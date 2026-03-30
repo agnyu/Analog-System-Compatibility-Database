@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Analog Photography Compatibility Database{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+</head>
+<body>
+    <div class="container">
+        <section class="hero">
+            <h1>Analog Photography Compatibility Database</h1>
+            <p>
+                Search cameras, film stocks, lenses, mounts, accessories, and documentation.
+                For the current prototype, Film Stocks is the active and working CRUD module.
+            </p>
+
+            <div class="hero-badges">
+                <span class="badge active">Film Stocks Active</span>
+                <span class="badge">Cameras Planned</span>
+                <span class="badge">Lenses Planned</span>
+                <span class="badge">Accessories Planned</span>
+                <span class="badge">Documentation Planned</span>
+            </div>
+        </section>
+
+        <nav class="nav-tabs">
+            <a href="{{ url_for('index') }}" class="active-tab">Home</a>
+            <span class="active-tab">Film Stocks</span>
+            <span>Cameras</span>
+            <span>Lenses</span>
+            <span>Mounts</span>
+            <span>Accessories</span>
+            <span>Documentation</span>
+        </nav>
+
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
