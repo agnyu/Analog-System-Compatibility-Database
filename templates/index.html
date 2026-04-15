@@ -3,32 +3,16 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<section class="hero">
-    <h1>Analog Photography Compatibility Database</h1>
-    <p>
-        Browse film cameras, lenses, mounts, accessories, film stocks, and documentation
-        through a reference database focused on compatibility, archival documentation,
-        and analog system research.
-    </p>
 
-    <div class="hero-badges">
-        <span class="badge active">Homepage Active</span>
-        <a class="badge" href="{{ url_for('film') }}">Film Stocks Live</a>
-        <span class="badge">Cameras Planned</span>
-        <span class="badge">Lenses Planned</span>
-        <span class="badge">Documentation Active</span>
-    </div>
-</section>
-
-<nav class="nav-tabs">
+<!-- <nav class="nav-tabs">
     <a class="active-tab" href="{{ url_for('index') }}">Home</a>
-    <a href="{{ url_for('film') }}">Film Stocks</a>
+    <a href="{{ url_for('add_film') }}">Film Stocks</a>
     <span>Cameras</span>
     <span>Lenses</span>
     <span>Mounts</span>
     <span>Accessories</span>
     <span>Documentation</span>
-</nav>
+</nav> -->
 
 <section class="card homepage-search-card">
     <div class="homepage-search-bar">
@@ -87,7 +71,7 @@
     </div>
 
     <div class="homepage-card-grid">
-        <a class="mini-card homepage-link-card" href="{{ url_for('film') }}">
+        <a class="mini-card homepage-link-card" href="{{ url_for('add_film') }}">
             <h3>Film Stocks</h3>
             <p>Open the current working CRUD table for film stock records.</p>
         </a>
