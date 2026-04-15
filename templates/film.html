@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h2>Global Search</h2>
+    <p class="subtext">Visual homepage search area for the full proposal scope. Search behavior can be added later.</p>
+
+    <div class="search-grid">
+        <div class="form-control">
+            <label for="global-search">Search</label>
+            <input type="text" id="global-search" placeholder="Search camera, film, lens, mount, accessory...">
+        </div>
+
+        <div class="form-control">
+            <label for="search-type">Search Type</label>
+            <select id="search-type">
+                <option>Film Stocks</option>
+                <option>Cameras</option>
+                <option>Lenses</option>
+                <option>Mounts</option>
+                <option>Accessories</option>
+                <option>Documentation</option>
+            </select>
+        </div>
+
+        <div class="button-row">
+            <button class="btn" type="button">Search</button>
+            <button class="btn-secondary" type="button">Reset</button>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Quick Filters</h2>
+            <p class="subtext">Prototype filter layout for the homepage. Film Stocks is the current live dataset.</p>
+        </div>
+    </div>
+
+    <div class="filter-grid">
+        <div class="form-control">
+            <label for="manufacturer-filter">Manufacturer</label>
+            <select id="manufacturer-filter">
+                <option>All</option>
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="format-filter">Format</label>
+            <select id="format-filter">
+                <option>All</option>
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="color-filter">Color Type</label>
+            <select id="color-filter">
+                <option>All</option>
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="iso-min">ISO Min</label>
+            <input type="number" id="iso-min" placeholder="e.g. 100">
+        </div>
+
+        <div class="form-control">
+            <label for="iso-max">ISO Max</label>
+            <input type="number" id="iso-max" placeholder="e.g. 400">
+        </div>
+
+        <div class="form-control">
+            <label for="status-filter">Status</label>
+            <select id="status-filter">
+                <option>All</option>
+            </select>
+        </div>
+    </div>
+</section>
+
+<section class="layout-grid">
+    <div>
+        <section class="card">
+            <div class="table-header">
+                <div>
+                    <h2>Film Stocks Index</h2>
+                    <p class="subtext">Current working CRUD table</p>
+                </div>
+
+                <a class="btn" href="{{ url_for('add_film') }}">+ Add New Film</a>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Film Name</th>
+                            <th>Manufacturer</th>
+                            <th>ISO</th>
+                            <th>Format</th>
+                            <th>Color Type</th>
+                            <th>Release Year</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for film in films %}
+                        <tr>
+                            <td>{{ film.film_id }}</td>
+                            <td>{{ film.film_name }}</td>
+                            <td>{{ film.manufacturer_name }}</td>
+                            <td>{{ film.iso }}</td>
+                            <td>{{ film.format_name }}</td>
+                            <td>{{ film.color_type }}</td>
+                            <td>{{ film.release_year }}</td>
+                            <td>
+                                {% if film.discontinued %}
+                                    <span class="status-pill discontinued">Discontinued</span>
+                                {% else %}
+                                    <span class="status-pill">Active</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ film.notes }}</td>
+                            <td>
+                                <div class="actions">
+                                    <a class="btn-secondary action-link" href="{{ url_for('edit_film', film_id=film.film_id) }}">Edit</a>
+
+                                    <form action="{{ url_for('delete_film', film_id=film.film_id) }}" method="POST">
+                                        <button class="btn-danger" type="submit" onclick="return confirm('Are you sure you want to delete this film?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Planned Compatibility Result View</h2>
+            <p class="subtext">
+                This section represents a visual placeholder for future compatibility pages.
+            </p>
+
+            <div class="placeholder-box">
+                <h3 style="margin-bottom: 6px;">Example Selected Item: Canon AE-1</h3>
+                <p style="color:#666; margin-bottom: 14px;">
+                    Manufacturer: Canon | Mount: FD | Format: 35mm | Camera Type: SLR
+                </p>
+
+                <div class="placeholder-grid">
+                    <div class="mini-card">
+                        <h4>Compatible Lenses</h4>
+                        <ul>
+                            <li>FD 50mm f/1.8</li>
+                            <li>FD 28mm f/2.8</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Compatible Film Stocks</h4>
+                        <ul>
+                            <li>Portra 400</li>
+                            <li>HP5 Plus</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Compatible Accessories</h4>
+                        <ul>
+                            <li>Motor Drive</li>
+                            <li>External Flash</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Documentation</h4>
+                        <ul>
+                            <li>User Manual</li>
+                            <li>Repair Guide</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <aside>
+        <section class="card">
+            <h2>Prototype Scope</h2>
+            <ul class="sidebar-list">
+                <li>Film Stocks page is the current working CRUD module.</li>
+                <li>Global navigation reflects the full project proposal scope.</li>
+                <li>Camera, lens, accessory, and documentation views will be expanded later.</li>
+                <li>Compatibility pages will connect related entities in future iterations.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Entity Roadmap</h2>
+
+            <div class="roadmap-item">
+                <strong>Film Stocks</strong>
+                Active working table for CRUD
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Cameras</strong>
+                Next candidate for search and detail page
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Lenses</strong>
+                Will connect through mount relationships
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Accessories</strong>
+                Will connect through compatibility records
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Documentation</strong>
+                Will attach to item detail pages
+            </div>
+        </section>
+    </aside>
+</section>
+{% endblock %}
