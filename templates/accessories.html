@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block title %}Accessories{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h2>Accessory Search</h2>
+    <p class="subtext">Browse accessories by manufacturer, accessory type, mount, format, and release year.</p>
+
+    <div class="search-grid">
+        <div class="form-control">
+            <label for="accessory-search">Search</label>
+            <input type="text" id="accessory-search" placeholder="Search accessory, manufacturer, type, mount...">
+        </div>
+
+        <div class="form-control">
+            <label for="accessory-search-type">Search Type</label>
+            <select id="accessory-search-type">
+                <option>Accessories</option>
+                <option>Accessory Types</option>
+                <option>Accessory Compatibility</option>
+                <option>Documentation</option>
+            </select>
+        </div>
+
+        <div class="button-row">
+            <button class="btn" type="button">Search</button>
+            <button class="btn-secondary" type="button">Reset</button>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Quick Filters</h2>
+            <p class="subtext">Prototype filter layout for accessories and their compatibility relationships.</p>
+        </div>
+    </div>
+
+    <div class="filter-grid">
+        <div class="form-control">
+            <label for="manufacturer-filter">Manufacturer</label>
+            <select id="manufacturer-filter">
+                <option>All</option>
+                {% for manufacturer in manufacturers %}
+                <option>{{ manufacturer.manufacturer_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="type-filter">Accessory Type</label>
+            <select id="type-filter">
+                <option>All</option>
+                {% for accessory_type in accessory_types %}
+                <option>{{ accessory_type.type_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="mount-filter">Mount</label>
+            <select id="mount-filter">
+                <option>All</option>
+                {% for mount in mounts %}
+                <option>{{ mount.mount_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="format-filter">Format</label>
+            <select id="format-filter">
+                <option>All</option>
+                {% for format in formats %}
+                <option>{{ format.format_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="year-min">Year Min</label>
+            <input type="number" id="year-min" placeholder="e.g. 1970">
+        </div>
+
+        <div class="form-control">
+            <label for="year-max">Year Max</label>
+            <input type="number" id="year-max" placeholder="e.g. 1990">
+        </div>
+    </div>
+</section>
+
+<section class="layout-grid">
+    <div>
+        <section class="card">
+            <div class="table-header">
+                <div>
+                    <h2>Accessory Index</h2>
+                    <p class="subtext">Core accessory records in the current database.</p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Accessory Name</th>
+                            <th>Manufacturer</th>
+                            <th>Type</th>
+                            <th>Mount</th>
+                            <th>Format</th>
+                            <th>Release Year</th>
+                            <th>Description</th>
+                            <th>Compatibility Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for accessory in accessories %}
+                        <tr>
+                            <td>{{ accessory.accessory_id }}</td>
+                            <td>{{ accessory.accessory_name }}</td>
+                            <td>{{ accessory.manufacturer_name }}</td>
+                            <td>{{ accessory.type_name }}</td>
+                            <td>{{ accessory.mount_name or 'N/A' }}</td>
+                            <td>{{ accessory.format_name or 'N/A' }}</td>
+                            <td>{{ accessory.release_year }}</td>
+                            <td>{{ accessory.description }}</td>
+                            <td>{{ accessory.compatibility_notes }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Planned Accessory Compatibility View</h2>
+            <p class="subtext">
+                This section represents a visual placeholder for future accessory detail and compatibility pages.
+            </p>
+
+            <div class="placeholder-box">
+                <h3 style="margin-bottom: 6px;">Example Selected Accessory: Canon Speedlite 155A</h3>
+                <p style="color:#666; margin-bottom: 14px;">
+                    Manufacturer: Canon | Type: Flash | Mount: Canon FD | Format: 35mm
+                </p>
+
+                <div class="placeholder-grid">
+                    <div class="mini-card">
+                        <h4>Accessory Type</h4>
+                        <ul>
+                            <li>Flash</li>
+                            <li>Branded system accessory</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Compatible Cameras</h4>
+                        <ul>
+                            <li>Canon AE-1</li>
+                            <li>Canon AE-1 Program</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Compatible Variants</h4>
+                        <ul>
+                            <li>Canon AE-1 Program</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Documentation</h4>
+                        <ul>
+                            <li>Accessory guide</li>
+                            <li>System brochure</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <aside>
+        <section class="card">
+            <h2>Accessory Scope</h2>
+            <ul class="sidebar-list">
+                <li>Accessories are grouped by accessory type and linked to systems through mount and format fields.</li>
+                <li>Accessory Compatibility records can later connect accessories to specific camera variants.</li>
+                <li>This page currently serves as the top-level browse page for accessory records.</li>
+                <li>Further detail pages can expand into compatibility bundles and linked documentation.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Accessory Roadmap</h2>
+
+            <div class="roadmap-item">
+                <strong>Accessory Index</strong>
+                Core browse page for accessories
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Accessory Types</strong>
+                Support page for accessory categorization
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Accessory Compatibility</strong>
+                Future drill-down page for camera variant relationships
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Saved Profiles</strong>
+                Future feature for saving accessory-based compatibility bundles
+            </div>
+        </section>
+    </aside>
+</section>
+{% endblock %}

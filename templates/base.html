@@ -15,15 +15,6 @@
                 Search cameras, film stocks, lenses, mounts, accessories, and documentation.
                 For the current prototype, Film Stocks is the active and working CRUD module.
             </p>
-
-            <!-- <div class="hero-badges">
-                <span class = "badge"><a href="{{ url_for('index') }}">Home</a></span>
-                <span class = "badge"><a href="{{ url_for('film') }}">Film</a></span>
-                <span class="badge">Cameras Planned</span>
-                <span class="badge">Lenses Planned</span>
-                <span class="badge">Accessories Planned</span>
-                <span class="badge">Documentation Planned</span>
-            </div> -->
         </section>
 
         <nav class="nav-tabs">
@@ -45,7 +36,10 @@
             Lenses
             </a>
             <a href="#">Mounts</a>
-            <a href="#">Accessories</a>
+            <a href="{{ url_for('accessories') }}"
+            class="{% if request.endpoint == 'accessories' %}active-tab{% endif %}">
+            Accessories
+            </a>
             <a href="#">Documentation</a>
         </nav>
 
