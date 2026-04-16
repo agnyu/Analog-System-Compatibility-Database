@@ -7,6 +7,11 @@
     <h2>Accessory Search</h2>
     <p class="subtext">Browse accessories by manufacturer, accessory type, mount, format, and release year.</p>
 
+    <div class="button-row" style="margin-top: 16px;">
+    <a class="btn-secondary" href="{{ url_for('accessory_types') }}">Browse Accessory Types</a>
+    <a class="btn-secondary" href="{{ url_for('accessory_compatibility') }}">Browse Compatibility</a>
+    </div>
+
     <div class="search-grid">
         <div class="form-control">
             <label for="accessory-search">Search</label>

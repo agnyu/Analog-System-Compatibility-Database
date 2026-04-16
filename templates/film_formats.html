@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Film Formats{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h2>Film Format Search</h2>
+    <p class="subtext">Browse film formats by name, format type, and related system usage across the database.</p>
+
+    <div class="search-grid">
+        <div class="form-control">
+            <label for="format-search">Search</label>
+            <input type="text" id="format-search" placeholder="Search format, type, notes...">
+        </div>
+
+        <div class="form-control">
+            <label for="format-search-type">Search Type</label>
+            <select id="format-search-type">
+                <option>Film Formats</option>
+                <option>Film Stocks</option>
+                <option>Accessories</option>
+                <option>Cameras</option>
+            </select>
+        </div>
+
+        <div class="button-row">
+            <button class="btn" type="button">Search</button>
+            <button class="btn-secondary" type="button">Reset</button>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Quick Filters</h2>
+            <p class="subtext">Prototype filter layout for film formats and related records.</p>
+        </div>
+    </div>
+
+    <div class="filter-grid">
+        <div class="form-control">
+            <label for="format-name-filter">Format Name</label>
+            <input type="text" id="format-name-filter" placeholder="e.g. 35mm">
+        </div>
+
+        <div class="form-control">
+            <label for="format-type-filter">Format Type</label>
+            <select id="format-type-filter">
+                <option>All</option>
+                <option>Roll Film</option>
+                <option>Sheet Film</option>
+                <option>Cartridge Film</option>
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="usage-filter">Usage Scope</label>
+            <select id="usage-filter">
+                <option>All</option>
+                <option>Used by Film Stocks</option>
+                <option>Used by Accessories</option>
+                <option>Used by Both</option>
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="notes-filter">Notes</label>
+            <input type="text" id="notes-filter" placeholder="Search notes...">
+        </div>
+
+        <div class="form-control">
+            <label for="scale-filter">Scale</label>
+            <select id="scale-filter">
+                <option>All</option>
+                <option>35mm</option>
+                <option>120</option>
+                <option>Large Format</option>
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="status-filter">Category</label>
+            <select id="status-filter">
+                <option>All</option>
+                <option>Core Format</option>
+                <option>Specialized Format</option>
+            </select>
+        </div>
+    </div>
+</section>
+
+<section class="layout-grid">
+    <div>
+        <section class="card">
+            <div class="table-header">
+                <div>
+                    <h2>Film Format Index</h2>
+                    <p class="subtext">Format records in the current database.</p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Format Name</th>
+                            <th>Format Type</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for format in formats %}
+                        <tr>
+                            <td>{{ format.format_id }}</td>
+                            <td>{{ format.format_name }}</td>
+                            <td>{{ format.format_type }}</td>
+                            <td>{{ format.notes }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Planned Format Detail View</h2>
+            <p class="subtext">
+                This section represents a visual placeholder for future format detail and linked-record pages.
+            </p>
+
+            <div class="placeholder-box">
+                <h3 style="margin-bottom: 6px;">Example Selected Format: 35mm</h3>
+                <p style="color:#666; margin-bottom: 14px;">
+                    Format: 35mm | Type: Cartridge Film | Scope: Common still photography format
+                </p>
+
+                <div class="placeholder-grid">
+                    <div class="mini-card">
+                        <h4>Linked Film Stocks</h4>
+                        <ul>
+                            <li>HP5 Plus</li>
+                            <li>Tri-X 400</li>
+                            <li>Portra 400</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Linked Accessories</h4>
+                        <ul>
+                            <li>Canon Speedlite 155A</li>
+                            <li>Leica Ever-Ready Case</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>System Role</h4>
+                        <ul>
+                            <li>Common format for SLR and rangefinder systems</li>
+                            <li>Used widely across branded camera lines</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Related Pages</h4>
+                        <ul>
+                            <li>Film Stocks</li>
+                            <li>Accessories</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <aside>
+        <section class="card">
+            <h2>Format Scope</h2>
+            <ul class="sidebar-list">
+                <li>Film formats classify the physical format used by film stocks and some accessory records.</li>
+                <li>This page supports the Film section as a reference layer for browsing and grouping.</li>
+                <li>Format records can later expand into linked film stocks and system-level compatibility views.</li>
+                <li>This page currently serves as the main browse page for film format records.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Format Roadmap</h2>
+
+            <div class="roadmap-item">
+                <strong>Format Index</strong>
+                Core browse page for film format records
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Linked Film Stocks</strong>
+                Future drill-down into stocks using the format
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Linked Accessories</strong>
+                Future drill-down into accessories tied to the format
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Saved Profiles</strong>
+                Future feature for format-based browsing bundles
+            </div>
+        </section>
+    </aside>
+</section>
+{% endblock %}

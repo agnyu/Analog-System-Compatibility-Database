@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}Accessory Compatibility{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h2>Accessory Compatibility Search</h2>
+    <p class="subtext">Browse compatibility relationships between accessories and camera variants.</p>
+
+    <div class="search-grid">
+        <div class="form-control">
+            <label for="compat-search">Search</label>
+            <input type="text" id="compat-search" placeholder="Search accessory, variant, compatibility type...">
+        </div>
+
+        <div class="form-control">
+            <label for="compat-search-type">Search Type</label>
+            <select id="compat-search-type">
+                <option>Accessory Compatibility</option>
+                <option>Accessories</option>
+                <option>Camera Variants</option>
+                <option>Accessory Types</option>
+            </select>
+        </div>
+
+        <div class="button-row">
+            <button class="btn" type="button">Search</button>
+            <button class="btn-secondary" type="button">Reset</button>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Quick Filters</h2>
+            <p class="subtext">Prototype filter layout for accessory-to-variant compatibility records.</p>
+        </div>
+    </div>
+
+    <div class="filter-grid">
+        <div class="form-control">
+            <label for="accessory-filter">Accessory</label>
+            <select id="accessory-filter">
+                <option>All</option>
+                {% for accessory in accessories %}
+                <option>{{ accessory.accessory_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="variant-filter">Camera Variant</label>
+            <select id="variant-filter">
+                <option>All</option>
+                {% for variant in variants %}
+                <option>{{ variant.variant_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="compat-type-filter">Compatibility Type</label>
+            <input type="text" id="compat-type-filter" placeholder="e.g. Compatible">
+        </div>
+
+        <div class="form-control">
+            <label for="notes-filter">Notes</label>
+            <input type="text" id="notes-filter" placeholder="Search notes...">
+        </div>
+
+        <div class="form-control">
+            <label for="scope-filter">Relationship Scope</label>
+            <select id="scope-filter">
+                <option>All</option>
+                <option>Direct Match</option>
+                <option>Conditional</option>
+                <option>System-Based</option>
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="status-filter">Status</label>
+            <select id="status-filter">
+                <option>All</option>
+                <option>Linked Record</option>
+                <option>Needs Review</option>
+            </select>
+        </div>
+    </div>
+</section>
+
+<section class="layout-grid">
+    <div>
+        <section class="card">
+            <div class="table-header">
+                <div>
+                    <h2>Accessory Compatibility Index</h2>
+                    <p class="subtext">Compatibility relationships between accessories and camera variants.</p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Accessory</th>
+                            <th>Camera Variant</th>
+                            <th>Compatibility Type</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for compat in compatibilities %}
+                        <tr>
+                            <td>{{ compat.accessory_compat_id }}</td>
+                            <td>{{ compat.accessory_name }}</td>
+                            <td>{{ compat.variant_name }}</td>
+                            <td>{{ compat.compatibility_type }}</td>
+                            <td>{{ compat.notes }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Planned Compatibility Detail View</h2>
+            <p class="subtext">
+                This section represents a visual placeholder for future accessory-variant detail pages.
+            </p>
+
+            <div class="placeholder-box">
+                <h3 style="margin-bottom: 6px;">Example Compatibility Record</h3>
+                <p style="color:#666; margin-bottom: 14px;">
+                    Accessory: Canon Speedlite 155A | Variant: Canon AE-1 Program | Type: Compatible
+                </p>
+
+                <div class="placeholder-grid">
+                    <div class="mini-card">
+                        <h4>Accessory Record</h4>
+                        <ul>
+                            <li>Canon Speedlite 155A</li>
+                            <li>Flash accessory</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Variant Record</h4>
+                        <ul>
+                            <li>Canon AE-1 Program</li>
+                            <li>35mm variant</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Compatibility Meaning</h4>
+                        <ul>
+                            <li>Directly associated system match</li>
+                            <li>Useful for compatibility browsing</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Related Pages</h4>
+                        <ul>
+                            <li>Accessories</li>
+                            <li>Camera Variants</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <aside>
+        <section class="card">
+            <h2>Compatibility Scope</h2>
+            <ul class="sidebar-list">
+                <li>Accessory Compatibility links accessories to specific camera variants.</li>
+                <li>This page acts as a relationship layer inside the Accessories section.</li>
+                <li>These records help demonstrate how the database supports compatibility browsing.</li>
+                <li>This page currently serves as the main browse page for accessory compatibility records.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Compatibility Roadmap</h2>
+
+            <div class="roadmap-item">
+                <strong>Compatibility Index</strong>
+                Core browse page for accessory-to-variant relationships
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Accessory Links</strong>
+                Future drill-down into accessory-based compatibility sets
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Variant Links</strong>
+                Future drill-down into variant-based accessory matches
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Saved Profiles</strong>
+                Future feature for saving accessory compatibility bundles
+            </div>
+        </section>
+    </aside>
+</section>
+{% endblock %}

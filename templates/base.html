@@ -16,36 +16,69 @@
             </p>
         </section>
 
-        <nav class="nav-tabs">
-            <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active-tab{% endif %}">
-                Home
-            </a>
-            <a href="{{ url_for('film') }}"
-            class="{% if request.endpoint == 'film' %}active-tab{% endif %}">
-            Film
-            </a>
+    <nav class="nav-tabs">
+    <a href="{{ url_for('index') }}"
+       class="{% if request.endpoint == 'index' %}active-tab{% endif %}">
+       Home
+    </a>
 
-            <a href="{{ url_for('cameras') }}"
-             class="{% if request.endpoint == 'cameras' %}active-tab{% endif %}">
-            Cameras
-            </a>
+    <div class="dropdown">
+        <a href="{{ url_for('film') }}"
+           class="{% if request.endpoint in ['film', 'developers', 'development_guide', 'film_formats'] %}active-tab{% endif %}">
+           Film
+        </a>
+        <div class="dropdown-menu">
+            <a href="{{ url_for('film') }}">Film Stocks</a>
+            <a href="{{ url_for('developers') }}">Developers</a>
+            <a href="{{ url_for('development_guide') }}">Development Guide</a>
+            <a href="{{ url_for('film_formats') }}">Formats</a>
+        </div>
+    </div>
 
-            <a href="{{ url_for('lenses') }}"
-            class="{% if request.endpoint == 'lenses' %}active-tab{% endif %}">
-            Lenses
-            </a>
-            <!-- <a href="#">Mounts</a> -->
-            <a href="{{ url_for('accessories') }}"
-            class="{% if request.endpoint == 'accessories' %}active-tab{% endif %}">
-            Accessories
-            </a>
+    <div class="dropdown">
+        <a href="{{ url_for('cameras') }}"
+           class="{% if request.endpoint in ['cameras', 'camera_variants'] %}active-tab{% endif %}">
+           Cameras
+        </a>
+        <div class="dropdown-menu">
+            <a href="{{ url_for('cameras') }}">Camera Index</a>
+            <a href="{{ url_for('camera_variants') }}">Camera Variants</a>
+        </div>
+    </div>
 
-            <a href="{{ url_for('documentation') }}"
-            class="{% if request.endpoint == 'documentation' %}active-tab{% endif %}">
-            Documentation
-            </a>
-        </nav>
+    <div class="dropdown">
+        <a href="{{ url_for('lenses') }}"
+           class="{% if request.endpoint in ['lenses', 'mounts'] %}active-tab{% endif %}">
+           Lenses
+        </a>
+        <div class="dropdown-menu">
+            <a href="{{ url_for('lenses') }}">Lens Index</a>
+            <a href="{{ url_for('mounts') }}">Mounts</a>
+        </div>
+    </div>
 
+    <div class="dropdown">
+        <a href="{{ url_for('accessories') }}"
+           class="{% if request.endpoint in ['accessories', 'accessory_types', 'accessory_compatibility'] %}active-tab{% endif %}">
+           Accessories
+        </a>
+        <div class="dropdown-menu">
+            <a href="{{ url_for('accessories') }}">Accessory Index</a>
+            <a href="{{ url_for('accessory_types') }}">Accessory Types</a>
+            <a href="{{ url_for('accessory_compatibility') }}">Accessory Compatibility</a>
+        </div>
+    </div>
+
+    <div class="dropdown">
+        <a href="{{ url_for('documentation') }}"
+           class="{% if request.endpoint == 'documentation' %}active-tab{% endif %}">
+           Documentation
+        </a>
+        <div class="dropdown-menu">
+            <a href="{{ url_for('documentation') }}">Documentation Index</a>
+        </div>
+    </div>
+    </nav>
         {% block content %}{% endblock %}
     </div>
 </body>

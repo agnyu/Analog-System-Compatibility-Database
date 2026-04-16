@@ -453,7 +453,234 @@ def camera_variants():
         cameras=cameras
     )
 
+@app.route("/mounts")
+def mounts():
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
 
+    mounts_query = """
+    SELECT
+        mo.mount_id,
+        mo.mount_name,
+        m.manufacturer_name,
+        mo.mount_type,
+        mo.year_introduced,
+        mo.notes
+    FROM mounts mo
+    JOIN manufacturers m ON mo.manufacturer_id = m.manufacturer_id
+    ORDER BY mo.mount_name;
+    """
+
+    manufacturers_query = """
+    SELECT manufacturer_id, manufacturer_name
+    FROM manufacturers
+    ORDER BY manufacturer_name;
+    """
+
+    cursor.execute(mounts_query)
+    mounts = cursor.fetchall()
+
+    cursor.execute(manufacturers_query)
+    manufacturers = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return render_template(
+        "mounts.html",
+        mounts=mounts,
+        manufacturers=manufacturers
+    )
+
+@app.route("/developers")
+def developers():
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    developers_query = """
+    SELECT
+        d.developer_id,
+        d.developer_name,
+        m.manufacturer_name,
+        d.developer_type,
+        d.notes
+    FROM film_developers d
+    JOIN manufacturers m ON d.manufacturer_id = m.manufacturer_id
+    ORDER BY d.developer_name;
+    """
+
+    manufacturers_query = """
+    SELECT manufacturer_id, manufacturer_name
+    FROM manufacturers
+    ORDER BY manufacturer_name;
+    """
+
+    cursor.execute(developers_query)
+    developers = cursor.fetchall()
+
+    cursor.execute(manufacturers_query)
+    manufacturers = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return render_template(
+        "developers.html",
+        developers=developers,
+        manufacturers=manufacturers
+    )
+
+@app.route("/development-guide")
+def development_guide():
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    guides_query = """
+    SELECT
+        fdg.development_id,
+        fs.film_name,
+        fd.developer_name,
+        fdg.temperature_celsius,
+        fdg.dilution,
+        fdg.shot_iso,
+        fdg.development_time_minutes,
+        fdg.agitation_notes,
+        fdg.notes
+    FROM film_development_guide fdg
+    JOIN film_stocks fs ON fdg.film_id = fs.film_id
+    JOIN film_developers fd ON fdg.developer_id = fd.developer_id
+    ORDER BY fs.film_name, fd.developer_name;
+    """
+
+    films_query = """
+    SELECT film_id, film_name
+    FROM film_stocks
+    ORDER BY film_name;
+    """
+
+    developers_query = """
+    SELECT developer_id, developer_name
+    FROM film_developers
+    ORDER BY developer_name;
+    """
+
+    cursor.execute(guides_query)
+    guides = cursor.fetchall()
+
+    cursor.execute(films_query)
+    films = cursor.fetchall()
+
+    cursor.execute(developers_query)
+    developers = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return render_template(
+        "development_guide.html",
+        guides=guides,
+        films=films,
+        developers=developers
+    )
+
+@app.route("/accessory-types")
+def accessory_types():
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    accessory_types_query = """
+    SELECT
+        accessory_type_id,
+        type_name
+    FROM accessory_types
+    ORDER BY type_name;
+    """
+
+    cursor.execute(accessory_types_query)
+    accessory_types = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return render_template(
+        "accessory_types.html",
+        accessory_types=accessory_types
+    )
+
+@app.route("/accessory-compatibility")
+def accessory_compatibility():
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    compat_query = """
+    SELECT
+        ac.accessory_compat_id,
+        a.accessory_name,
+        cv.variant_name,
+        ac.compatibility_type,
+        ac.notes
+    FROM accessory_compatibility ac
+    JOIN accessories a ON ac.accessory_id = a.accessory_id
+    JOIN camera_variants cv ON ac.variant_id = cv.variant_id
+    ORDER BY a.accessory_name, cv.variant_name;
+    """
+
+    accessories_query = """
+    SELECT accessory_id, accessory_name
+    FROM accessories
+    ORDER BY accessory_name;
+    """
+
+    variants_query = """
+    SELECT variant_id, variant_name
+    FROM camera_variants
+    ORDER BY variant_name;
+    """
+
+    cursor.execute(compat_query)
+    compatibilities = cursor.fetchall()
+
+    cursor.execute(accessories_query)
+    accessories = cursor.fetchall()
+
+    cursor.execute(variants_query)
+    variants = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return render_template(
+        "accessory_compatibility.html",
+        compatibilities=compatibilities,
+        accessories=accessories,
+        variants=variants
+    )
+
+@app.route("/film-formats")
+def film_formats():
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    formats_query = """
+    SELECT
+        format_id,
+        format_name,
+        format_type,
+        notes
+    FROM film_formats
+    ORDER BY format_name;
+    """
+
+    cursor.execute(formats_query)
+    formats = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return render_template(
+        "film_formats.html",
+        formats=formats
+    )
 
 #Sub Level Categories Here
 

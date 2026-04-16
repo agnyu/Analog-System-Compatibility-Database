@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Development Guide{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h2>Development Guide Search</h2>
+    <p class="subtext">Browse development workflows by film stock, developer, ISO, dilution, temperature, and development time.</p>
+
+    <div class="search-grid">
+        <div class="form-control">
+            <label for="guide-search">Search</label>
+            <input type="text" id="guide-search" placeholder="Search film, developer, dilution, notes...">
+        </div>
+
+        <div class="form-control">
+            <label for="guide-search-type">Search Type</label>
+            <select id="guide-search-type">
+                <option>Development Guide</option>
+                <option>Film Stocks</option>
+                <option>Developers</option>
+                <option>Formats</option>
+            </select>
+        </div>
+
+        <div class="button-row">
+            <button class="btn" type="button">Search</button>
+            <button class="btn-secondary" type="button">Reset</button>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Quick Filters</h2>
+            <p class="subtext">Prototype filter layout for film-development workflows and chemistry pairings.</p>
+        </div>
+    </div>
+
+    <div class="filter-grid">
+        <div class="form-control">
+            <label for="film-filter">Film Stock</label>
+            <select id="film-filter">
+                <option>All</option>
+                {% for film in films %}
+                <option>{{ film.film_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="developer-filter">Developer</label>
+            <select id="developer-filter">
+                <option>All</option>
+                {% for developer in developers %}
+                <option>{{ developer.developer_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="iso-filter">Shot ISO</label>
+            <input type="number" id="iso-filter" placeholder="e.g. 400">
+        </div>
+
+        <div class="form-control">
+            <label for="temp-filter">Temperature °C</label>
+            <input type="number" step="0.1" id="temp-filter" placeholder="e.g. 20.0">
+        </div>
+
+        <div class="form-control">
+            <label for="time-filter">Dev Time (min)</label>
+            <input type="number" step="0.1" id="time-filter" placeholder="e.g. 9.75">
+        </div>
+
+        <div class="form-control">
+            <label for="dilution-filter">Dilution</label>
+            <input type="text" id="dilution-filter" placeholder="e.g. 1:1 or Stock">
+        </div>
+    </div>
+</section>
+
+<section class="layout-grid">
+    <div>
+        <section class="card">
+            <div class="table-header">
+                <div>
+                    <h2>Development Guide Index</h2>
+                    <p class="subtext">Film-development workflow records in the current database.</p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Film Stock</th>
+                            <th>Developer</th>
+                            <th>Temp °C</th>
+                            <th>Dilution</th>
+                            <th>Shot ISO</th>
+                            <th>Dev Time</th>
+                            <th>Agitation Notes</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for guide in guides %}
+                        <tr>
+                            <td>{{ guide.development_id }}</td>
+                            <td>{{ guide.film_name }}</td>
+                            <td>{{ guide.developer_name }}</td>
+                            <td>{{ guide.temperature_celsius }}</td>
+                            <td>{{ guide.dilution }}</td>
+                            <td>{{ guide.shot_iso }}</td>
+                            <td>{{ guide.development_time_minutes }}</td>
+                            <td>{{ guide.agitation_notes }}</td>
+                            <td>{{ guide.notes }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Planned Workflow Detail View</h2>
+            <p class="subtext">
+                This section represents a visual placeholder for future development workflow detail pages.
+            </p>
+
+            <div class="placeholder-box">
+                <h3 style="margin-bottom: 6px;">Example Workflow: Tri-X 400 in Kodak D-76</h3>
+                <p style="color:#666; margin-bottom: 14px;">
+                    Film: Tri-X 400 | Developer: Kodak D-76 | ISO: 400 | Temperature: 20°C
+                </p>
+
+                <div class="placeholder-grid">
+                    <div class="mini-card">
+                        <h4>Film Record</h4>
+                        <ul>
+                            <li>Tri-X 400</li>
+                            <li>Black and White</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Developer Record</h4>
+                        <ul>
+                            <li>Kodak D-76</li>
+                            <li>Black and White Developer</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Workflow Details</h4>
+                        <ul>
+                            <li>Dilution: 1:1</li>
+                            <li>Development Time: 9.75 min</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Use Case</h4>
+                        <ul>
+                            <li>Traditional B&W workflow</li>
+                            <li>Repeatable lab reference</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <aside>
+        <section class="card">
+            <h2>Development Guide Scope</h2>
+            <ul class="sidebar-list">
+                <li>The development guide links film stocks to developers through practical workflow records.</li>
+                <li>This page acts as the bridge between the Film Stocks and Developers subpages.</li>
+                <li>Guide records capture ISO, temperature, dilution, timing, and agitation notes.</li>
+                <li>This page currently serves as the main browse page for film-development workflows.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Development Guide Roadmap</h2>
+
+            <div class="roadmap-item">
+                <strong>Guide Index</strong>
+                Core browse page for development workflows
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Film Links</strong>
+                Future drill-down into film-specific workflow sets
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Developer Links</strong>
+                Future drill-down into developer-specific usage
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Saved Profiles</strong>
+                Future feature for saving film-development combinations
+            </div>
+        </section>
+    </aside>
+</section>
+{% endblock %}

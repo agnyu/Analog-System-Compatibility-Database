@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}Mounts{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h2>Mount Search</h2>
+    <p class="subtext">Browse camera and lens mounts by manufacturer, mount type, and year introduced.</p>
+
+    <div class="search-grid">
+        <div class="form-control">
+            <label for="mount-search">Search</label>
+            <input type="text" id="mount-search" placeholder="Search mount, manufacturer, type...">
+        </div>
+
+        <div class="form-control">
+            <label for="mount-search-type">Search Type</label>
+            <select id="mount-search-type">
+                <option>Mounts</option>
+                <option>Cameras</option>
+                <option>Lenses</option>
+                <option>Manufacturers</option>
+            </select>
+        </div>
+
+        <div class="button-row">
+            <button class="btn" type="button">Search</button>
+            <button class="btn-secondary" type="button">Reset</button>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Quick Filters</h2>
+            <p class="subtext">Prototype filter layout for mounts and related camera and lens system records.</p>
+        </div>
+    </div>
+
+    <div class="filter-grid">
+        <div class="form-control">
+            <label for="manufacturer-filter">Manufacturer</label>
+            <select id="manufacturer-filter">
+                <option>All</option>
+                {% for manufacturer in manufacturers %}
+                <option>{{ manufacturer.manufacturer_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="mount-type-filter">Mount Type</label>
+            <select id="mount-type-filter">
+                <option>All</option>
+                <option>SLR</option>
+                <option>Rangefinder</option>
+                <option>Medium Format</option>
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="year-min">Year Introduced Min</label>
+            <input type="number" id="year-min" placeholder="e.g. 1950">
+        </div>
+
+        <div class="form-control">
+            <label for="year-max">Year Introduced Max</label>
+            <input type="number" id="year-max" placeholder="e.g. 1990">
+        </div>
+
+        <div class="form-control">
+            <label for="system-filter">System Coverage</label>
+            <select id="system-filter">
+                <option>All</option>
+                <option>Used by Cameras</option>
+                <option>Used by Lenses</option>
+                <option>Used by Both</option>
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="notes-filter">Notes</label>
+            <input type="text" id="notes-filter" placeholder="Search notes...">
+        </div>
+    </div>
+</section>
+
+<section class="layout-grid">
+    <div>
+        <section class="card">
+            <div class="table-header">
+                <div>
+                    <h2>Mount Index</h2>
+                    <p class="subtext">Core mount records in the current database.</p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Mount Name</th>
+                            <th>Manufacturer</th>
+                            <th>Mount Type</th>
+                            <th>Year Introduced</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mount in mounts %}
+                        <tr>
+                            <td>{{ mount.mount_id }}</td>
+                            <td>{{ mount.mount_name }}</td>
+                            <td>{{ mount.manufacturer_name }}</td>
+                            <td>{{ mount.mount_type }}</td>
+                            <td>{{ mount.year_introduced }}</td>
+                            <td>{{ mount.notes }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Planned Mount Relationship View</h2>
+            <p class="subtext">
+                This section represents a visual placeholder for future mount detail and compatibility pages.
+            </p>
+
+            <div class="placeholder-box">
+                <h3 style="margin-bottom: 6px;">Example Selected Mount: Canon FD</h3>
+                <p style="color:#666; margin-bottom: 14px;">
+                    Manufacturer: Canon | Type: SLR | Year Introduced: 1971
+                </p>
+
+                <div class="placeholder-grid">
+                    <div class="mini-card">
+                        <h4>Linked Cameras</h4>
+                        <ul>
+                            <li>Canon AE-1</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Linked Variants</h4>
+                        <ul>
+                            <li>Canon AE-1 Program</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Linked Lenses</h4>
+                        <ul>
+                            <li>FD 50mm f/1.8</li>
+                            <li>FD 28mm f/2.8</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>System Notes</h4>
+                        <ul>
+                            <li>Manual-focus SLR mount</li>
+                            <li>Used across Canon FD-era bodies and lenses</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <aside>
+        <section class="card">
+            <h2>Mount Scope</h2>
+            <ul class="sidebar-list">
+                <li>Mounts act as a core relationship layer between cameras and lenses.</li>
+                <li>This page focuses on the mount as a system record rather than on any single camera or lens.</li>
+                <li>Mount detail pages can later expand into linked cameras, lenses, and accessories.</li>
+                <li>This page currently serves as the main browse page for mount records.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Mount Roadmap</h2>
+
+            <div class="roadmap-item">
+                <strong>Mount Index</strong>
+                Core browse page for mount records
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Camera Links</strong>
+                Future drill-down into camera systems using the mount
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Lens Links</strong>
+                Future drill-down into compatible lenses
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Saved Profiles</strong>
+                Future feature for saving mount-based compatibility bundles
+            </div>
+        </section>
+    </aside>
+</section>
+{% endblock %}

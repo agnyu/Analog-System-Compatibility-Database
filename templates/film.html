@@ -6,7 +6,15 @@
 <section class="card">
     <h2>Film Search</h2>
     <p class="subtext">Browse film stocks by format, ISO, color type, development workflow, and related records.</p>
+    <div class="button-row" style="margin-top: 16px;">
+    <a class="btn-secondary" href="{{ url_for('developers') }}">Browse Developers</a>
+    </div>
 
+    <div class="button-row" style="margin-top: 16px;">
+    <a class="btn-secondary" href="{{ url_for('developers') }}">Browse Developers</a>
+    <a class="btn-secondary" href="{{ url_for('development_guide') }}">Browse Development Guide</a>
+    </div>
+    
     <div class="search-grid">
         <div class="form-control">
             <label for="film-search">Search</label>

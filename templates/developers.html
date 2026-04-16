@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Developers{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h2>Developer Search</h2>
+    <p class="subtext">Browse film developers by manufacturer, developer type, and linked development workflows.</p>
+
+    <div class="search-grid">
+        <div class="form-control">
+            <label for="developer-search">Search</label>
+            <input type="text" id="developer-search" placeholder="Search developer, manufacturer, type...">
+        </div>
+
+        <div class="form-control">
+            <label for="developer-search-type">Search Type</label>
+            <select id="developer-search-type">
+                <option>Developers</option>
+                <option>Film Stocks</option>
+                <option>Development Guide</option>
+                <option>Manufacturers</option>
+            </select>
+        </div>
+
+        <div class="button-row">
+            <button class="btn" type="button">Search</button>
+            <button class="btn-secondary" type="button">Reset</button>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Quick Filters</h2>
+            <p class="subtext">Prototype filter layout for developers and related film-development records.</p>
+        </div>
+    </div>
+
+    <div class="filter-grid">
+        <div class="form-control">
+            <label for="manufacturer-filter">Manufacturer</label>
+            <select id="manufacturer-filter">
+                <option>All</option>
+                {% for manufacturer in manufacturers %}
+                <option>{{ manufacturer.manufacturer_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="developer-type-filter">Developer Type</label>
+            <select id="developer-type-filter">
+                <option>All</option>
+                <option>Black and White</option>
+                <option>Monobath</option>
+                <option>Color</option>
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="name-filter">Developer Name</label>
+            <input type="text" id="name-filter" placeholder="e.g. D-76">
+        </div>
+
+        <div class="form-control">
+            <label for="workflow-filter">Guide Coverage</label>
+            <select id="workflow-filter">
+                <option>All</option>
+                <option>Used in Development Guide</option>
+                <option>Not Yet Used</option>
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="notes-filter">Notes</label>
+            <input type="text" id="notes-filter" placeholder="Search notes...">
+        </div>
+
+        <div class="form-control">
+            <label for="scope-filter">Scope</label>
+            <select id="scope-filter">
+                <option>All</option>
+                <option>Film-related</option>
+                <option>Guide-related</option>
+            </select>
+        </div>
+    </div>
+</section>
+
+<section class="layout-grid">
+    <div>
+        <section class="card">
+            <div class="table-header">
+                <div>
+                    <h2>Developer Index</h2>
+                    <p class="subtext">Core developer records in the current database.</p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Developer Name</th>
+                            <th>Manufacturer</th>
+                            <th>Developer Type</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for developer in developers %}
+                        <tr>
+                            <td>{{ developer.developer_id }}</td>
+                            <td>{{ developer.developer_name }}</td>
+                            <td>{{ developer.manufacturer_name }}</td>
+                            <td>{{ developer.developer_type }}</td>
+                            <td>{{ developer.notes }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Planned Developer Workflow View</h2>
+            <p class="subtext">
+                This section represents a visual placeholder for future developer detail and development-guide pages.
+            </p>
+
+            <div class="placeholder-box">
+                <h3 style="margin-bottom: 6px;">Example Selected Developer: Kodak D-76</h3>
+                <p style="color:#666; margin-bottom: 14px;">
+                    Manufacturer: Kodak | Type: Black and White Developer
+                </p>
+
+                <div class="placeholder-grid">
+                    <div class="mini-card">
+                        <h4>Linked Films</h4>
+                        <ul>
+                            <li>Tri-X 400</li>
+                            <li>Panatomic X</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Guide Usage</h4>
+                        <ul>
+                            <li>D-76 1:1</li>
+                            <li>20°C workflows</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Typical Use</h4>
+                        <ul>
+                            <li>General-purpose B&W development</li>
+                            <li>Traditional tonal rendering</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Related Pages</h4>
+                        <ul>
+                            <li>Film Stocks</li>
+                            <li>Development Guide</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <aside>
+        <section class="card">
+            <h2>Developer Scope</h2>
+            <ul class="sidebar-list">
+                <li>Developers are grouped by manufacturer and developer type.</li>
+                <li>This page serves as the main browse page for chemistry records used in the film workflow.</li>
+                <li>Developer records can later expand into linked film stocks and development guide entries.</li>
+                <li>This page supports the Film section as a key subcategory.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Developer Roadmap</h2>
+
+            <div class="roadmap-item">
+                <strong>Developer Index</strong>
+                Core browse page for developer records
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Guide Relationships</strong>
+                Future drill-down into linked development workflows
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Film Relationships</strong>
+                Future drill-down into film stocks using the developer
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Saved Profiles</strong>
+                Future feature for saving film-development bundles
+            </div>
+        </section>
+    </aside>
+</section>
+{% endblock %}

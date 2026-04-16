@@ -76,9 +76,12 @@ body {
     flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 20px;
+    position: relative;
+    z-index: 20;
 }
 
-.nav-tabs a {
+.nav-tabs > a,
+.dropdown > a {
     text-decoration: none;
     padding: 10px 16px;
     border-radius: 14px;
@@ -86,10 +89,12 @@ body {
     background: white;
     color: #333;
     font-size: 0.95rem;
+    display: inline-block;
     transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
 }
 
-.nav-tabs a:hover {
+.nav-tabs > a:hover,
+.dropdown > a:hover {
     background: #111;
     color: white;
     border-color: #111;
@@ -101,6 +106,44 @@ body {
     color: white;
     border-color: #111;
     font-weight: bold;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 220px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    padding: 8px;
+    z-index: 50;
+}
+
+.dropdown-menu a {
+    display: block;
+    text-decoration: none;
+    color: #333;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: white;
+    transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.dropdown-menu a:hover {
+    background: #111;
+    color: white;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
 }
 
 .card {

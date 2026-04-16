@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}Accessory Types{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h2>Accessory Type Search</h2>
+    <p class="subtext">Browse accessory categories used to organize system accessories across the database.</p>
+
+    <div class="search-grid">
+        <div class="form-control">
+            <label for="type-search">Search</label>
+            <input type="text" id="type-search" placeholder="Search accessory type...">
+        </div>
+
+        <div class="form-control">
+            <label for="type-search-type">Search Type</label>
+            <select id="type-search-type">
+                <option>Accessory Types</option>
+                <option>Accessories</option>
+                <option>Accessory Compatibility</option>
+            </select>
+        </div>
+
+        <div class="button-row">
+            <button class="btn" type="button">Search</button>
+            <button class="btn-secondary" type="button">Reset</button>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Quick Filters</h2>
+            <p class="subtext">Prototype filter layout for accessory categories and related accessory records.</p>
+        </div>
+    </div>
+
+    <div class="filter-grid">
+        <div class="form-control">
+            <label for="category-filter">Category Name</label>
+            <input type="text" id="category-filter" placeholder="e.g. Flash">
+        </div>
+
+        <div class="form-control">
+            <label for="usage-filter">Usage Scope</label>
+            <select id="usage-filter">
+                <option>All</option>
+                <option>Camera Support</option>
+                <option>Optical</option>
+                <option>Carrying / Protection</option>
+                <option>Film Handling</option>
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="linked-records-filter">Linked Records</label>
+            <select id="linked-records-filter">
+                <option>All</option>
+                <option>Has Accessories</option>
+                <option>No Accessories Yet</option>
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="system-filter">System Scope</label>
+            <select id="system-filter">
+                <option>All</option>
+                <option>35mm</option>
+                <option>120</option>
+                <option>Cross-System</option>
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="notes-filter">Notes</label>
+            <input type="text" id="notes-filter" placeholder="Search notes...">
+        </div>
+
+        <div class="form-control">
+            <label for="status-filter">Status</label>
+            <select id="status-filter">
+                <option>All</option>
+                <option>Core Category</option>
+                <option>Specialized Category</option>
+            </select>
+        </div>
+    </div>
+</section>
+
+<section class="layout-grid">
+    <div>
+        <section class="card">
+            <div class="table-header">
+                <div>
+                    <h2>Accessory Type Index</h2>
+                    <p class="subtext">Accessory category records in the current database.</p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for accessory_type in accessory_types %}
+                        <tr>
+                            <td>{{ accessory_type.accessory_type_id }}</td>
+                            <td>{{ accessory_type.type_name }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Planned Accessory Type Detail View</h2>
+            <p class="subtext">
+                This section represents a visual placeholder for future accessory type detail and linked-record pages.
+            </p>
+
+            <div class="placeholder-box">
+                <h3 style="margin-bottom: 6px;">Example Selected Type: Flash</h3>
+                <p style="color:#666; margin-bottom: 14px;">
+                    Category: Flash | Scope: Camera accessory | Common System Use: 35mm
+                </p>
+
+                <div class="placeholder-grid">
+                    <div class="mini-card">
+                        <h4>Linked Accessories</h4>
+                        <ul>
+                            <li>Canon Speedlite 155A</li>
+                            <li>Pentax AF200S</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Common Purpose</h4>
+                        <ul>
+                            <li>Low-light support</li>
+                            <li>System-specific flash use</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Category Use</h4>
+                        <ul>
+                            <li>Branded accessory grouping</li>
+                            <li>Supports accessory browsing</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Related Pages</h4>
+                        <ul>
+                            <li>Accessories</li>
+                            <li>Accessory Compatibility</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <aside>
+        <section class="card">
+            <h2>Accessory Type Scope</h2>
+            <ul class="sidebar-list">
+                <li>Accessory types classify accessory records into consistent categories.</li>
+                <li>This page supports the Accessories section as a reference layer for browsing and grouping.</li>
+                <li>Accessory type records can later expand into linked accessory detail pages.</li>
+                <li>This page currently serves as the main browse page for accessory type records.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Accessory Type Roadmap</h2>
+
+            <div class="roadmap-item">
+                <strong>Accessory Type Index</strong>
+                Core browse page for accessory categories
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Linked Accessories</strong>
+                Future drill-down into accessories using the category
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Category Detail View</strong>
+                Future grouped view by system or usage
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Saved Profiles</strong>
+                Future feature for category-based accessory bundles
+            </div>
+        </section>
+    </aside>
+</section>
+{% endblock %}
