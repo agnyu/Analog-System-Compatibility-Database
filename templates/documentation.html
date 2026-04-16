@@ -125,7 +125,7 @@
                             <td>{{ doc.publication_year }}</td>
                             <td>
                                 {% if doc.url %}
-                                    <a href="{{ doc.url }}" target="_blank" rel="noopener noreferrer">Open Link</a>
+                                <a class="table-link" href="{{ doc.url }}" target="_blank" rel="noopener noreferrer">Open Link</a>
                                 {% else %}
                                     N/A
                                 {% endif %}

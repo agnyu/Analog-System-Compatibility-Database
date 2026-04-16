@@ -510,3 +510,18 @@ tr:hover {
         align-items: flex-start;
     }
 }
+
+.table-link {
+    color: #111;
+    text-decoration: underline;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.table-link:hover {
+    color: #111;
+    background: transparent;
+    text-decoration: underline;
+    border: none;
+}
