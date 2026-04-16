@@ -7,6 +7,35 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
 </head>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const dropdowns = document.querySelectorAll(".dropdown");
+
+    dropdowns.forEach((dropdown) => {
+        const toggle = dropdown.querySelector(".dropdown-toggle");
+
+        toggle.addEventListener("click", function (event) {
+            event.stopPropagation();
+
+            dropdowns.forEach((otherDropdown) => {
+                if (otherDropdown !== dropdown) {
+                    otherDropdown.classList.remove("open");
+                }
+            });
+
+            dropdown.classList.toggle("open");
+        });
+    });
+
+    document.addEventListener("click", function () {
+        dropdowns.forEach((dropdown) => {
+            dropdown.classList.remove("open");
+        });
+    });
+});
+</script>
+
 <body>
     <div class="container">
         <section class="hero">
@@ -16,17 +45,17 @@
             </p>
         </section>
 
-    <nav class="nav-tabs">
+<nav class="nav-tabs">
     <a href="{{ url_for('index') }}"
        class="{% if request.endpoint == 'index' %}active-tab{% endif %}">
        Home
     </a>
 
     <div class="dropdown">
-        <a href="{{ url_for('film') }}"
-           class="{% if request.endpoint in ['film', 'developers', 'development_guide', 'film_formats'] %}active-tab{% endif %}">
-           Film
-        </a>
+        <button type="button"
+                class="dropdown-toggle {% if request.endpoint in ['film', 'developers', 'development_guide', 'film_formats'] %}active-tab{% endif %}">
+            Film
+        </button>
         <div class="dropdown-menu">
             <a href="{{ url_for('film') }}">Film Stocks</a>
             <a href="{{ url_for('developers') }}">Developers</a>
@@ -36,10 +65,10 @@
     </div>
 
     <div class="dropdown">
-        <a href="{{ url_for('cameras') }}"
-           class="{% if request.endpoint in ['cameras', 'camera_variants'] %}active-tab{% endif %}">
-           Cameras
-        </a>
+        <button type="button"
+                class="dropdown-toggle {% if request.endpoint in ['cameras', 'camera_variants'] %}active-tab{% endif %}">
+            Cameras
+        </button>
         <div class="dropdown-menu">
             <a href="{{ url_for('cameras') }}">Camera Index</a>
             <a href="{{ url_for('camera_variants') }}">Camera Variants</a>
@@ -47,10 +76,10 @@
     </div>
 
     <div class="dropdown">
-        <a href="{{ url_for('lenses') }}"
-           class="{% if request.endpoint in ['lenses', 'mounts'] %}active-tab{% endif %}">
-           Lenses
-        </a>
+        <button type="button"
+                class="dropdown-toggle {% if request.endpoint in ['lenses', 'mounts'] %}active-tab{% endif %}">
+            Lenses
+        </button>
         <div class="dropdown-menu">
             <a href="{{ url_for('lenses') }}">Lens Index</a>
             <a href="{{ url_for('mounts') }}">Mounts</a>
@@ -58,10 +87,10 @@
     </div>
 
     <div class="dropdown">
-        <a href="{{ url_for('accessories') }}"
-           class="{% if request.endpoint in ['accessories', 'accessory_types', 'accessory_compatibility'] %}active-tab{% endif %}">
-           Accessories
-        </a>
+        <button type="button"
+                class="dropdown-toggle {% if request.endpoint in ['accessories', 'accessory_types', 'accessory_compatibility'] %}active-tab{% endif %}">
+            Accessories
+        </button>
         <div class="dropdown-menu">
             <a href="{{ url_for('accessories') }}">Accessory Index</a>
             <a href="{{ url_for('accessory_types') }}">Accessory Types</a>
@@ -70,15 +99,15 @@
     </div>
 
     <div class="dropdown">
-        <a href="{{ url_for('documentation') }}"
-           class="{% if request.endpoint == 'documentation' %}active-tab{% endif %}">
-           Documentation
-        </a>
+        <button type="button"
+                class="dropdown-toggle {% if request.endpoint == 'documentation' %}active-tab{% endif %}">
+            Documentation
+        </button>
         <div class="dropdown-menu">
             <a href="{{ url_for('documentation') }}">Documentation Index</a>
         </div>
     </div>
-    </nav>
+</nav>
         {% block content %}{% endblock %}
     </div>
 </body>
