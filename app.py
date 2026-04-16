@@ -17,8 +17,14 @@ def get_db_connection():
     )
     return connection
 
+
 @app.route("/")
 def index():
+    return render_template("index.html")
+
+
+@app.route("/film")
+def film():
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
 
@@ -45,7 +51,8 @@ def index():
     cursor.close()
     connection.close()
 
-    return render_template("index.html", films=films)
+    return render_template("film.html", films=films)
+
 
 @app.route("/add", methods=["GET", "POST"])
 def add_film():
@@ -84,12 +91,13 @@ def add_film():
         cursor.close()
         connection.close()
 
-        return redirect(url_for("index"))
+        return redirect(url_for("film"))
 
     cursor.close()
     connection.close()
 
     return render_template("add_film.html", manufacturers=manufacturers, formats=formats)
+
 
 @app.route("/edit/<int:film_id>", methods=["GET", "POST"])
 def edit_film(film_id):
@@ -138,7 +146,7 @@ def edit_film(film_id):
         cursor.close()
         connection.close()
 
-        return redirect(url_for("index"))
+        return redirect(url_for("film"))
 
     cursor.close()
     connection.close()
@@ -149,6 +157,7 @@ def edit_film(film_id):
         manufacturers=manufacturers,
         formats=formats
     )
+
 
 @app.route("/delete/<int:film_id>", methods=["POST"])
 def delete_film(film_id):
@@ -161,7 +170,8 @@ def delete_film(film_id):
     cursor.close()
     connection.close()
 
-    return redirect(url_for("index"))
+    return redirect(url_for("film"))
+
 
 if __name__ == "__main__":
     app.run(debug=True)

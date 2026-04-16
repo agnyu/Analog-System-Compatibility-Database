@@ -17,7 +17,8 @@
             </p>
 
             <div class="hero-badges">
-                <span class="badge active">Film Stocks Active</span>
+                <span class = "badge"><a href="{{ url_for('index') }}">Home</a></span>
+                <span class = "badge"><a href="{{ url_for('film') }}">Film</a></span>
                 <span class="badge">Cameras Planned</span>
                 <span class="badge">Lenses Planned</span>
                 <span class="badge">Accessories Planned</span>
@@ -27,7 +28,7 @@
 
         <nav class="nav-tabs">
             <a href="{{ url_for('index') }}" class="active-tab">Home</a>
-            <span class="active-tab">Film Stocks</span>
+            <span>Film Stocks</span>
             <span>Cameras</span>
             <span>Lenses</span>
             <span>Mounts</span>
