@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}Lenses{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h2>Lens Search</h2>
+    <p class="subtext">Browse lenses by manufacturer, mount, focal length, lens type, and release year.</p>
+
+    <div class="search-grid">
+        <div class="form-control">
+            <label for="lens-search">Search</label>
+            <input type="text" id="lens-search" placeholder="Search lens, manufacturer, mount...">
+        </div>
+
+        <div class="form-control">
+            <label for="lens-search-type">Search Type</label>
+            <select id="lens-search-type">
+                <option>Lenses</option>
+                <option>Mounts</option>
+                <option>Manufacturers</option>
+                <option>Documentation</option>
+            </select>
+        </div>
+
+        <div class="button-row">
+            <button class="btn" type="button">Search</button>
+            <button class="btn-secondary" type="button">Reset</button>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Quick Filters</h2>
+            <p class="subtext">Prototype filter layout for lenses and mount-based relationships.</p>
+        </div>
+    </div>
+
+    <div class="filter-grid">
+        <div class="form-control">
+            <label for="manufacturer-filter">Manufacturer</label>
+            <select id="manufacturer-filter">
+                <option>All</option>
+                {% for manufacturer in manufacturers %}
+                <option>{{ manufacturer.manufacturer_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="mount-filter">Mount</label>
+            <select id="mount-filter">
+                <option>All</option>
+                {% for mount in mounts %}
+                <option>{{ mount.mount_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="lens-type-filter">Lens Type</label>
+            <select id="lens-type-filter">
+                <option>All</option>
+                <option>Standard</option>
+                <option>Wide Angle</option>
+                <option>Telephoto</option>
+                <option>Macro</option>
+                <option>Zoom</option>
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="focal-min">Focal Min</label>
+            <input type="number" id="focal-min" placeholder="e.g. 28">
+        </div>
+
+        <div class="form-control">
+            <label for="focal-max">Focal Max</label>
+            <input type="number" id="focal-max" placeholder="e.g. 135">
+        </div>
+
+        <div class="form-control">
+            <label for="year-filter">Release Year</label>
+            <input type="number" id="year-filter" placeholder="e.g. 1980">
+        </div>
+    </div>
+</section>
+
+<section class="layout-grid">
+    <div>
+        <section class="card">
+            <div class="table-header">
+                <div>
+                    <h2>Lens Index</h2>
+                    <p class="subtext">Core lens records in the current database.</p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Lens Name</th>
+                            <th>Manufacturer</th>
+                            <th>Mount</th>
+                            <th>Focal Length</th>
+                            <th>Max Aperture</th>
+                            <th>Lens Type</th>
+                            <th>Release Year</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lens in lenses %}
+                        <tr>
+                            <td>{{ lens.lens_id }}</td>
+                            <td>{{ lens.lens_name }}</td>
+                            <td>{{ lens.manufacturer_name }}</td>
+                            <td>{{ lens.mount_name }}</td>
+                            <td>{{ lens.focal_length }}</td>
+                            <td>{{ lens.max_aperture }}</td>
+                            <td>{{ lens.lens_type }}</td>
+                            <td>{{ lens.release_year }}</td>
+                            <td>{{ lens.notes }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Planned Lens Compatibility View</h2>
+            <p class="subtext">
+                This section represents a visual placeholder for future lens detail and compatibility pages.
+            </p>
+
+            <div class="placeholder-box">
+                <h3 style="margin-bottom: 6px;">Example Selected Lens: FD 50mm f/1.8</h3>
+                <p style="color:#666; margin-bottom: 14px;">
+                    Manufacturer: Canon | Mount: Canon FD | Type: Standard | Release Year: 1976
+                </p>
+
+                <div class="placeholder-grid">
+                    <div class="mini-card">
+                        <h4>Compatible Cameras</h4>
+                        <ul>
+                            <li>Canon AE-1</li>
+                            <li>Canon AE-1 Program</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Mount Relationship</h4>
+                        <ul>
+                            <li>Canon FD</li>
+                            <li>Manual focus SLR system</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Suggested Use Cases</h4>
+                        <ul>
+                            <li>General photography</li>
+                            <li>Portraits</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Documentation</h4>
+                        <ul>
+                            <li>Lens brochure</li>
+                            <li>System manual</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <aside>
+        <section class="card">
+            <h2>Lens Scope</h2>
+            <ul class="sidebar-list">
+                <li>Lenses are connected to camera systems through mount relationships.</li>
+                <li>Mount data will support compatibility between cameras and lenses.</li>
+                <li>Lens detail pages can later expand to documentation and saved profiles.</li>
+                <li>This page currently serves as the top-level browse page for lens records.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Lens Roadmap</h2>
+
+            <div class="roadmap-item">
+                <strong>Lens Index</strong>
+                Core browse page for lenses
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Mounts</strong>
+                Top-level support page for lens and camera system relationships
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Lens Detail Pages</strong>
+                Future compatibility and documentation drill-down
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Saved Profiles</strong>
+                Future feature for saving lens-based compatibility bundles
+            </div>
+        </section>
+    </aside>
+</section>
+{% endblock %}
