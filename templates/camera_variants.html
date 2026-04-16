@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}Camera Variants{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h2>Camera Variant Search</h2>
+    <p class="subtext">Browse named camera submodels by parent camera, format, release year, and production period.</p>
+
+    <div class="search-grid">
+        <div class="form-control">
+            <label for="variant-search">Search</label>
+            <input type="text" id="variant-search" placeholder="Search variant, parent camera, format...">
+        </div>
+
+        <div class="form-control">
+            <label for="variant-search-type">Search Type</label>
+            <select id="variant-search-type">
+                <option>Camera Variants</option>
+                <option>Cameras</option>
+                <option>Documentation</option>
+                <option>Accessories</option>
+            </select>
+        </div>
+
+        <div class="button-row">
+            <button class="btn" type="button">Search</button>
+            <button class="btn-secondary" type="button">Reset</button>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Quick Filters</h2>
+            <p class="subtext">Prototype filter layout for camera variants and linked parent camera records.</p>
+        </div>
+    </div>
+
+    <div class="filter-grid">
+        <div class="form-control">
+            <label for="camera-filter">Parent Camera</label>
+            <select id="camera-filter">
+                <option>All</option>
+                {% for camera in cameras %}
+                <option>{{ camera.camera_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="format-filter">Frame Format</label>
+            <select id="format-filter">
+                <option>All</option>
+                <option>35mm</option>
+                <option>120</option>
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="year-min">Release Year Min</label>
+            <input type="number" id="year-min" placeholder="e.g. 1970">
+        </div>
+
+        <div class="form-control">
+            <label for="year-max">Release Year Max</label>
+            <input type="number" id="year-max" placeholder="e.g. 2000">
+        </div>
+
+        <div class="form-control">
+            <label for="production-end-min">End Year Min</label>
+            <input type="number" id="production-end-min" placeholder="e.g. 1980">
+        </div>
+
+        <div class="form-control">
+            <label for="production-end-max">End Year Max</label>
+            <input type="number" id="production-end-max" placeholder="e.g. 2005">
+        </div>
+    </div>
+</section>
+
+<section class="layout-grid">
+    <div>
+        <section class="card">
+            <div class="table-header">
+                <div>
+                    <h2>Camera Variant Index</h2>
+                    <p class="subtext">Named submodels and revised family versions in the current database.</p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Variant Name</th>
+                            <th>Parent Camera</th>
+                            <th>Release Year</th>
+                            <th>Frame Format</th>
+                            <th>Production End Year</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for variant in variants %}
+                        <tr>
+                            <td>{{ variant.variant_id }}</td>
+                            <td>{{ variant.variant_name }}</td>
+                            <td>{{ variant.camera_name }}</td>
+                            <td>{{ variant.release_year }}</td>
+                            <td>{{ variant.frame_format }}</td>
+                            <td>{{ variant.production_end_year }}</td>
+                            <td>{{ variant.notes }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Planned Variant Detail View</h2>
+            <p class="subtext">
+                This section represents a visual placeholder for future variant detail and compatibility pages.
+            </p>
+
+            <div class="placeholder-box">
+                <h3 style="margin-bottom: 6px;">Example Selected Variant: Canon AE-1 Program</h3>
+                <p style="color:#666; margin-bottom: 14px;">
+                    Parent Camera: Canon AE-1 | Format: 35mm | Release Year: 1981
+                </p>
+
+                <div class="placeholder-grid">
+                    <div class="mini-card">
+                        <h4>Parent Camera</h4>
+                        <ul>
+                            <li>Canon AE-1</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Compatible Accessories</h4>
+                        <ul>
+                            <li>Canon Speedlite 155A</li>
+                            <li>Canon Lens Hood T50-1</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Documentation</h4>
+                        <ul>
+                            <li>Canon AE-1 Program Instruction Manual</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Variant Notes</h4>
+                        <ul>
+                            <li>Named submodel of the AE-1 family</li>
+                            <li>Represents a revised version with added features</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <aside>
+        <section class="card">
+            <h2>Variant Scope</h2>
+            <ul class="sidebar-list">
+                <li>Camera variants represent manufacturer-recognized named submodels within a parent camera family.</li>
+                <li>This page focuses on variant identity rather than duplicating all parent camera attributes.</li>
+                <li>Variants can later connect to accessory compatibility and documentation pages.</li>
+                <li>This page currently serves as the main browse page for variant records.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Variant Roadmap</h2>
+
+            <div class="roadmap-item">
+                <strong>Variant Index</strong>
+                Core browse page for named camera submodels
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Parent Camera Links</strong>
+                Future drill-down into the main camera family
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Compatibility View</strong>
+                Future page for accessories and documentation linked to a variant
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Saved Profiles</strong>
+                Future feature for saving variant-based compatibility bundles
+            </div>
+        </section>
+    </aside>
+</section>
+{% endblock %}
