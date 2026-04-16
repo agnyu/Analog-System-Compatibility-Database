@@ -35,12 +35,16 @@
             class="{% if request.endpoint == 'lenses' %}active-tab{% endif %}">
             Lenses
             </a>
-            <a href="#">Mounts</a>
+            <!-- <a href="#">Mounts</a> -->
             <a href="{{ url_for('accessories') }}"
             class="{% if request.endpoint == 'accessories' %}active-tab{% endif %}">
             Accessories
             </a>
-            <a href="#">Documentation</a>
+
+            <a href="{{ url_for('documentation') }}"
+            class="{% if request.endpoint == 'documentation' %}active-tab{% endif %}">
+            Documentation
+            </a>
         </nav>
 
         {% block content %}{% endblock %}

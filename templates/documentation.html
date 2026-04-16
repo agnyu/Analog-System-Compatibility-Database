@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Documentation{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h2>Documentation Search</h2>
+    <p class="subtext">Browse manuals, brochures, guides, and archival references by camera, variant, source, and publication year.</p>
+
+    <div class="search-grid">
+        <div class="form-control">
+            <label for="documentation-search">Search</label>
+            <input type="text" id="documentation-search" placeholder="Search title, camera, variant, source...">
+        </div>
+
+        <div class="form-control">
+            <label for="documentation-search-type">Search Type</label>
+            <select id="documentation-search-type">
+                <option>Documentation</option>
+                <option>Cameras</option>
+                <option>Camera Variants</option>
+                <option>Sources</option>
+            </select>
+        </div>
+
+        <div class="button-row">
+            <button class="btn" type="button">Search</button>
+            <button class="btn-secondary" type="button">Reset</button>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Quick Filters</h2>
+            <p class="subtext">Prototype filter layout for documentation records and linked archive sources.</p>
+        </div>
+    </div>
+
+    <div class="filter-grid">
+        <div class="form-control">
+            <label for="camera-filter">Camera</label>
+            <select id="camera-filter">
+                <option>All</option>
+                {% for camera in cameras %}
+                <option>{{ camera.camera_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="variant-filter">Variant</label>
+            <select id="variant-filter">
+                <option>All</option>
+                {% for variant in variants %}
+                <option>{{ variant.variant_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="document-type-filter">Document Type</label>
+            <select id="document-type-filter">
+                <option>All</option>
+                <option>Manual</option>
+                <option>Brochure</option>
+                <option>Guide</option>
+                <option>Catalog</option>
+                <option>Instructions</option>
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="source-filter">Source</label>
+            <input type="text" id="source-filter" placeholder="e.g. Nikon Archive">
+        </div>
+
+        <div class="form-control">
+            <label for="year-min">Year Min</label>
+            <input type="number" id="year-min" placeholder="e.g. 1970">
+        </div>
+
+        <div class="form-control">
+            <label for="year-max">Year Max</label>
+            <input type="number" id="year-max" placeholder="e.g. 1995">
+        </div>
+    </div>
+</section>
+
+<section class="layout-grid">
+    <div>
+        <section class="card">
+            <div class="table-header">
+                <div>
+                    <h2>Documentation Index</h2>
+                    <p class="subtext">Linked archival and reference documentation records in the current database.</p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Camera</th>
+                            <th>Variant</th>
+                            <th>Document Type</th>
+                            <th>Source</th>
+                            <th>Publication Year</th>
+                            <th>URL</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in documentation %}
+                        <tr>
+                            <td>{{ doc.documentation_id }}</td>
+                            <td>{{ doc.title }}</td>
+                            <td>{{ doc.camera_name }}</td>
+                            <td>{{ doc.variant_name or 'N/A' }}</td>
+                            <td>{{ doc.document_type }}</td>
+                            <td>{{ doc.source }}</td>
+                            <td>{{ doc.publication_year }}</td>
+                            <td>
+                                {% if doc.url %}
+                                    <a href="{{ doc.url }}" target="_blank" rel="noopener noreferrer">Open Link</a>
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                            <td>{{ doc.notes }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Planned Documentation Detail View</h2>
+            <p class="subtext">
+                This section represents a visual placeholder for future documentation detail and linked-reference pages.
+            </p>
+
+            <div class="placeholder-box">
+                <h3 style="margin-bottom: 6px;">Example Selected Record: Canon AE-1 Instruction Manual</h3>
+                <p style="color:#666; margin-bottom: 14px;">
+                    Camera: Canon AE-1 | Variant: N/A | Type: Manual | Source: Archive
+                </p>
+
+                <div class="placeholder-grid">
+                    <div class="mini-card">
+                        <h4>Linked Camera</h4>
+                        <ul>
+                            <li>Canon AE-1</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Linked Variant</h4>
+                        <ul>
+                            <li>Canon AE-1 Program</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Document Type</h4>
+                        <ul>
+                            <li>Manual</li>
+                            <li>Archival reference</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Demo Action</h4>
+                        <ul>
+                            <li>Open real manual link</li>
+                            <li>Verify model match</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <aside>
+        <section class="card">
+            <h2>Documentation Scope</h2>
+            <ul class="sidebar-list">
+                <li>Documentation records are linked to parent camera models and optional variants.</li>
+                <li>This page highlights real manuals, brochures, and archival references.</li>
+                <li>Documentation is one of the strongest demo sections because links resolve to usable sources.</li>
+                <li>Future detail pages can group records by camera family or variant.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Documentation Roadmap</h2>
+
+            <div class="roadmap-item">
+                <strong>Documentation Index</strong>
+                Core browse page for reference records
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Browse by Camera</strong>
+                Future grouped view by parent model
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Browse by Variant</strong>
+                Future grouped view for submodels
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Saved Profiles</strong>
+                Future feature for saving documentation-related bundles
+            </div>
+        </section>
+    </aside>
+</section>
+{% endblock %}
