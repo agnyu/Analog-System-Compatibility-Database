@@ -4,6 +4,18 @@
     padding: 0;
 }
 
+a {
+    color: white;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: none;
+    background: #111;
+    color: white;
+    border-color: #111;
+}
+
 body {
     font-family: Arial, Helvetica, sans-serif;
     background-color: #f4f4f4;
@@ -66,8 +78,7 @@ body {
     margin-bottom: 20px;
 }
 
-.nav-tabs a,
-.nav-tabs span {
+.nav-tabs a {
     text-decoration: none;
     padding: 10px 16px;
     border-radius: 14px;
@@ -75,6 +86,14 @@ body {
     background: white;
     color: #333;
     font-size: 0.95rem;
+    transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+}
+
+.nav-tabs a:hover {
+    background: #111;
+    color: white;
+    border-color: #111;
+    transform: translateY(-1px);
 }
 
 .nav-tabs .active-tab {

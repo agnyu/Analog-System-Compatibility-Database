@@ -173,5 +173,57 @@ def delete_film(film_id):
     return redirect(url_for("film"))
 
 
+@app.route("/cameras")
+def cameras():
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    camera_query = """
+    SELECT
+        c.camera_id,
+        c.camera_name,
+        m.manufacturer_name,
+        mo.mount_name,
+        c.camera_type,
+        c.release_year,
+        c.notes
+    FROM cameras c
+    JOIN manufacturers m ON c.manufacturer_id = m.manufacturer_id
+    JOIN mounts mo ON c.mount_id = mo.mount_id
+    ORDER BY c.camera_name;
+    """
+
+    manufacturers_query = """
+    SELECT manufacturer_id, manufacturer_name
+    FROM manufacturers
+    ORDER BY manufacturer_name;
+    """
+
+    mounts_query = """
+    SELECT mount_id, mount_name
+    FROM mounts
+    ORDER BY mount_name;
+    """
+
+    cursor.execute(camera_query)
+    cameras = cursor.fetchall()
+
+    cursor.execute(manufacturers_query)
+    manufacturers = cursor.fetchall()
+
+    cursor.execute(mounts_query)
+    mounts = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return render_template(
+        "cameras.html",
+        cameras=cameras,
+        manufacturers=manufacturers,
+        mounts=mounts
+    )
+
+
 if __name__ == "__main__":
     app.run(debug=True)

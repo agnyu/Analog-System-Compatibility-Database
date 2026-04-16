@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}Cameras{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h2>Camera Search</h2>
+    <p class="subtext">Browse camera bodies by manufacturer, mount, type, and release year.</p>
+
+    <div class="search-grid">
+        <div class="form-control">
+            <label for="camera-search">Search</label>
+            <input type="text" id="camera-search" placeholder="Search camera, manufacturer, mount...">
+        </div>
+
+        <div class="form-control">
+            <label for="camera-search-type">Search Type</label>
+            <select id="camera-search-type">
+                <option>Cameras</option>
+                <option>Camera Variants</option>
+                <option>Manufacturers</option>
+                <option>Documentation</option>
+            </select>
+        </div>
+
+        <div class="button-row">
+            <button class="btn" type="button">Search</button>
+            <button class="btn-secondary" type="button">Reset</button>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Quick Filters</h2>
+            <p class="subtext">Prototype filter layout for cameras and related system records.</p>
+        </div>
+    </div>
+
+    <div class="filter-grid">
+        <div class="form-control">
+            <label for="manufacturer-filter">Manufacturer</label>
+            <select id="manufacturer-filter">
+                <option>All</option>
+                {% for manufacturer in manufacturers %}
+                <option>{{ manufacturer.manufacturer_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="mount-filter">Mount</label>
+            <select id="mount-filter">
+                <option>All</option>
+                {% for mount in mounts %}
+                <option>{{ mount.mount_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="camera-type-filter">Camera Type</label>
+            <select id="camera-type-filter">
+                <option>All</option>
+                <option>SLR</option>
+                <option>Rangefinder</option>
+                <option>Medium Format</option>
+            </select>
+        </div>
+
+        <div class="form-control">
+            <label for="year-min">Year Min</label>
+            <input type="number" id="year-min" placeholder="e.g. 1970">
+        </div>
+
+        <div class="form-control">
+            <label for="year-max">Year Max</label>
+            <input type="number" id="year-max" placeholder="e.g. 1990">
+        </div>
+
+        <div class="form-control">
+            <label for="variant-filter">Variant Coverage</label>
+            <select id="variant-filter">
+                <option>All</option>
+                <option>Has Variants</option>
+                <option>No Variants</option>
+            </select>
+        </div>
+    </div>
+</section>
+
+<section class="layout-grid">
+    <div>
+        <section class="card">
+            <div class="table-header">
+                <div>
+                    <h2>Camera Index</h2>
+                    <p class="subtext">Core camera records in the current database.</p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Camera Name</th>
+                            <th>Manufacturer</th>
+                            <th>Mount</th>
+                            <th>Camera Type</th>
+                            <th>Release Year</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for camera in cameras %}
+                        <tr>
+                            <td>{{ camera.camera_id }}</td>
+                            <td>{{ camera.camera_name }}</td>
+                            <td>{{ camera.manufacturer_name }}</td>
+                            <td>{{ camera.mount_name }}</td>
+                            <td>{{ camera.camera_type }}</td>
+                            <td>{{ camera.release_year }}</td>
+                            <td>{{ camera.notes }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Planned Camera Compatibility View</h2>
+            <p class="subtext">
+                This section represents a visual placeholder for future camera detail and compatibility pages.
+            </p>
+
+            <div class="placeholder-box">
+                <h3 style="margin-bottom: 6px;">Example Selected Camera: Canon AE-1</h3>
+                <p style="color:#666; margin-bottom: 14px;">
+                    Manufacturer: Canon | Mount: Canon FD | Type: SLR | Release Year: 1976
+                </p>
+
+                <div class="placeholder-grid">
+                    <div class="mini-card">
+                        <h4>Variants</h4>
+                        <ul>
+                            <li>Canon AE-1 Program</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Compatible Lenses</h4>
+                        <ul>
+                            <li>FD 50mm f/1.8</li>
+                            <li>FD 28mm f/2.8</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Compatible Accessories</h4>
+                        <ul>
+                            <li>Canon Speedlite 155A</li>
+                            <li>Canon Lens Hood T50-1</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Documentation</h4>
+                        <ul>
+                            <li>Canon AE-1 Instruction Manual</li>
+                            <li>Canon AE-1 Program Manual</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <aside>
+        <section class="card">
+            <h2>Camera Scope</h2>
+            <ul class="sidebar-list">
+                <li>Cameras page focuses on parent camera models and their key identifying fields.</li>
+                <li>Camera Variants will expand this section with named submodels.</li>
+                <li>Mount relationships connect cameras to lenses and some accessories.</li>
+                <li>Documentation links can be attached through camera and variant records.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Camera Roadmap</h2>
+
+            <div class="roadmap-item">
+                <strong>Camera Index</strong>
+                Core browse page for parent camera models
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Camera Variants</strong>
+                Named submodels and family revisions
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Camera Detail Pages</strong>
+                Future compatibility and documentation drill-down
+            </div>
+
+            <div class="roadmap-item">
+                <strong>Saved Profiles</strong>
+                Future feature for saving compatibility bundles
+            </div>
+        </section>
+    </aside>
+</section>
+{% endblock %}

@@ -16,24 +16,34 @@
                 For the current prototype, Film Stocks is the active and working CRUD module.
             </p>
 
-            <div class="hero-badges">
+            <!-- <div class="hero-badges">
                 <span class = "badge"><a href="{{ url_for('index') }}">Home</a></span>
                 <span class = "badge"><a href="{{ url_for('film') }}">Film</a></span>
                 <span class="badge">Cameras Planned</span>
                 <span class="badge">Lenses Planned</span>
                 <span class="badge">Accessories Planned</span>
                 <span class="badge">Documentation Planned</span>
-            </div>
+            </div> -->
         </section>
 
         <nav class="nav-tabs">
-            <a href="{{ url_for('index') }}" class="active-tab">Home</a>
-            <span>Film Stocks</span>
-            <span>Cameras</span>
-            <span>Lenses</span>
-            <span>Mounts</span>
-            <span>Accessories</span>
-            <span>Documentation</span>
+            <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active-tab{% endif %}">
+                Home
+            </a>
+            <a href="{{ url_for('film') }}"
+            class="{% if request.endpoint == 'film' %}active-tab{% endif %}">
+            Film
+            </a>
+
+            <a href="{{ url_for('cameras') }}"
+             class="{% if request.endpoint == 'cameras' %}active-tab{% endif %}">
+            Cameras
+            </a>
+            
+            <a href="#">Lenses</a>
+            <a href="#">Mounts</a>
+            <a href="#">Accessories</a>
+            <a href="#">Documentation</a>
         </nav>
 
         {% block content %}{% endblock %}
