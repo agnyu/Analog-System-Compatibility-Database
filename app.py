@@ -5,6 +5,7 @@ from routes.lenses_routes import lenses_bp
 from routes.mounts_routes import mounts_bp
 from routes.documentation_routes import documentation_bp
 from routes.accessories_routes import accessories_bp
+from routes.developers_routes import developers_bp
 
 app = Flask(__name__)
 
@@ -14,6 +15,7 @@ app.register_blueprint(lenses_bp)
 app.register_blueprint(mounts_bp)
 app.register_blueprint(documentation_bp)
 app.register_blueprint(accessories_bp)
+app.register_blueprint(developers_bp)
 
 @app.route("/")
 def index():

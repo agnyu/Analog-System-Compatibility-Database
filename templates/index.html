@@ -4,14 +4,6 @@
 
 {% block content %}
 
-<!-- <nav class="nav-tabs">
-    <span>Cameras</span>
-    <span>Lenses</span>
-    <span>Mounts</span>
-    <span>Accessories</span>
-    <span>Documentation</span>
-</nav> -->
-
 <section class="card homepage-search-card">
     <div class="homepage-search-bar">
         <input type="text" placeholder="Search cameras, film stocks, lenses, mounts, accessories, documentation...">
@@ -53,8 +45,8 @@
             </div>
 
             <div class="button-row" style="margin-top: 16px;">
-                <a class="btn" href="#">View Camera Record</a>
-                <a class="btn-secondary" href="#">View Documentation</a>
+                <a class="btn" href="{{ url_for('camera_bp.cameras') }}">View Camera Record</a>
+                <a class="btn-secondary" href="{{ url_for('documentation_bp.documentation') }}">View Documentation</a>
             </div>
         </div>
     </div>
@@ -69,35 +61,35 @@
     </div>
 
     <div class="homepage-card-grid">
-        <a class="mini-card homepage-link-card" href="{{ url_for('add_film') }}">
+        <a class="mini-card homepage-link-card" href="{{ url_for('film_bp.film') }}">
             <h3>Film Stocks</h3>
             <p>Open the current working CRUD table for film stock records.</p>
         </a>
 
-        <div class="mini-card homepage-link-card">
+        <a class="mini-card homepage-link-card" href="{{ url_for('camera_bp.cameras') }}">
             <h3>Cameras</h3>
             <p>Browse camera bodies, model families, and variants.</p>
-        </div>
+        </a>
 
-        <div class="mini-card homepage-link-card">
+        <a class="mini-card homepage-link-card" href="{{ url_for('lenses_bp.lenses') }}">
             <h3>Lenses</h3>
             <p>Explore lenses through manufacturer and mount relationships.</p>
-        </div>
+        </a>
 
-        <div class="mini-card homepage-link-card">
+        <a class="mini-card homepage-link-card" href="{{ url_for('accessories_bp.accessories') }}">
             <h3>Accessories</h3>
             <p>Reference flashes, grips, filters, straps, and system accessories.</p>
-        </div>
+        </a>
 
-        <div class="mini-card homepage-link-card">
+        <a class="mini-card homepage-link-card" href="{{ url_for('documentation_bp.documentation') }}">
             <h3>Documentation</h3>
             <p>Open linked manuals and archival references from the documentation table.</p>
-        </div>
+        </a>
 
-        <div class="mini-card homepage-link-card">
+        <a class="mini-card homepage-link-card" href="{{ url_for('mounts_bp.mounts') }}">
             <h3>Mounts & Formats</h3>
             <p>Review foundational compatibility relationships across systems.</p>
-        </div>
+        </a>
     </div>
 </section>
 

@@ -45,69 +45,70 @@ document.addEventListener("DOMContentLoaded", function () {
             </p>
         </section>
 
-<nav class="nav-tabs">
-    <a href="{{ url_for('index') }}"
-       class="{% if request.endpoint == 'index' %}active-tab{% endif %}">
-       Home
-    </a>
+        <nav class="nav-tabs">
+            <a href="{{ url_for('index') }}"
+               class="{% if request.endpoint == 'index' %}active-tab{% endif %}">
+               Home
+            </a>
 
-    <div class="dropdown">
-        <button type="button"
-                class="dropdown-toggle {% if request.endpoint in ['film', 'developers', 'development_guide', 'film_formats'] %}active-tab{% endif %}">
-            Film
-        </button>
-        <div class="dropdown-menu">
-            <a href="{{ url_for('film') }}">Film Stocks</a>
-            <a href="{{ url_for('developers') }}">Developers</a>
-            <a href="{{ url_for('development_guide') }}">Development Guide</a>
-            <a href="{{ url_for('film_formats') }}">Formats</a>
-        </div>
-    </div>
+            <div class="dropdown">
+                <button type="button"
+                        class="dropdown-toggle {% if request.endpoint in ['film_bp.film', 'film_bp.edit_film', 'film_bp.add_film', 'film_bp.update_film', 'film_bp.delete_film'] %}active-tab{% endif %}">
+                    Film
+                </button>
+                <div class="dropdown-menu">
+                    <a href="{{ url_for('film_bp.film') }}">Film Stocks</a>
+                    <a href="{{ url_for('developers') }}">Developers</a>
+                    <a href="{{ url_for('development_guide') }}">Development Guide</a>
+                    <a href="{{ url_for('film_formats') }}">Formats</a>
+                </div>
+            </div>
 
-    <div class="dropdown">
-        <button type="button"
-                class="dropdown-toggle {% if request.endpoint in ['cameras', 'camera_variants'] %}active-tab{% endif %}">
-            Cameras
-        </button>
-        <div class="dropdown-menu">
-            <a href="{{ url_for('cameras') }}">Camera Index</a>
-            <a href="{{ url_for('camera_variants') }}">Camera Variants</a>
-        </div>
-    </div>
+            <div class="dropdown">
+                <button type="button"
+                        class="dropdown-toggle {% if request.endpoint in ['camera_bp.cameras', 'camera_variants'] %}active-tab{% endif %}">
+                    Cameras
+                </button>
+                <div class="dropdown-menu">
+                    <a href="{{ url_for('camera_bp.cameras') }}">Camera Index</a>
+                    <a href="{{ url_for('camera_variants') }}">Camera Variants</a>
+                </div>
+            </div>
 
-    <div class="dropdown">
-        <button type="button"
-                class="dropdown-toggle {% if request.endpoint in ['lenses', 'mounts'] %}active-tab{% endif %}">
-            Lenses
-        </button>
-        <div class="dropdown-menu">
-            <a href="{{ url_for('lenses') }}">Lens Index</a>
-            <a href="{{ url_for('mounts') }}">Mounts</a>
-        </div>
-    </div>
+            <div class="dropdown">
+                <button type="button"
+                        class="dropdown-toggle {% if request.endpoint in ['lenses_bp.lenses', 'mounts_bp.mounts'] %}active-tab{% endif %}">
+                    Lenses
+                </button>
+                <div class="dropdown-menu">
+                    <a href="{{ url_for('lenses_bp.lenses') }}">Lens Index</a>
+                    <a href="{{ url_for('mounts_bp.mounts') }}">Mounts</a>
+                </div>
+            </div>
 
-    <div class="dropdown">
-        <button type="button"
-                class="dropdown-toggle {% if request.endpoint in ['accessories', 'accessory_types', 'accessory_compatibility'] %}active-tab{% endif %}">
-            Accessories
-        </button>
-        <div class="dropdown-menu">
-            <a href="{{ url_for('accessories') }}">Accessory Index</a>
-            <a href="{{ url_for('accessory_types') }}">Accessory Types</a>
-            <a href="{{ url_for('accessory_compatibility') }}">Accessory Compatibility</a>
-        </div>
-    </div>
+            <div class="dropdown">
+                <button type="button"
+                        class="dropdown-toggle {% if request.endpoint in ['accessories_bp.accessories', 'accessory_types', 'accessory_compatibility'] %}active-tab{% endif %}">
+                    Accessories
+                </button>
+                <div class="dropdown-menu">
+                    <a href="{{ url_for('accessories_bp.accessories') }}">Accessory Index</a>
+                    <a href="{{ url_for('accessory_types') }}">Accessory Types</a>
+                    <a href="{{ url_for('accessory_compatibility') }}">Accessory Compatibility</a>
+                </div>
+            </div>
 
-    <div class="dropdown">
-        <button type="button"
-                class="dropdown-toggle {% if request.endpoint == 'documentation' %}active-tab{% endif %}">
-            Documentation
-        </button>
-        <div class="dropdown-menu">
-            <a href="{{ url_for('documentation') }}">Documentation Index</a>
-        </div>
-    </div>
-</nav>
+            <div class="dropdown">
+                <button type="button"
+                        class="dropdown-toggle {% if request.endpoint == 'documentation_bp.documentation' %}active-tab{% endif %}">
+                    Documentation
+                </button>
+                <div class="dropdown-menu">
+                    <a href="{{ url_for('documentation_bp.documentation') }}">Documentation Index</a>
+                </div>
+            </div>
+        </nav>
+
         {% block content %}{% endblock %}
     </div>
 </body>
