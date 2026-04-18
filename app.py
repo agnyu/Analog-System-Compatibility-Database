@@ -1,11 +1,12 @@
 from flask import Flask, render_template
-from routes.film_routes import film_bp
+from routes.film_routes import film_bp, camera_bp, lenses_bp, documentation_bp, accessories_bp, mounts_bp
 
 app = Flask(__name__)
 
 app.register_blueprint(film_bp)
 app.register_blueprint(camera_bp)
 app.register_blueprint(lenses_bp)
+app.register_blueprint(mounts_bp)
 app.register_blueprint(documentation_bp)
 app.register_blueprint(accessories_bp)
 
@@ -61,44 +62,7 @@ def camera_variants():
         cameras=cameras
     )
 
-@app.route("/mounts")
-def mounts():
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
 
-    mounts_query = """
-    SELECT
-        mo.mount_id,
-        mo.mount_name,
-        m.manufacturer_name,
-        mo.mount_type,
-        mo.year_introduced,
-        mo.notes
-    FROM mounts mo
-    JOIN manufacturers m ON mo.manufacturer_id = m.manufacturer_id
-    ORDER BY mo.mount_name;
-    """
-
-    manufacturers_query = """
-    SELECT manufacturer_id, manufacturer_name
-    FROM manufacturers
-    ORDER BY manufacturer_name;
-    """
-
-    cursor.execute(mounts_query)
-    mounts = cursor.fetchall()
-
-    cursor.execute(manufacturers_query)
-    manufacturers = cursor.fetchall()
-
-    cursor.close()
-    connection.close()
-
-    return render_template(
-        "mounts.html",
-        mounts=mounts,
-        manufacturers=manufacturers
-    )
 
 @app.route("/developers")
 def developers():

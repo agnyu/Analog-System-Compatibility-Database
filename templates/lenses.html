@@ -3,6 +3,96 @@
 {% block title %}Lenses{% endblock %}
 
 {% block content %}
+
+{% if mode == 'add' or lens_to_edit %}
+<section class="card form-card">
+    <div class="table-header">
+        <div>
+            <h2>{% if lens_to_edit %}Edit Lens{% else %}Add New Lens{% endif %}</h2>
+            <p class="subtext">
+                {% if lens_to_edit %}
+                    Update an existing lens record.
+                {% else %}
+                    Create a new lens record for the prototype database.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <form method="POST"
+          action="{% if lens_to_edit %}{{ url_for('lenses_bp.update_lens', lens_id=lens_to_edit.lens_id) }}{% else %}{{ url_for('lenses_bp.add_lens') }}{% endif %}">
+        <div class="two-column-form">
+            <div class="form-control">
+                <label for="lens_name">Lens Name</label>
+                <input type="text" id="lens_name" name="lens_name"
+                       value="{{ lens_to_edit.lens_name if lens_to_edit else '' }}" required>
+            </div>
+
+            <div class="form-control">
+                <label for="manufacturer_id">Manufacturer</label>
+                <select id="manufacturer_id" name="manufacturer_id" required>
+                    {% for manufacturer in manufacturers %}
+                    <option value="{{ manufacturer.manufacturer_id }}"
+                        {% if lens_to_edit and manufacturer.manufacturer_id == lens_to_edit.manufacturer_id %}selected{% endif %}>
+                        {{ manufacturer.manufacturer_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="mount_id">Mount</label>
+                <select id="mount_id" name="mount_id" required>
+                    {% for mount in mounts %}
+                    <option value="{{ mount.mount_id }}"
+                        {% if lens_to_edit and mount.mount_id == lens_to_edit.mount_id %}selected{% endif %}>
+                        {{ mount.mount_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="focal_length">Focal Length</label>
+                <input type="text" id="focal_length" name="focal_length"
+                       value="{{ lens_to_edit.focal_length if lens_to_edit and lens_to_edit.focal_length else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="max_aperture">Max Aperture</label>
+                <input type="text" id="max_aperture" name="max_aperture"
+                       value="{{ lens_to_edit.max_aperture if lens_to_edit and lens_to_edit.max_aperture else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="lens_type">Lens Type</label>
+                <input type="text" id="lens_type" name="lens_type"
+                       value="{{ lens_to_edit.lens_type if lens_to_edit and lens_to_edit.lens_type else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="release_year">Release Year</label>
+                <input type="number" id="release_year" name="release_year"
+                       value="{{ lens_to_edit.release_year if lens_to_edit and lens_to_edit.release_year is not none else '' }}">
+            </div>
+        </div>
+
+        <div class="form-control">
+            <label for="notes">Notes</label>
+            <textarea id="notes" name="notes">{{ lens_to_edit.notes if lens_to_edit and lens_to_edit.notes else '' }}</textarea>
+        </div>
+
+        <div class="button-row">
+            <button class="btn" type="submit">
+                {% if lens_to_edit %}Update Lens{% else %}Add Lens{% endif %}
+            </button>
+            <a class="btn-secondary" href="{{ url_for('lenses_bp.lenses') }}">Cancel</a>
+        </div>
+    </form>
+</section>
+
+{% else %}
+
 <section class="card">
     <h2>Lens Search</h2>
     <div class="button-row" style="margin-top: 16px;">
@@ -99,6 +189,8 @@
                     <h2>Lens Index</h2>
                     <p class="subtext">Core lens records in the current database.</p>
                 </div>
+
+                <a class="btn" href="{{ url_for('lenses_bp.lenses', mode='add') }}">+ Add New Lens</a>
             </div>
 
             <div class="table-wrapper">
@@ -114,6 +206,7 @@
                             <th>Lens Type</th>
                             <th>Release Year</th>
                             <th>Notes</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -128,6 +221,21 @@
                             <td>{{ lens.lens_type }}</td>
                             <td>{{ lens.release_year }}</td>
                             <td>{{ lens.notes }}</td>
+                            <td>
+                                <div class="actions">
+                                    <a class="btn-secondary action-link"
+                                       href="{{ url_for('lenses_bp.edit_lens', lens_id=lens.lens_id) }}">
+                                        Edit
+                                    </a>
+
+                                    <form action="{{ url_for('lenses_bp.delete_lens', lens_id=lens.lens_id) }}" method="POST">
+                                        <button class="btn-danger" type="submit"
+                                                onclick="return confirm('Are you sure you want to delete this lens?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -220,4 +328,7 @@
         </section>
     </aside>
 </section>
+
+{% endif %}
+
 {% endblock %}
