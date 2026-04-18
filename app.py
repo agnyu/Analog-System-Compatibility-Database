@@ -8,14 +8,59 @@ load_dotenv()
 app = Flask(__name__)
 
 def get_db_connection():
-    connection = mysql.connector.connect(
+    return mysql.connector.connect(
         host=os.getenv("MYSQL_HOST", "127.0.0.1"),
         port=int(os.getenv("MYSQL_PORT", 3306)),
         user=os.getenv("MYSQL_USER"),
         password=os.getenv("MYSQL_PASSWORD"),
         database=os.getenv("MYSQL_DB")
     )
-    return connection
+
+#Adding helper functions to remove repitition
+
+def fetch_all(query, params=None):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    try:
+        cursor.execute(query, params or ())
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        connection.close()
+
+def fetch_one(query, params=None):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    try:
+        cursor.execute(query, params or ())
+        return cursor.fetchone()
+    finally:
+        cursor.close()
+        connection.close()
+
+def execute_query(query, params=None):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    try:
+        cursor.execute(query, params or ())
+        connection.commit()
+    finally:
+        cursor.close()
+        connection.close()
+
+def execute_many(query, values):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    try:
+        cursor.executemany(query, values)
+        connection.commit()
+    finally:
+        cursor.close()
+        connection.close()
+
+def get_lookup_table(table_name, id_col, name_col):
+    query = f"SELECT {id_col}, {name_col} FROM {table_name} ORDER BY {name_col};"
+    return fetch_all(query)
 
 #Top Level Categories Here
 
@@ -26,9 +71,6 @@ def index():
 
 @app.route("/film")
 def film():
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
-
     query = """
     SELECT 
         fs.film_id,
@@ -45,27 +87,11 @@ def film():
     JOIN film_formats ff ON fs.format_id = ff.format_id
     ORDER BY fs.film_id;
     """
-
-    cursor.execute(query)
-    films = cursor.fetchall()
-
-    cursor.close()
-    connection.close()
-
+    films = fetch_all(query)
     return render_template("film.html", films=films)
-
 
 @app.route("/add", methods=["GET", "POST"])
 def add_film():
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
-
-    cursor.execute("SELECT * FROM manufacturers ORDER BY manufacturer_name;")
-    manufacturers = cursor.fetchall()
-
-    cursor.execute("SELECT * FROM film_formats ORDER BY format_name;")
-    formats = cursor.fetchall()
-
     if request.method == "POST":
         film_name = request.form["film_name"]
         manufacturer_id = request.form["manufacturer_id"]
@@ -86,34 +112,21 @@ def add_film():
             color_type, release_year, discontinued, notes
         )
 
-        cursor.execute(insert_query, values)
-        connection.commit()
-
-        cursor.close()
-        connection.close()
-
+        execute_query(insert_query, values)
         return redirect(url_for("film"))
 
-    cursor.close()
-    connection.close()
+    manufacturers = fetch_all(
+        "SELECT * FROM manufacturers ORDER BY manufacturer_name;"
+    )
+    formats = fetch_all(
+        "SELECT * FROM film_formats ORDER BY format_name;"
+    )
 
     return render_template("add_film.html", manufacturers=manufacturers, formats=formats)
 
 
 @app.route("/edit/<int:film_id>", methods=["GET", "POST"])
 def edit_film(film_id):
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
-
-    cursor.execute("SELECT * FROM manufacturers ORDER BY manufacturer_name;")
-    manufacturers = cursor.fetchall()
-
-    cursor.execute("SELECT * FROM film_formats ORDER BY format_name;")
-    formats = cursor.fetchall()
-
-    cursor.execute("SELECT * FROM film_stocks WHERE film_id = %s;", (film_id,))
-    film = cursor.fetchone()
-
     if request.method == "POST":
         film_name = request.form["film_name"]
         manufacturer_id = request.form["manufacturer_id"]
@@ -141,16 +154,19 @@ def edit_film(film_id):
             color_type, release_year, discontinued, notes, film_id
         )
 
-        cursor.execute(update_query, values)
-        connection.commit()
-
-        cursor.close()
-        connection.close()
-
+        execute_query(update_query, values)
         return redirect(url_for("film"))
 
-    cursor.close()
-    connection.close()
+    manufacturers = fetch_all(
+        "SELECT * FROM manufacturers ORDER BY manufacturer_name;"
+    )
+    formats = fetch_all(
+        "SELECT * FROM film_formats ORDER BY format_name;"
+    )
+    film = fetch_one(
+        "SELECT * FROM film_stocks WHERE film_id = %s;",
+        (film_id,)
+    )
 
     return render_template(
         "edit_film.html",
@@ -162,15 +178,7 @@ def edit_film(film_id):
 
 @app.route("/delete/<int:film_id>", methods=["POST"])
 def delete_film(film_id):
-    connection = get_db_connection()
-    cursor = connection.cursor()
-
-    cursor.execute("DELETE FROM film_stocks WHERE film_id = %s;", (film_id,))
-    connection.commit()
-
-    cursor.close()
-    connection.close()
-
+    execute_query("DELETE FROM film_stocks WHERE film_id = %s;", (film_id,))
     return redirect(url_for("film"))
 
 
