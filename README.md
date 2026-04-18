@@ -1,4 +1,4 @@
-# Analog-Photography-System-Compatibility-Database
+# Analog Photography System Compatibility Database
 
 This project is an analog photography compatibility and documentation database created to support film camera users, collectors, hobbyists, repair enthusiasts, and individuals who are new to analog photography. The main purpose of this database is to organize photography-related information in a structured format that is both practical and easy to reference.
 
