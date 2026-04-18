@@ -3,6 +3,8 @@ from routes.film_routes import film_bp
 from routes.camera_routes import camera_bp
 from routes.lenses_routes import lenses_bp
 from routes.mounts_routes import mounts_bp
+from routes.documentation_routes import documentation_bp
+from routes.accessories_routes import accessories_bp
 
 app = Flask(__name__)
 
