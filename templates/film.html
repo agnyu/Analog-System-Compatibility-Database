@@ -1,245 +1,161 @@
 {% extends "base.html" %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Film Stocks{% endblock %}
 
 {% block content %}
-<section class="card">
-    <h2>Film Search</h2>
-    <p class="subtext">Browse film stocks by format, ISO, color type, development workflow, and related records.</p>
-    <div class="button-row" style="margin-top: 16px;">
-    <a class="btn-secondary" href="{{ url_for('developers') }}">Browse Developers</a>
+
+{% if mode == 'add' or film_to_edit %}
+<section class="card form-card">
+    <div class="table-header">
+        <div>
+            <h2>{% if film_to_edit %}Edit Film{% else %}Add New Film{% endif %}</h2>
+            <p class="subtext">
+                {% if film_to_edit %}
+                    Update an existing film stock record.
+                {% else %}
+                    Create a new film stock record for the prototype database.
+                {% endif %}
+            </p>
+        </div>
     </div>
 
-    <div class="button-row" style="margin-top: 16px;">
-    <a class="btn-secondary" href="{{ url_for('developers') }}">Browse Developers</a>
-    <a class="btn-secondary" href="{{ url_for('development_guide') }}">Browse Development Guide</a>
-    </div>
-    
-    <div class="search-grid">
-        <div class="form-control">
-            <label for="film-search">Search</label>
-            <input type="text" id="film-search" placeholder="Search film stock, developer, format...">
+    <form method="POST"
+          action="{% if film_to_edit %}{{ url_for('update_film', film_id=film_to_edit.film_id) }}{% else %}{{ url_for('add_film') }}{% endif %}">
+        <div class="two-column-form">
+            <div class="form-control">
+                <label for="film_name">Film Name</label>
+                <input type="text" id="film_name" name="film_name"
+                       value="{{ film_to_edit.film_name if film_to_edit else '' }}" required>
+            </div>
+
+            <div class="form-control">
+                <label for="manufacturer_id">Manufacturer</label>
+                <select id="manufacturer_id" name="manufacturer_id" required>
+                    {% for manufacturer in manufacturers %}
+                    <option value="{{ manufacturer.manufacturer_id }}"
+                        {% if film_to_edit and manufacturer.manufacturer_id == film_to_edit.manufacturer_id %}selected{% endif %}>
+                        {{ manufacturer.manufacturer_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="iso">ISO</label>
+                <input type="number" id="iso" name="iso"
+                       value="{{ film_to_edit.iso if film_to_edit and film_to_edit.iso is not none else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="format_id">Format</label>
+                <select id="format_id" name="format_id" required>
+                    {% for format in formats %}
+                    <option value="{{ format.format_id }}"
+                        {% if film_to_edit and format.format_id == film_to_edit.format_id %}selected{% endif %}>
+                        {{ format.format_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="color_type">Color Type</label>
+                <input type="text" id="color_type" name="color_type"
+                       value="{{ film_to_edit.color_type if film_to_edit and film_to_edit.color_type else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="release_year">Release Year</label>
+                <input type="number" id="release_year" name="release_year"
+                       value="{{ film_to_edit.release_year if film_to_edit and film_to_edit.release_year is not none else '' }}">
+            </div>
+        </div>
+
+        <div class="checkbox-row">
+            <input type="checkbox" id="discontinued" name="discontinued"
+                   {% if film_to_edit and film_to_edit.discontinued %}checked{% endif %}>
+            <label for="discontinued">Discontinued</label>
         </div>
 
         <div class="form-control">
-            <label for="film-search-type">Search Type</label>
-            <select id="film-search-type">
-                <option>Film Stocks</option>
-                <option>Developers</option>
-                <option>Development Guide</option>
-                <option>Formats</option>
-                <option>Documentation</option>
-            </select>
+            <label for="notes">Notes</label>
+            <textarea id="notes" name="notes">{{ film_to_edit.notes if film_to_edit and film_to_edit.notes else '' }}</textarea>
         </div>
 
         <div class="button-row">
-            <button class="btn" type="button">Search</button>
-            <button class="btn-secondary" type="button">Reset</button>
+            <button class="btn" type="submit">
+                {% if film_to_edit %}Update Film{% else %}Add Film{% endif %}
+            </button>
+            <a class="btn-secondary" href="{{ url_for('film') }}">Cancel</a>
         </div>
-    </div>
+    </form>
 </section>
-
+{% else %}
 <section class="card">
     <div class="table-header">
         <div>
-            <h2>Quick Filters</h2>
-            <p class="subtext">Prototype filter layout for the homepage. Film Stocks is the current live dataset.</p>
+            <h2>Film Stocks Index</h2>
+            <p class="subtext">Current working CRUD table</p>
         </div>
+
+        <a class="btn" href="{{ url_for('film', mode='add') }}">+ Add New Film</a>
     </div>
 
-    <div class="filter-grid">
-        <div class="form-control">
-            <label for="manufacturer-filter">Manufacturer</label>
-            <select id="manufacturer-filter">
-                <option>All</option>
-            </select>
-        </div>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Film Name</th>
+                    <th>Manufacturer</th>
+                    <th>ISO</th>
+                    <th>Format</th>
+                    <th>Color Type</th>
+                    <th>Release Year</th>
+                    <th>Status</th>
+                    <th>Notes</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for film in films %}
+                <tr>
+                    <td>{{ film.film_id }}</td>
+                    <td>{{ film.film_name }}</td>
+                    <td>{{ film.manufacturer_name }}</td>
+                    <td>{{ film.iso }}</td>
+                    <td>{{ film.format_name }}</td>
+                    <td>{{ film.color_type }}</td>
+                    <td>{{ film.release_year }}</td>
+                    <td>
+                        {% if film.discontinued %}
+                            <span class="status-pill discontinued">Discontinued</span>
+                        {% else %}
+                            <span class="status-pill">Active</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ film.notes }}</td>
+                    <td>
+                        <div class="actions">
+                            <a class="btn-secondary action-link"
+                               href="{{ url_for('edit_film', film_id=film.film_id) }}">
+                                Edit
+                            </a>
 
-        <div class="form-control">
-            <label for="format-filter">Format</label>
-            <select id="format-filter">
-                <option>All</option>
-            </select>
-        </div>
-
-        <div class="form-control">
-            <label for="color-filter">Color Type</label>
-            <select id="color-filter">
-                <option>All</option>
-            </select>
-        </div>
-
-        <div class="form-control">
-            <label for="iso-min">ISO Min</label>
-            <input type="number" id="iso-min" placeholder="e.g. 100">
-        </div>
-
-        <div class="form-control">
-            <label for="iso-max">ISO Max</label>
-            <input type="number" id="iso-max" placeholder="e.g. 400">
-        </div>
-
-        <div class="form-control">
-            <label for="status-filter">Status</label>
-            <select id="status-filter">
-                <option>All</option>
-            </select>
-        </div>
+                            <form action="{{ url_for('delete_film', film_id=film.film_id) }}" method="POST">
+                                <button class="btn-danger" type="submit"
+                                        onclick="return confirm('Are you sure you want to delete this film?');">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </section>
+{% endif %}
 
-<section class="layout-grid">
-    <div>
-        <section class="card">
-            <div class="table-header">
-                <div>
-                    <h2>Film Stocks Index</h2>
-                    <p class="subtext">Current working CRUD table</p>
-                </div>
-
-                <a class="btn" href="{{ url_for('add_film') }}">+ Add New Film</a>
-            </div>
-
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Film Name</th>
-                            <th>Manufacturer</th>
-                            <th>ISO</th>
-                            <th>Format</th>
-                            <th>Color Type</th>
-                            <th>Release Year</th>
-                            <th>Status</th>
-                            <th>Notes</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for film in films %}
-                        <tr>
-                            <td>{{ film.film_id }}</td>
-                            <td>{{ film.film_name }}</td>
-                            <td>{{ film.manufacturer_name }}</td>
-                            <td>{{ film.iso }}</td>
-                            <td>{{ film.format_name }}</td>
-                            <td>{{ film.color_type }}</td>
-                            <td>{{ film.release_year }}</td>
-                            <td>
-                                {% if film.discontinued %}
-                                    <span class="status-pill discontinued">Discontinued</span>
-                                {% else %}
-                                    <span class="status-pill">Active</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ film.notes }}</td>
-                            <td>
-                                <div class="actions">
-                                    <a class="btn-secondary action-link" href="{{ url_for('edit_film', film_id=film.film_id) }}">Edit</a>
-
-                                    <form action="{{ url_for('delete_film', film_id=film.film_id) }}" method="POST">
-                                        <button class="btn-danger" type="submit" onclick="return confirm('Are you sure you want to delete this film?');">
-                                            Delete
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section class="card">
-            <h2>Planned Compatibility Result View</h2>
-            <p class="subtext">
-                This section represents a visual placeholder for future compatibility pages.
-            </p>
-
-            <div class="placeholder-box">
-                <h3 style="margin-bottom: 6px;">Example Selected Item: Canon AE-1</h3>
-                <p style="color:#666; margin-bottom: 14px;">
-                    Manufacturer: Canon | Mount: FD | Format: 35mm | Camera Type: SLR
-                </p>
-
-                <div class="placeholder-grid">
-                    <div class="mini-card">
-                        <h4>Compatible Lenses</h4>
-                        <ul>
-                            <li>FD 50mm f/1.8</li>
-                            <li>FD 28mm f/2.8</li>
-                        </ul>
-                    </div>
-
-                    <div class="mini-card">
-                        <h4>Compatible Film Stocks</h4>
-                        <ul>
-                            <li>Portra 400</li>
-                            <li>HP5 Plus</li>
-                        </ul>
-                    </div>
-
-                    <div class="mini-card">
-                        <h4>Compatible Accessories</h4>
-                        <ul>
-                            <li>Motor Drive</li>
-                            <li>External Flash</li>
-                        </ul>
-                    </div>
-
-                    <div class="mini-card">
-                        <h4>Documentation</h4>
-                        <ul>
-                            <li>User Manual</li>
-                            <li>Repair Guide</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <aside>
-        <section class="card">
-            <h2>Prototype Scope</h2>
-            <ul class="sidebar-list">
-                <li>Film Stocks page is the current working CRUD module.</li>
-                <li>Global navigation reflects the full project proposal scope.</li>
-                <li>Camera, lens, accessory, and documentation views will be expanded later.</li>
-                <li>Compatibility pages will connect related entities in future iterations.</li>
-            </ul>
-        </section>
-
-        <section class="card">
-            <h2>Entity Roadmap</h2>
-
-            <div class="roadmap-item">
-                <strong>Film Stocks</strong>
-                Active working table for CRUD
-            </div>
-
-            <div class="roadmap-item">
-                <strong>Cameras</strong>
-                Next candidate for search and detail page
-            </div>
-
-            <div class="roadmap-item">
-                <strong>Lenses</strong>
-                Will connect through mount relationships
-            </div>
-
-            <div class="roadmap-item">
-                <strong>Accessories</strong>
-                Will connect through compatibility records
-            </div>
-
-            <div class="roadmap-item">
-                <strong>Documentation</strong>
-                Will attach to item detail pages
-            </div>
-        </section>
-    </aside>
-</section>
 {% endblock %}
