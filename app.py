@@ -1,5 +1,8 @@
 from flask import Flask, render_template
-from routes.film_routes import film_bp, camera_bp, lenses_bp, documentation_bp, accessories_bp, mounts_bp
+from routes.film_routes import film_bp
+from routes.camera_routes import camera_bp
+from routes.lenses_routes import lenses_bp
+from routes.mounts_routes import mounts_bp
 
 app = Flask(__name__)
 
