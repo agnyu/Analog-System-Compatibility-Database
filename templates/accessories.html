@@ -3,13 +3,116 @@
 {% block title %}Accessories{% endblock %}
 
 {% block content %}
+
+{% if mode == 'add' or accessory_to_edit %}
+<section class="card form-card">
+    <div class="table-header">
+        <div>
+            <h2>{% if accessory_to_edit %}Edit Accessory{% else %}Add New Accessory{% endif %}</h2>
+            <p class="subtext">
+                {% if accessory_to_edit %}
+                    Update an existing accessory record.
+                {% else %}
+                    Create a new accessory record for the prototype database.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <form method="POST"
+          action="{% if accessory_to_edit %}{{ url_for('accessories_bp.update_accessory', accessory_id=accessory_to_edit.accessory_id) }}{% else %}{{ url_for('accessories_bp.add_accessory') }}{% endif %}">
+        <div class="two-column-form">
+            <div class="form-control">
+                <label for="accessory_name">Accessory Name</label>
+                <input type="text" id="accessory_name" name="accessory_name"
+                       value="{{ accessory_to_edit.accessory_name if accessory_to_edit else '' }}" required>
+            </div>
+
+            <div class="form-control">
+                <label for="manufacturer_id">Manufacturer</label>
+                <select id="manufacturer_id" name="manufacturer_id" required>
+                    {% for manufacturer in manufacturers %}
+                    <option value="{{ manufacturer.manufacturer_id }}"
+                        {% if accessory_to_edit and manufacturer.manufacturer_id == accessory_to_edit.manufacturer_id %}selected{% endif %}>
+                        {{ manufacturer.manufacturer_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="accessory_type_id">Accessory Type</label>
+                <select id="accessory_type_id" name="accessory_type_id" required>
+                    {% for accessory_type in accessory_types %}
+                    <option value="{{ accessory_type.accessory_type_id }}"
+                        {% if accessory_to_edit and accessory_type.accessory_type_id == accessory_to_edit.accessory_type_id %}selected{% endif %}>
+                        {{ accessory_type.type_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="mount_id">Mount</label>
+                <select id="mount_id" name="mount_id">
+                    <option value="">None</option>
+                    {% for mount in mounts %}
+                    <option value="{{ mount.mount_id }}"
+                        {% if accessory_to_edit and accessory_to_edit.mount_id == mount.mount_id %}selected{% endif %}>
+                        {{ mount.mount_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="format_id">Format</label>
+                <select id="format_id" name="format_id">
+                    <option value="">None</option>
+                    {% for format in formats %}
+                    <option value="{{ format.format_id }}"
+                        {% if accessory_to_edit and accessory_to_edit.format_id == format.format_id %}selected{% endif %}>
+                        {{ format.format_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="release_year">Release Year</label>
+                <input type="number" id="release_year" name="release_year"
+                       value="{{ accessory_to_edit.release_year if accessory_to_edit and accessory_to_edit.release_year is not none else '' }}">
+            </div>
+        </div>
+
+        <div class="form-control">
+            <label for="description">Description</label>
+            <textarea id="description" name="description">{{ accessory_to_edit.description if accessory_to_edit and accessory_to_edit.description else '' }}</textarea>
+        </div>
+
+        <div class="form-control">
+            <label for="compatibility_notes">Compatibility Notes</label>
+            <textarea id="compatibility_notes" name="compatibility_notes">{{ accessory_to_edit.compatibility_notes if accessory_to_edit and accessory_to_edit.compatibility_notes else '' }}</textarea>
+        </div>
+
+        <div class="button-row">
+            <button class="btn" type="submit">
+                {% if accessory_to_edit %}Update Accessory{% else %}Add Accessory{% endif %}
+            </button>
+            <a class="btn-secondary" href="{{ url_for('accessories_bp.accessories') }}">Cancel</a>
+        </div>
+    </form>
+</section>
+
+{% else %}
+
 <section class="card">
     <h2>Accessory Search</h2>
     <p class="subtext">Browse accessories by manufacturer, accessory type, mount, format, and release year.</p>
 
     <div class="button-row" style="margin-top: 16px;">
-    <a class="btn-secondary" href="{{ url_for('accessory_types') }}">Browse Accessory Types</a>
-    <a class="btn-secondary" href="{{ url_for('accessory_compatibility') }}">Browse Compatibility</a>
+        <a class="btn-secondary" href="{{ url_for('accessory_types') }}">Browse Accessory Types</a>
+        <a class="btn-secondary" href="{{ url_for('accessory_compatibility') }}">Browse Compatibility</a>
     </div>
 
     <div class="search-grid">
@@ -104,6 +207,8 @@
                     <h2>Accessory Index</h2>
                     <p class="subtext">Core accessory records in the current database.</p>
                 </div>
+
+                <a class="btn" href="{{ url_for('accessories_bp.accessories', mode='add') }}">+ Add New Accessory</a>
             </div>
 
             <div class="table-wrapper">
@@ -119,6 +224,7 @@
                             <th>Release Year</th>
                             <th>Description</th>
                             <th>Compatibility Notes</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -133,6 +239,21 @@
                             <td>{{ accessory.release_year }}</td>
                             <td>{{ accessory.description }}</td>
                             <td>{{ accessory.compatibility_notes }}</td>
+                            <td>
+                                <div class="actions">
+                                    <a class="btn-secondary action-link"
+                                       href="{{ url_for('accessories_bp.edit_accessory', accessory_id=accessory.accessory_id) }}">
+                                        Edit
+                                    </a>
+
+                                    <form action="{{ url_for('accessories_bp.delete_accessory', accessory_id=accessory.accessory_id) }}" method="POST">
+                                        <button class="btn-danger" type="submit"
+                                                onclick="return confirm('Are you sure you want to delete this accessory?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -224,4 +345,7 @@
         </section>
     </aside>
 </section>
+
+{% endif %}
+
 {% endblock %}

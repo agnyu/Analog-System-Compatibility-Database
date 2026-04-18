@@ -3,6 +3,97 @@
 {% block title %}Documentation{% endblock %}
 
 {% block content %}
+
+{% if mode == 'add' or doc_to_edit %}
+<section class="card form-card">
+    <div class="table-header">
+        <div>
+            <h2>{% if doc_to_edit %}Edit Documentation{% else %}Add New Documentation{% endif %}</h2>
+            <p class="subtext">
+                {% if doc_to_edit %}
+                    Update an existing documentation record.
+                {% else %}
+                    Create a new documentation record for the prototype database.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <form method="POST"
+          action="{% if doc_to_edit %}{{ url_for('documentation_bp.update_documentation', documentation_id=doc_to_edit.documentation_id) }}{% else %}{{ url_for('documentation_bp.add_documentation') }}{% endif %}">
+        <div class="two-column-form">
+            <div class="form-control">
+                <label for="title">Title</label>
+                <input type="text" id="title" name="title"
+                       value="{{ doc_to_edit.title if doc_to_edit else '' }}" required>
+            </div>
+
+            <div class="form-control">
+                <label for="camera_id">Camera</label>
+                <select id="camera_id" name="camera_id" required>
+                    {% for camera in cameras %}
+                    <option value="{{ camera.camera_id }}"
+                        {% if doc_to_edit and camera.camera_id == doc_to_edit.camera_id %}selected{% endif %}>
+                        {{ camera.camera_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="variant_id">Variant</label>
+                <select id="variant_id" name="variant_id">
+                    <option value="">None</option>
+                    {% for variant in variants %}
+                    <option value="{{ variant.variant_id }}"
+                        {% if doc_to_edit and doc_to_edit.variant_id == variant.variant_id %}selected{% endif %}>
+                        {{ variant.variant_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="document_type">Document Type</label>
+                <input type="text" id="document_type" name="document_type"
+                       value="{{ doc_to_edit.document_type if doc_to_edit and doc_to_edit.document_type else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="source">Source</label>
+                <input type="text" id="source" name="source"
+                       value="{{ doc_to_edit.source if doc_to_edit and doc_to_edit.source else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="publication_year">Publication Year</label>
+                <input type="number" id="publication_year" name="publication_year"
+                       value="{{ doc_to_edit.publication_year if doc_to_edit and doc_to_edit.publication_year is not none else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="url">URL</label>
+                <input type="url" id="url" name="url"
+                       value="{{ doc_to_edit.url if doc_to_edit and doc_to_edit.url else '' }}">
+            </div>
+        </div>
+
+        <div class="form-control">
+            <label for="notes">Notes</label>
+            <textarea id="notes" name="notes">{{ doc_to_edit.notes if doc_to_edit and doc_to_edit.notes else '' }}</textarea>
+        </div>
+
+        <div class="button-row">
+            <button class="btn" type="submit">
+                {% if doc_to_edit %}Update Documentation{% else %}Add Documentation{% endif %}
+            </button>
+            <a class="btn-secondary" href="{{ url_for('documentation_bp.documentation') }}">Cancel</a>
+        </div>
+    </form>
+</section>
+
+{% else %}
+
 <section class="card">
     <h2>Documentation Search</h2>
     <p class="subtext">Browse manuals, brochures, guides, and archival references by camera, variant, source, and publication year.</p>
@@ -96,6 +187,8 @@
                     <h2>Documentation Index</h2>
                     <p class="subtext">Linked archival and reference documentation records in the current database.</p>
                 </div>
+
+                <a class="btn" href="{{ url_for('documentation_bp.documentation', mode='add') }}">+ Add New Documentation</a>
             </div>
 
             <div class="table-wrapper">
@@ -111,6 +204,7 @@
                             <th>Publication Year</th>
                             <th>URL</th>
                             <th>Notes</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -127,10 +221,25 @@
                                 {% if doc.url %}
                                 <a class="table-link" href="{{ doc.url }}" target="_blank" rel="noopener noreferrer">Open Link</a>
                                 {% else %}
-                                    N/A
+                                N/A
                                 {% endif %}
                             </td>
                             <td>{{ doc.notes }}</td>
+                            <td>
+                                <div class="actions">
+                                    <a class="btn-secondary action-link"
+                                       href="{{ url_for('documentation_bp.edit_documentation', documentation_id=doc.documentation_id) }}">
+                                        Edit
+                                    </a>
+
+                                    <form action="{{ url_for('documentation_bp.delete_documentation', documentation_id=doc.documentation_id) }}" method="POST">
+                                        <button class="btn-danger" type="submit"
+                                                onclick="return confirm('Are you sure you want to delete this documentation record?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -221,4 +330,7 @@
         </section>
     </aside>
 </section>
+
+{% endif %}
+
 {% endblock %}
