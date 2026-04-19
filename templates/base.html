@@ -93,13 +93,17 @@ document.addEventListener("DOMContentLoaded", function () {
                             'camera_bp.add_camera',
                             'camera_bp.update_camera',
                             'camera_bp.delete_camera',
-                            'camera_variants'
+                            'camera_variants_bp.camera_variants',
+                            'camera_variants_bp.edit_camera_variant',
+                            'camera_variants_bp.add_camera_variant',
+                            'camera_variants_bp.update_camera_variant',
+                            'camera_variants_bp.delete_camera_variant'
                         ] %}active-tab{% endif %}">
                     Cameras
                 </button>
                 <div class="dropdown-menu">
                     <a href="{{ url_for('camera_bp.cameras') }}">Camera Index</a>
-                    <a href="{{ url_for('camera_variants') }}">Camera Variants</a>
+                    <a href="{{ url_for('camera_variants_bp.camera_variants') }}">Camera Variants</a>
                 </div>
             </div>
 
