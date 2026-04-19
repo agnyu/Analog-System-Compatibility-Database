@@ -160,6 +160,15 @@ def cameras():
                 ORDER BY d.title;
             """, (selected_camera_id,))
 
+    browse_params = {
+        "search": search,
+        "manufacturer_id": manufacturer_id,
+        "mount_id": mount_id,
+        "camera_type": camera_type,
+        "year_min": year_min,
+        "year_max": year_max
+    }
+
     return render_template(
         "cameras.html",
         cameras=cameras,
@@ -178,7 +187,8 @@ def cameras():
         selected_mount_id=mount_id,
         selected_camera_type=camera_type,
         selected_year_min=year_min,
-        selected_year_max=year_max
+        selected_year_max=year_max,
+        browse_params=browse_params
     )
 
 
@@ -249,7 +259,8 @@ def edit_camera(camera_id):
         selected_mount_id=None,
         selected_camera_type=None,
         selected_year_min=None,
-        selected_year_max=None
+        selected_year_max=None,
+        browse_params={}
     )
 
 

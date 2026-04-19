@@ -3,8 +3,20 @@ from db import fetch_all, fetch_one, execute_query
 
 camera_variants_bp = Blueprint("camera_variants_bp", __name__)
 
+
 @camera_variants_bp.route("/camera-variants")
 def camera_variants():
+    search = request.args.get("search", type=str)
+    camera_id = request.args.get("camera_id", type=int)
+    frame_format = request.args.get("frame_format", type=str)
+    year_min = request.args.get("year_min", type=int)
+    year_max = request.args.get("year_max", type=int)
+    production_end_min = request.args.get("production_end_min", type=int)
+    production_end_max = request.args.get("production_end_max", type=int)
+
+    mode = request.args.get("mode")
+    selected_variant_id = request.args.get("selected_variant_id", type=int)
+
     variants_query = """
     SELECT
         cv.variant_id,
@@ -17,8 +29,52 @@ def camera_variants():
         cv.notes
     FROM camera_variants cv
     JOIN cameras c ON cv.camera_id = c.camera_id
-    ORDER BY cv.variant_name;
+    WHERE 1=1
     """
+
+    values = []
+
+    if search and search.strip():
+        search_term = f"%{search.strip()}%"
+        variants_query += """
+        AND (
+            cv.variant_name LIKE %s
+            OR c.camera_name LIKE %s
+            OR COALESCE(cv.frame_format, '') LIKE %s
+            OR COALESCE(cv.notes, '') LIKE %s
+        )
+        """
+        values.extend([search_term, search_term, search_term, search_term])
+
+    if camera_id:
+        variants_query += " AND cv.camera_id = %s"
+        values.append(camera_id)
+
+    if frame_format:
+        variants_query += " AND cv.frame_format = %s"
+        values.append(frame_format)
+
+    if year_min:
+        variants_query += " AND cv.release_year >= %s"
+        values.append(year_min)
+
+    if year_max:
+        variants_query += " AND cv.release_year <= %s"
+        values.append(year_max)
+
+    if production_end_min:
+        variants_query += " AND cv.production_end_year >= %s"
+        values.append(production_end_min)
+
+    if production_end_max:
+        variants_query += " AND cv.production_end_year <= %s"
+        values.append(production_end_max)
+
+    if selected_variant_id:
+        variants_query += " AND cv.variant_id = %s"
+        values.append(selected_variant_id)
+
+    variants_query += " ORDER BY cv.variant_name;"
 
     cameras_query = """
     SELECT camera_id, camera_name
@@ -26,17 +82,88 @@ def camera_variants():
     ORDER BY camera_name;
     """
 
-    variants = fetch_all(variants_query)
-    cameras = fetch_all(cameras_query)
+    frame_formats_query = """
+    SELECT DISTINCT frame_format
+    FROM camera_variants
+    WHERE frame_format IS NOT NULL
+      AND TRIM(frame_format) <> ''
+    ORDER BY frame_format;
+    """
 
-    mode = request.args.get("mode")
+    variants = fetch_all(variants_query, tuple(values))
+    cameras = fetch_all(cameras_query)
+    frame_formats = fetch_all(frame_formats_query)
+
+    selected_variant = None
+    parent_camera = None
+    related_documentation = []
+    related_accessories = []
+
+    if selected_variant_id:
+        selected_variant = fetch_one("""
+            SELECT
+                cv.variant_id,
+                cv.variant_name,
+                cv.camera_id,
+                c.camera_name,
+                c.mount_id,
+                cv.release_year,
+                cv.frame_format,
+                cv.production_end_year,
+                cv.notes
+            FROM camera_variants cv
+            JOIN cameras c ON cv.camera_id = c.camera_id
+            WHERE cv.variant_id = %s;
+        """, (selected_variant_id,))
+
+        if selected_variant:
+            parent_camera = fetch_one("""
+                SELECT
+                    c.camera_id,
+                    c.camera_name,
+                    c.camera_type,
+                    c.release_year,
+                    c.notes
+                FROM cameras c
+                WHERE c.camera_id = %s;
+            """, (selected_variant["camera_id"],))
+
+            related_accessories = fetch_all("""
+                SELECT
+                    a.accessory_id,
+                    a.accessory_name
+                FROM accessories a
+                WHERE a.mount_id = %s
+                ORDER BY a.accessory_name;
+            """, (selected_variant["mount_id"],))
+
+            related_documentation = fetch_all("""
+                SELECT
+                    d.documentation_id,
+                    d.title
+                FROM documentation d
+                WHERE d.camera_id = %s
+                ORDER BY d.title;
+            """, (selected_variant["camera_id"],))
 
     return render_template(
         "camera_variants.html",
         variants=variants,
         cameras=cameras,
+        frame_formats=frame_formats,
         variant_to_edit=None,
-        mode=mode
+        mode=mode,
+        selected_variant=selected_variant,
+        parent_camera=parent_camera,
+        related_documentation=related_documentation,
+        related_accessories=related_accessories,
+        selected_search=search,
+        selected_camera_id=camera_id,
+        selected_frame_format=frame_format,
+        selected_year_min=year_min,
+        selected_year_max=year_max,
+        selected_production_end_min=production_end_min,
+        selected_production_end_max=production_end_max
     )
 
 
@@ -63,8 +190,18 @@ def edit_camera_variant(variant_id):
     ORDER BY camera_name;
     """
 
+    frame_formats_query = """
+    SELECT DISTINCT frame_format
+    FROM camera_variants
+    WHERE frame_format IS NOT NULL
+      AND TRIM(frame_format) <> ''
+    ORDER BY frame_format;
+    """
+
     variants = fetch_all(variants_query)
     cameras = fetch_all(cameras_query)
+    frame_formats = fetch_all(frame_formats_query)
+
     variant_to_edit = fetch_one(
         "SELECT * FROM camera_variants WHERE variant_id = %s;",
         (variant_id,)
@@ -74,8 +211,20 @@ def edit_camera_variant(variant_id):
         "camera_variants.html",
         variants=variants,
         cameras=cameras,
+        frame_formats=frame_formats,
         variant_to_edit=variant_to_edit,
-        mode=None
+        mode=None,
+        selected_variant=None,
+        parent_camera=None,
+        related_documentation=[],
+        related_accessories=[],
+        selected_search=None,
+        selected_camera_id=None,
+        selected_frame_format=None,
+        selected_year_min=None,
+        selected_year_max=None,
+        selected_production_end_min=None,
+        selected_production_end_max=None
     )
 
 

@@ -275,7 +275,12 @@
                         {% if variants %}
                         <ul>
                             {% for variant in variants %}
-                            <li>{{ variant.variant_name }}</li>
+                            <li>
+                                <a class="compatibility-link" 
+                                href="{{ url_for('camera_variants_bp.camera_variants', selected_variant_id=variant.variant_id) }}">
+                                    {{ variant.variant_name }}
+                                </a>
+                            </li>
                             {% endfor %}
                         </ul>
                         {% else %}
@@ -288,7 +293,12 @@
                         {% if compatible_lenses %}
                         <ul>
                             {% for lens in compatible_lenses %}
-                            <li>{{ lens.lens_name }}</li>
+                            <li>
+                                <a class="compatibility-link" 
+                                href="{{ url_for('lenses_bp.lenses', selected_lens_id=lens.lens_id) }}">
+                                    {{ lens.lens_name }}
+                                </a>
+                            </li>
                             {% endfor %}
                         </ul>
                         {% else %}
@@ -301,7 +311,12 @@
                         {% if compatible_accessories %}
                         <ul>
                             {% for accessory in compatible_accessories %}
-                            <li>{{ accessory.accessory_name }}</li>
+                            <li>
+                                <a class="compatibility-link" 
+                                href="{{ url_for('accessories_bp.accessories', selected_accessory_id=accessory.accessory_id) }}">
+                                    {{ accessory.accessory_name }}
+                                </a>
+                            </li>
                             {% endfor %}
                         </ul>
                         {% else %}
@@ -314,7 +329,12 @@
                         {% if documentation %}
                         <ul>
                             {% for doc in documentation %}
-                            <li>{{ doc.title }}</li>
+                            <li>
+                                <a class="compatibility-link" 
+                                href="{{ url_for('documentation_bp.documentation', selected_documentation_id=doc.documentation_id) }}">
+                                    {{ doc.title }}
+                                </a>
+                            </li>
                             {% endfor %}
                         </ul>
                         {% else %}

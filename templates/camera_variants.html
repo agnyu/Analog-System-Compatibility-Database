@@ -76,80 +76,82 @@
 {% else %}
 
 <section class="card">
-    <h2>Camera Variant Search</h2>
-    <p class="subtext">Browse named camera submodels by parent camera, format, release year, and production period.</p>
-
-    <div class="search-grid">
-        <div class="form-control">
-            <label for="variant-search">Search</label>
-            <input type="text" id="variant-search" placeholder="Search variant, parent camera, format...">
-        </div>
-
-        <div class="form-control">
-            <label for="variant-search-type">Search Type</label>
-            <select id="variant-search-type">
-                <option>Camera Variants</option>
-                <option>Cameras</option>
-                <option>Documentation</option>
-                <option>Accessories</option>
-            </select>
-        </div>
-
-        <div class="button-row">
-            <button class="btn" type="button">Search</button>
-            <button class="btn-secondary" type="button">Reset</button>
-        </div>
-    </div>
-</section>
-
-<section class="card">
     <div class="table-header">
         <div>
-            <h2>Quick Filters</h2>
-            <p class="subtext">Prototype filter layout for camera variants and linked parent camera records.</p>
+            <h2>Search and Filter Camera Variants</h2>
+            <p class="subtext">Browse variants by parent camera, frame format, release window, production span, and keyword.</p>
         </div>
     </div>
 
-    <div class="filter-grid">
-        <div class="form-control">
-            <label for="camera-filter">Parent Camera</label>
-            <select id="camera-filter">
-                <option>All</option>
-                {% for camera in cameras %}
-                <option>{{ camera.camera_name }}</option>
-                {% endfor %}
-            </select>
+    <form method="GET" action="{{ url_for('camera_variants_bp.camera_variants') }}">
+        <div class="filter-grid">
+            <div class="form-control">
+                <label for="camera_id">Parent Camera</label>
+                <select id="camera_id" name="camera_id">
+                    <option value="">All</option>
+                    {% for camera in cameras %}
+                    <option value="{{ camera.camera_id }}"
+                        {% if selected_camera_id == camera.camera_id %}selected{% endif %}>
+                        {{ camera.camera_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="frame_format">Frame Format</label>
+                <select id="frame_format" name="frame_format">
+                    <option value="">All</option>
+                    {% for format_row in frame_formats %}
+                    <option value="{{ format_row.frame_format }}"
+                        {% if selected_frame_format == format_row.frame_format %}selected{% endif %}>
+                        {{ format_row.frame_format }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="year_min">Release Year Min</label>
+                <input type="number" id="year_min" name="year_min"
+                       placeholder="e.g. 1970"
+                       value="{{ selected_year_min if selected_year_min is not none else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="year_max">Release Year Max</label>
+                <input type="number" id="year_max" name="year_max"
+                       placeholder="e.g. 2000"
+                       value="{{ selected_year_max if selected_year_max is not none else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="production_end_min">End Year Min</label>
+                <input type="number" id="production_end_min" name="production_end_min"
+                       placeholder="e.g. 1980"
+                       value="{{ selected_production_end_min if selected_production_end_min is not none else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="production_end_max">End Year Max</label>
+                <input type="number" id="production_end_max" name="production_end_max"
+                       placeholder="e.g. 2005"
+                       value="{{ selected_production_end_max if selected_production_end_max is not none else '' }}">
+            </div>
         </div>
 
-        <div class="form-control">
-            <label for="format-filter">Frame Format</label>
-            <select id="format-filter">
-                <option>All</option>
-                <option>35mm</option>
-                <option>120</option>
-            </select>
+        <div class="form-control" style="margin-top: 18px;">
+            <label for="search">Search</label>
+            <input type="text" id="search" name="search"
+                   placeholder="Search variant name, parent camera, frame format, or notes..."
+                   value="{{ selected_search if selected_search else '' }}">
         </div>
 
-        <div class="form-control">
-            <label for="year-min">Release Year Min</label>
-            <input type="number" id="year-min" placeholder="e.g. 1970">
+        <div class="button-row" style="margin-top: 16px;">
+            <button class="btn" type="submit">Apply Search & Filters</button>
+            <a class="btn-secondary" href="{{ url_for('camera_variants_bp.camera_variants') }}">Reset</a>
         </div>
-
-        <div class="form-control">
-            <label for="year-max">Release Year Max</label>
-            <input type="number" id="year-max" placeholder="e.g. 2000">
-        </div>
-
-        <div class="form-control">
-            <label for="production-end-min">End Year Min</label>
-            <input type="number" id="production-end-min" placeholder="e.g. 1980">
-        </div>
-
-        <div class="form-control">
-            <label for="production-end-max">End Year Max</label>
-            <input type="number" id="production-end-max" placeholder="e.g. 2005">
-        </div>
-    </div>
+    </form>
 </section>
 
 <section class="layout-grid">
@@ -158,10 +160,31 @@
             <div class="table-header">
                 <div>
                     <h2>Camera Variant Index</h2>
-                    <p class="subtext">Named submodels and revised family versions in the current database.</p>
+                    <p class="subtext">
+                        {% if selected_variant %}
+                            Showing the selected variant and its related records.
+                        {% else %}
+                            Named submodels and revised family versions in the current database.
+                        {% endif %}
+                    </p>
                 </div>
 
-                <a class="btn" href="{{ url_for('camera_variants_bp.camera_variants', mode='add') }}">+ Add New Camera Variant</a>
+                <div class="button-row">
+                    {% if selected_variant %}
+                    <a class="btn-secondary"
+                       href="{{ url_for('camera_variants_bp.camera_variants',
+                           search=selected_search,
+                           camera_id=selected_camera_id,
+                           frame_format=selected_frame_format,
+                           year_min=selected_year_min,
+                           year_max=selected_year_max,
+                           production_end_min=selected_production_end_min,
+                           production_end_max=selected_production_end_max) }}">
+                        Back to Full Variant Index
+                    </a>
+                    {% endif %}
+                    <a class="btn" href="{{ url_for('camera_variants_bp.camera_variants', mode='add') }}">+ Add New Camera Variant</a>
+                </div>
             </div>
 
             <div class="table-wrapper">
@@ -191,6 +214,19 @@
                             <td>
                                 <div class="actions">
                                     <a class="btn-secondary action-link"
+                                       href="{{ url_for('camera_variants_bp.camera_variants',
+                                           search=selected_search,
+                                           camera_id=selected_camera_id,
+                                           frame_format=selected_frame_format,
+                                           year_min=selected_year_min,
+                                           year_max=selected_year_max,
+                                           production_end_min=selected_production_end_min,
+                                           production_end_max=selected_production_end_max,
+                                           selected_variant_id=variant.variant_id) }}">
+                                        View Detail
+                                    </a>
+
+                                    <a class="btn-secondary action-link"
                                        href="{{ url_for('camera_variants_bp.edit_camera_variant', variant_id=variant.variant_id) }}">
                                         Edit
                                     </a>
@@ -204,6 +240,10 @@
                                 </div>
                             </td>
                         </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8">No camera variants match the current search and filters.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -211,49 +251,78 @@
         </section>
 
         <section class="card">
-            <h2>Planned Variant Detail View</h2>
+            <h2>Variant Detail View</h2>
             <p class="subtext">
-                This section represents a visual placeholder for future variant detail and compatibility pages.
+                Select a variant from the index below to view parent camera context, related accessories, documentation, and notes.
             </p>
 
+            {% if selected_variant %}
             <div class="placeholder-box">
-                <h3 style="margin-bottom: 6px;">Example Selected Variant: Canon AE-1 Program</h3>
+                <h3 style="margin-bottom: 6px;">Selected Variant: {{ selected_variant.variant_name }}</h3>
                 <p style="color:#666; margin-bottom: 14px;">
-                    Parent Camera: Canon AE-1 | Format: 35mm | Release Year: 1981
+                    Parent Camera: {{ selected_variant.camera_name }}
+                    | Format: {{ selected_variant.frame_format or 'N/A' }}
+                    | Release Year: {{ selected_variant.release_year or 'N/A' }}
+                    | Production End Year: {{ selected_variant.production_end_year or 'N/A' }}
                 </p>
 
                 <div class="placeholder-grid">
                     <div class="mini-card">
                         <h4>Parent Camera</h4>
+                        {% if parent_camera %}
                         <ul>
-                            <li>Canon AE-1</li>
+                            <li>{{ parent_camera.camera_name }}</li>
+                            <li>Type: {{ parent_camera.camera_type or 'N/A' }}</li>
+                            <li>Release Year: {{ parent_camera.release_year or 'N/A' }}</li>
                         </ul>
+                        {% else %}
+                        <p>No parent camera record found.</p>
+                        {% endif %}
                     </div>
 
                     <div class="mini-card">
                         <h4>Compatible Accessories</h4>
+                        {% if related_accessories %}
                         <ul>
-                            <li>Canon Speedlite 155A</li>
-                            <li>Canon Lens Hood T50-1</li>
+                            {% for accessory in related_accessories %}
+                            <li>{{ accessory.accessory_name }}</li>
+                            {% endfor %}
                         </ul>
+                        {% else %}
+                        <p>No related accessories recorded.</p>
+                        {% endif %}
                     </div>
 
                     <div class="mini-card">
                         <h4>Documentation</h4>
+                        {% if related_documentation %}
                         <ul>
-                            <li>Canon AE-1 Program Instruction Manual</li>
+                            {% for doc in related_documentation %}
+                            <li>{{ doc.title }}</li>
+                            {% endfor %}
                         </ul>
+                        {% else %}
+                        <p>No documentation recorded.</p>
+                        {% endif %}
                     </div>
 
                     <div class="mini-card">
                         <h4>Variant Notes</h4>
-                        <ul>
-                            <li>Named submodel of the AE-1 family</li>
-                            <li>Represents a revised version with added features</li>
-                        </ul>
+                        {% if selected_variant.notes %}
+                        <p>{{ selected_variant.notes }}</p>
+                        {% else %}
+                        <p>No notes recorded.</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
+            {% else %}
+            <div class="placeholder-box">
+                <p style="margin: 0;">
+                    No variant selected yet. Use the filters and search above, then click <strong>View Detail</strong>.
+                </p>
+            </div>
+            {% endif %}
         </section>
     </div>
 
@@ -263,33 +332,38 @@
             <ul class="sidebar-list">
                 <li>Camera variants represent manufacturer-recognized named submodels within a parent camera family.</li>
                 <li>This page focuses on variant identity rather than duplicating all parent camera attributes.</li>
-                <li>Variants can later connect to accessory compatibility and documentation pages.</li>
-                <li>This page currently serves as the main browse page for variant records.</li>
+                <li>Variants can connect to parent camera context, accessories, and documentation.</li>
+                <li>This page serves as the main browse page for variant records.</li>
             </ul>
         </section>
 
         <section class="card">
-            <h2>Variant Roadmap</h2>
+            <h2>Browse Camera Categories</h2>
 
-            <div class="roadmap-item">
-                <strong>Variant Index</strong>
-                Core browse page for named camera submodels
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('camera_bp.cameras') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Camera Index</h3>
+                <p>Browse core camera body records.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Parent Camera Links</strong>
-                Future drill-down into the main camera family
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('camera_variants_bp.camera_variants') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Camera Variants</h3>
+                <p>Browse named submodels and revisions.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Compatibility View</strong>
-                Future page for accessories and documentation linked to a variant
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('documentation_bp.documentation') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Documentation</h3>
+                <p>Browse manuals and reference material.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Saved Profiles</strong>
-                Future feature for saving variant-based compatibility bundles
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('accessories_bp.accessories') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Accessories</h3>
+                <p>Browse camera accessories and related gear.</p>
+            </a>
+
+            <a class="mini-card homepage-link-card" href="{{ url_for('camera_bp.cameras') }}" style="display:block;">
+                <h3>Parent Cameras</h3>
+                <p>Return to the main camera records for family-level details.</p>
+            </a>
         </section>
     </aside>
 </section>
