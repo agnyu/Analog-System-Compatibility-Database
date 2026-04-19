@@ -3,6 +3,78 @@
 {% block title %}Camera Variants{% endblock %}
 
 {% block content %}
+
+{% if mode == 'add' or variant_to_edit %}
+<section class="card form-card">
+    <div class="table-header">
+        <div>
+            <h2>{% if variant_to_edit %}Edit Camera Variant{% else %}Add New Camera Variant{% endif %}</h2>
+            <p class="subtext">
+                {% if variant_to_edit %}
+                    Update an existing camera variant record.
+                {% else %}
+                    Create a new camera variant record for the prototype database.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <form method="POST"
+          action="{% if variant_to_edit %}{{ url_for('camera_variants_bp.update_camera_variant', variant_id=variant_to_edit.variant_id) }}{% else %}{{ url_for('camera_variants_bp.add_camera_variant') }}{% endif %}">
+        <div class="two-column-form">
+            <div class="form-control">
+                <label for="variant_name">Variant Name</label>
+                <input type="text" id="variant_name" name="variant_name"
+                       value="{{ variant_to_edit.variant_name if variant_to_edit else '' }}" required>
+            </div>
+
+            <div class="form-control">
+                <label for="camera_id">Parent Camera</label>
+                <select id="camera_id" name="camera_id" required>
+                    {% for camera in cameras %}
+                    <option value="{{ camera.camera_id }}"
+                        {% if variant_to_edit and camera.camera_id == variant_to_edit.camera_id %}selected{% endif %}>
+                        {{ camera.camera_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="release_year">Release Year</label>
+                <input type="number" id="release_year" name="release_year"
+                       value="{{ variant_to_edit.release_year if variant_to_edit and variant_to_edit.release_year is not none else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="frame_format">Frame Format</label>
+                <input type="text" id="frame_format" name="frame_format"
+                       value="{{ variant_to_edit.frame_format if variant_to_edit and variant_to_edit.frame_format else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="production_end_year">Production End Year</label>
+                <input type="number" id="production_end_year" name="production_end_year"
+                       value="{{ variant_to_edit.production_end_year if variant_to_edit and variant_to_edit.production_end_year is not none else '' }}">
+            </div>
+        </div>
+
+        <div class="form-control">
+            <label for="notes">Notes</label>
+            <textarea id="notes" name="notes">{{ variant_to_edit.notes if variant_to_edit and variant_to_edit.notes else '' }}</textarea>
+        </div>
+
+        <div class="button-row">
+            <button class="btn" type="submit">
+                {% if variant_to_edit %}Update Camera Variant{% else %}Add Camera Variant{% endif %}
+            </button>
+            <a class="btn-secondary" href="{{ url_for('camera_variants_bp.camera_variants') }}">Cancel</a>
+        </div>
+    </form>
+</section>
+
+{% else %}
+
 <section class="card">
     <h2>Camera Variant Search</h2>
     <p class="subtext">Browse named camera submodels by parent camera, format, release year, and production period.</p>
@@ -88,6 +160,8 @@
                     <h2>Camera Variant Index</h2>
                     <p class="subtext">Named submodels and revised family versions in the current database.</p>
                 </div>
+
+                <a class="btn" href="{{ url_for('camera_variants_bp.camera_variants', mode='add') }}">+ Add New Camera Variant</a>
             </div>
 
             <div class="table-wrapper">
@@ -101,6 +175,7 @@
                             <th>Frame Format</th>
                             <th>Production End Year</th>
                             <th>Notes</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -113,6 +188,21 @@
                             <td>{{ variant.frame_format }}</td>
                             <td>{{ variant.production_end_year }}</td>
                             <td>{{ variant.notes }}</td>
+                            <td>
+                                <div class="actions">
+                                    <a class="btn-secondary action-link"
+                                       href="{{ url_for('camera_variants_bp.edit_camera_variant', variant_id=variant.variant_id) }}">
+                                        Edit
+                                    </a>
+
+                                    <form action="{{ url_for('camera_variants_bp.delete_camera_variant', variant_id=variant.variant_id) }}" method="POST">
+                                        <button class="btn-danger" type="submit"
+                                                onclick="return confirm('Are you sure you want to delete this camera variant?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -203,4 +293,7 @@
         </section>
     </aside>
 </section>
+
+{% endif %}
+
 {% endblock %}
