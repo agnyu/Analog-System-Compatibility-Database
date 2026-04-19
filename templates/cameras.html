@@ -108,71 +108,82 @@
     </div>
 </section>
 
-<div class="button-row" style="margin-top: 16px;">
-    <a class="mini-card homepage-link-card" href="{{ url_for('camera_variants_bp.camera_variants') }}">
-        <h3>Camera Variants</h3>
-        <p>Browse named submodels and revised versions within camera families.</p>
-    </a>
-</div>
-
 <section class="card">
     <div class="table-header">
         <div>
             <h2>Quick Filters</h2>
-            <p class="subtext">Prototype filter layout for cameras and related system records.</p>
+            <p class="subtext">Filter the camera index by manufacturer, mount, type, and year range.</p>
         </div>
     </div>
 
-    <div class="filter-grid">
-        <div class="form-control">
-            <label for="manufacturer-filter">Manufacturer</label>
-            <select id="manufacturer-filter">
-                <option>All</option>
-                {% for manufacturer in manufacturers %}
-                <option>{{ manufacturer.manufacturer_name }}</option>
-                {% endfor %}
-            </select>
+    <form method="GET" action="{{ url_for('camera_bp.cameras') }}">
+        <div class="filter-grid">
+            <div class="form-control">
+                <label for="manufacturer_id">Manufacturer</label>
+                <select id="manufacturer_id" name="manufacturer_id">
+                    <option value="">All</option>
+                    {% for manufacturer in manufacturers %}
+                    <option value="{{ manufacturer.manufacturer_id }}"
+                        {% if selected_manufacturer_id == manufacturer.manufacturer_id %}selected{% endif %}>
+                        {{ manufacturer.manufacturer_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="mount_id">Mount</label>
+                <select id="mount_id" name="mount_id">
+                    <option value="">All</option>
+                    {% for mount in mounts %}
+                    <option value="{{ mount.mount_id }}"
+                        {% if selected_mount_id == mount.mount_id %}selected{% endif %}>
+                        {{ mount.mount_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="camera_type">Camera Type</label>
+                <select id="camera_type" name="camera_type">
+                    <option value="">All</option>
+                    {% for type_row in camera_types %}
+                    <option value="{{ type_row.camera_type }}"
+                        {% if selected_camera_type == type_row.camera_type %}selected{% endif %}>
+                        {{ type_row.camera_type }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="year_min">Year Min</label>
+                <input type="number" id="year_min" name="year_min"
+                       placeholder="e.g. 1970"
+                       value="{{ selected_year_min if selected_year_min is not none else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="year_max">Year Max</label>
+                <input type="number" id="year_max" name="year_max"
+                       placeholder="e.g. 1990"
+                       value="{{ selected_year_max if selected_year_max is not none else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="variant-filter">Variant Coverage</label>
+                <select id="variant-filter" disabled>
+                    <option>Coming Soon</option>
+                </select>
+            </div>
         </div>
 
-        <div class="form-control">
-            <label for="mount-filter">Mount</label>
-            <select id="mount-filter">
-                <option>All</option>
-                {% for mount in mounts %}
-                <option>{{ mount.mount_name }}</option>
-                {% endfor %}
-            </select>
+        <div class="button-row" style="margin-top: 16px;">
+            <button class="btn" type="submit">Apply Filters</button>
+            <a class="btn-secondary" href="{{ url_for('camera_bp.cameras') }}">Reset</a>
         </div>
-
-        <div class="form-control">
-            <label for="camera-type-filter">Camera Type</label>
-            <select id="camera-type-filter">
-                <option>All</option>
-                <option>SLR</option>
-                <option>Rangefinder</option>
-                <option>Medium Format</option>
-            </select>
-        </div>
-
-        <div class="form-control">
-            <label for="year-min">Year Min</label>
-            <input type="number" id="year-min" placeholder="e.g. 1970">
-        </div>
-
-        <div class="form-control">
-            <label for="year-max">Year Max</label>
-            <input type="number" id="year-max" placeholder="e.g. 1990">
-        </div>
-
-        <div class="form-control">
-            <label for="variant-filter">Variant Coverage</label>
-            <select id="variant-filter">
-                <option>All</option>
-                <option>Has Variants</option>
-                <option>No Variants</option>
-            </select>
-        </div>
-    </div>
+    </form>
 </section>
 
 <section class="layout-grid">
@@ -181,10 +192,21 @@
             <div class="table-header">
                 <div>
                     <h2>Camera Index</h2>
-                    <p class="subtext">Core camera records in the current database.</p>
+                    <p class="subtext">
+                        {% if selected_camera %}
+                            Showing the selected camera and its compatibility details.
+                        {% else %}
+                            Core camera records in the current database.
+                        {% endif %}
+                    </p>
                 </div>
 
-                <a class="btn" href="{{ url_for('camera_bp.cameras', mode='add') }}">+ Add New Camera</a>
+                <div class="button-row">
+                    {% if selected_camera %}
+                    <a class="btn-secondary" href="{{ url_for('camera_bp.cameras') }}">Back to Full Camera Index</a>
+                    {% endif %}
+                    <a class="btn" href="{{ url_for('camera_bp.cameras', mode='add') }}">+ Add New Camera</a>
+                </div>
             </div>
 
             <div class="table-wrapper">
@@ -214,6 +236,11 @@
                             <td>
                                 <div class="actions">
                                     <a class="btn-secondary action-link"
+                                       href="{{ url_for('camera_bp.cameras', selected_camera_id=camera.camera_id) }}">
+                                        View Compatibility
+                                    </a>
+
+                                    <a class="btn-secondary action-link"
                                        href="{{ url_for('camera_bp.edit_camera', camera_id=camera.camera_id) }}">
                                         Edit
                                     </a>
@@ -227,6 +254,10 @@
                                 </div>
                             </td>
                         </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8">No cameras match the selected filters.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -234,50 +265,82 @@
         </section>
 
         <section class="card">
-            <h2>Planned Camera Compatibility View</h2>
+            <h2>Camera Compatibility View</h2>
             <p class="subtext">
-                This section represents a visual placeholder for future camera detail and compatibility pages.
+                Select a camera from the index below to view variants, compatible lenses, accessories, and documentation.
             </p>
 
+            {% if selected_camera %}
             <div class="placeholder-box">
-                <h3 style="margin-bottom: 6px;">Example Selected Camera: Canon AE-1</h3>
+                <h3 style="margin-bottom: 6px;">Selected Camera: {{ selected_camera.camera_name }}</h3>
                 <p style="color:#666; margin-bottom: 14px;">
-                    Manufacturer: Canon | Mount: Canon FD | Type: SLR | Release Year: 1976
+                    Manufacturer: {{ selected_camera.manufacturer_name }}
+                    | Mount: {{ selected_camera.mount_name }}
+                    | Type: {{ selected_camera.camera_type or 'N/A' }}
+                    | Release Year: {{ selected_camera.release_year or 'N/A' }}
                 </p>
 
                 <div class="placeholder-grid">
                     <div class="mini-card">
                         <h4>Variants</h4>
+                        {% if variants %}
                         <ul>
-                            <li>Canon AE-1 Program</li>
+                            {% for variant in variants %}
+                            <li>{{ variant.variant_name }}</li>
+                            {% endfor %}
                         </ul>
+                        {% else %}
+                        <p>No variants recorded.</p>
+                        {% endif %}
                     </div>
 
                     <div class="mini-card">
                         <h4>Compatible Lenses</h4>
+                        {% if compatible_lenses %}
                         <ul>
-                            <li>FD 50mm f/1.8</li>
-                            <li>FD 28mm f/2.8</li>
+                            {% for lens in compatible_lenses %}
+                            <li>{{ lens.lens_name }}</li>
+                            {% endfor %}
                         </ul>
+                        {% else %}
+                        <p>No compatible lenses recorded.</p>
+                        {% endif %}
                     </div>
 
                     <div class="mini-card">
                         <h4>Compatible Accessories</h4>
+                        {% if compatible_accessories %}
                         <ul>
-                            <li>Canon Speedlite 155A</li>
-                            <li>Canon Lens Hood T50-1</li>
+                            {% for accessory in compatible_accessories %}
+                            <li>{{ accessory.accessory_name }}</li>
+                            {% endfor %}
                         </ul>
+                        {% else %}
+                        <p>No compatible accessories recorded.</p>
+                        {% endif %}
                     </div>
 
                     <div class="mini-card">
                         <h4>Documentation</h4>
+                        {% if documentation %}
                         <ul>
-                            <li>Canon AE-1 Instruction Manual</li>
-                            <li>Canon AE-1 Program Manual</li>
+                            {% for doc in documentation %}
+                            <li>{{ doc.title }}</li>
+                            {% endfor %}
                         </ul>
+                        {% else %}
+                        <p>No documentation recorded.</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
+            {% else %}
+            <div class="placeholder-box">
+                <p style="margin: 0;">
+                    No camera selected yet. Click <strong>View Compatibility</strong> on a camera in the table below.
+                </p>
+            </div>
+            {% endif %}
         </section>
     </div>
 
@@ -286,34 +349,44 @@
             <h2>Camera Scope</h2>
             <ul class="sidebar-list">
                 <li>Cameras page focuses on parent camera models and their key identifying fields.</li>
-                <li>Camera Variants will expand this section with named submodels.</li>
+                <li>Camera Variants expands this section with named submodels.</li>
                 <li>Mount relationships connect cameras to lenses and some accessories.</li>
-                <li>Documentation links can be attached through camera and variant records.</li>
+                <li>Documentation records support manuals and related references.</li>
             </ul>
         </section>
 
         <section class="card">
-            <h2>Camera Roadmap</h2>
+            <h2>Browse Camera Categories</h2>
 
-            <div class="roadmap-item">
-                <strong>Camera Index</strong>
-                Core browse page for parent camera models
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('camera_bp.cameras') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Camera Index</h3>
+                <p>Browse core camera body records.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Camera Variants</strong>
-                Named submodels and family revisions
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('camera_variants_bp.camera_variants') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Camera Variants</h3>
+                <p>Browse named submodels and revisions.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Camera Detail Pages</strong>
-                Future compatibility and documentation drill-down
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('documentation_bp.documentation') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Documentation</h3>
+                <p>Browse manuals and other reference material.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Saved Profiles</strong>
-                Future feature for saving compatibility bundles
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('accessories_bp.accessories') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Accessories</h3>
+                <p>Browse camera accessories and related gear.</p>
+            </a>
+
+            <a class="mini-card homepage-link-card" href="{{ url_for('lenses_bp.lenses') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Lenses</h3>
+                <p>Browse compatible lenses by mount system.</p>
+            </a>
+
+            <a class="mini-card homepage-link-card" href="{{ url_for('mounts_bp.mounts') }}" style="display:block;">
+                <h3>Mounts</h3>
+                <p>Browse mount systems used across cameras and lenses.</p>
+            </a>
         </section>
     </aside>
 </section>
