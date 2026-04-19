@@ -94,103 +94,121 @@
 {% else %}
 
 <section class="card">
-    <h2>Lens Search</h2>
-    <div class="button-row" style="margin-top: 16px;">
-        <a class="btn-secondary" href="{{ url_for('mounts_bp.mounts') }}">Browse Mounts</a>
-    </div>
-    <p class="subtext">Browse lenses by manufacturer, mount, focal length, lens type, and release year.</p>
-
-    <div class="search-grid">
-        <div class="form-control">
-            <label for="lens-search">Search</label>
-            <input type="text" id="lens-search" placeholder="Search lens, manufacturer, mount...">
-        </div>
-
-        <div class="form-control">
-            <label for="lens-search-type">Search Type</label>
-            <select id="lens-search-type">
-                <option>Lenses</option>
-                <option>Mounts</option>
-                <option>Manufacturers</option>
-                <option>Documentation</option>
-            </select>
-        </div>
-
-        <div class="button-row">
-            <button class="btn" type="button">Search</button>
-            <button class="btn-secondary" type="button">Reset</button>
-        </div>
-    </div>
-</section>
-
-<section class="card">
     <div class="table-header">
         <div>
-            <h2>Quick Filters</h2>
-            <p class="subtext">Prototype filter layout for lenses and mount-based relationships.</p>
+            <h2>Search and Filter Lenses</h2>
+            <p class="subtext">Browse lenses by manufacturer, mount, lens type, focal range, year, and keyword.</p>
         </div>
     </div>
 
-    <div class="filter-grid">
-        <div class="form-control">
-            <label for="manufacturer-filter">Manufacturer</label>
-            <select id="manufacturer-filter">
-                <option>All</option>
-                {% for manufacturer in manufacturers %}
-                <option>{{ manufacturer.manufacturer_name }}</option>
-                {% endfor %}
-            </select>
+    <form method="GET" action="{{ url_for('lenses_bp.lenses') }}">
+        <div class="filter-grid">
+            <div class="form-control">
+                <label for="manufacturer_id">Manufacturer</label>
+                <select id="manufacturer_id" name="manufacturer_id">
+                    <option value="">All</option>
+                    {% for manufacturer in manufacturers %}
+                    <option value="{{ manufacturer.manufacturer_id }}"
+                        {% if selected_manufacturer_id == manufacturer.manufacturer_id %}selected{% endif %}>
+                        {{ manufacturer.manufacturer_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="mount_id">Mount</label>
+                <select id="mount_id" name="mount_id">
+                    <option value="">All</option>
+                    {% for mount in mounts %}
+                    <option value="{{ mount.mount_id }}"
+                        {% if selected_mount_id == mount.mount_id %}selected{% endif %}>
+                        {{ mount.mount_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="lens_type">Lens Type</label>
+                <select id="lens_type" name="lens_type">
+                    <option value="">All</option>
+                    {% for type_row in lens_types %}
+                    <option value="{{ type_row.lens_type }}"
+                        {% if selected_lens_type == type_row.lens_type %}selected{% endif %}>
+                        {{ type_row.lens_type }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="focal_min">Focal Min</label>
+                <input type="number" id="focal_min" name="focal_min"
+                       placeholder="e.g. 28"
+                       value="{{ selected_focal_min if selected_focal_min is not none else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="focal_max">Focal Max</label>
+                <input type="number" id="focal_max" name="focal_max"
+                       placeholder="e.g. 135"
+                       value="{{ selected_focal_max if selected_focal_max is not none else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="year">Release Year</label>
+                <input type="number" id="year" name="year"
+                       placeholder="e.g. 1980"
+                       value="{{ selected_year if selected_year is not none else '' }}">
+            </div>
         </div>
 
-        <div class="form-control">
-            <label for="mount-filter">Mount</label>
-            <select id="mount-filter">
-                <option>All</option>
-                {% for mount in mounts %}
-                <option>{{ mount.mount_name }}</option>
-                {% endfor %}
-            </select>
+        <div class="form-control" style="margin-top: 18px;">
+            <label for="search">Search</label>
+            <input type="text" id="search" name="search"
+                   placeholder="Search lens name, manufacturer, mount, focal length, type, or notes..."
+                   value="{{ selected_search if selected_search else '' }}">
         </div>
 
-        <div class="form-control">
-            <label for="lens-type-filter">Lens Type</label>
-            <select id="lens-type-filter">
-                <option>All</option>
-                <option>Standard</option>
-                <option>Wide Angle</option>
-                <option>Telephoto</option>
-                <option>Macro</option>
-                <option>Zoom</option>
-            </select>
+        <div class="button-row" style="margin-top: 16px;">
+            <button class="btn" type="submit">Apply Search & Filters</button>
+            <a class="btn-secondary" href="{{ url_for('lenses_bp.lenses') }}">Reset</a>
         </div>
-
-        <div class="form-control">
-            <label for="focal-min">Focal Min</label>
-            <input type="number" id="focal-min" placeholder="e.g. 28">
-        </div>
-
-        <div class="form-control">
-            <label for="focal-max">Focal Max</label>
-            <input type="number" id="focal-max" placeholder="e.g. 135">
-        </div>
-
-        <div class="form-control">
-            <label for="year-filter">Release Year</label>
-            <input type="number" id="year-filter" placeholder="e.g. 1980">
-        </div>
-    </div>
+    </form>
 </section>
 
 <section class="layout-grid">
     <div>
         <section class="card">
-            <div class="table-header">
+            <div class="table-header" style="align-items: flex-start;">
                 <div>
                     <h2>Lens Index</h2>
-                    <p class="subtext">Core lens records in the current database.</p>
+                    <p class="subtext">
+                        {% if selected_lens %}
+                            Showing the selected lens and its related records.
+                        {% else %}
+                            Core lens records in the current database.
+                        {% endif %}
+                    </p>
                 </div>
 
-                <a class="btn" href="{{ url_for('lenses_bp.lenses', mode='add') }}">+ Add New Lens</a>
+                <div class="button-row" style="margin-left: auto; flex-direction: column; align-items: flex-end; min-width: 220px;">
+                    {% if selected_lens %}
+                    <a class="btn-secondary"
+                       href="{{ url_for('lenses_bp.lenses',
+                           search=selected_search,
+                           manufacturer_id=selected_manufacturer_id,
+                           mount_id=selected_mount_id,
+                           lens_type=selected_lens_type,
+                           focal_min=selected_focal_min,
+                           focal_max=selected_focal_max,
+                           year=selected_year) }}">
+                        Back to Full Lens Index
+                    </a>
+                    {% endif %}
+                    <a class="btn" href="{{ url_for('lenses_bp.lenses', mode='add') }}">+ Add New Lens</a>
+                </div>
             </div>
 
             <div class="table-wrapper">
@@ -224,6 +242,19 @@
                             <td>
                                 <div class="actions">
                                     <a class="btn-secondary action-link"
+                                       href="{{ url_for('lenses_bp.lenses',
+                                           search=selected_search,
+                                           manufacturer_id=selected_manufacturer_id,
+                                           mount_id=selected_mount_id,
+                                           lens_type=selected_lens_type,
+                                           focal_min=selected_focal_min,
+                                           focal_max=selected_focal_max,
+                                           year=selected_year,
+                                           selected_lens_id=lens.lens_id) }}">
+                                        View Detail
+                                    </a>
+
+                                    <a class="btn-secondary action-link"
                                        href="{{ url_for('lenses_bp.edit_lens', lens_id=lens.lens_id) }}">
                                         Edit
                                     </a>
@@ -237,6 +268,10 @@
                                 </div>
                             </td>
                         </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="10">No lenses match the current search and filters.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -244,51 +279,98 @@
         </section>
 
         <section class="card">
-            <h2>Planned Lens Compatibility View</h2>
+            <h2>Lens Detail View</h2>
             <p class="subtext">
-                This section represents a visual placeholder for future lens detail and compatibility pages.
+                Select a lens from the index below to view compatible cameras, related variants, mount relationships, and documentation.
             </p>
 
+            {% if selected_lens %}
             <div class="placeholder-box">
-                <h3 style="margin-bottom: 6px;">Example Selected Lens: FD 50mm f/1.8</h3>
+                <h3 style="margin-bottom: 6px;">Selected Lens: {{ selected_lens.lens_name }}</h3>
                 <p style="color:#666; margin-bottom: 14px;">
-                    Manufacturer: Canon | Mount: Canon FD | Type: Standard | Release Year: 1976
+                    Manufacturer: {{ selected_lens.manufacturer_name }}
+                    | Mount: {{ selected_lens.mount_name }}
+                    | Type: {{ selected_lens.lens_type or 'N/A' }}
+                    | Release Year: {{ selected_lens.release_year or 'N/A' }}
                 </p>
 
                 <div class="placeholder-grid">
                     <div class="mini-card">
                         <h4>Compatible Cameras</h4>
+                        {% if compatible_cameras %}
                         <ul>
-                            <li>Canon AE-1</li>
-                            <li>Canon AE-1 Program</li>
+                            {% for camera in compatible_cameras %}
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('camera_bp.cameras', selected_camera_id=camera.camera_id) }}">
+                                    {{ camera.camera_name }}
+                                </a>
+                            </li>
+                            {% endfor %}
                         </ul>
+                        {% else %}
+                        <p>No compatible cameras recorded.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Compatible Variants</h4>
+                        {% if compatible_variants %}
+                        <ul>
+                            {% for variant in compatible_variants %}
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('camera_variants_bp.camera_variants', selected_variant_id=variant.variant_id) }}">
+                                    {{ variant.variant_name }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p>No compatible variants recorded.</p>
+                        {% endif %}
                     </div>
 
                     <div class="mini-card">
                         <h4>Mount Relationship</h4>
                         <ul>
-                            <li>Canon FD</li>
-                            <li>Manual focus SLR system</li>
-                        </ul>
-                    </div>
-
-                    <div class="mini-card">
-                        <h4>Suggested Use Cases</h4>
-                        <ul>
-                            <li>General photography</li>
-                            <li>Portraits</li>
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('mounts_bp.mounts') }}">
+                                    {{ selected_lens.mount_name }}
+                                </a>
+                            </li>
+                            <li>Focal Length: {{ selected_lens.focal_length or 'N/A' }}</li>
+                            <li>Max Aperture: {{ selected_lens.max_aperture or 'N/A' }}</li>
                         </ul>
                     </div>
 
                     <div class="mini-card">
                         <h4>Documentation</h4>
+                        {% if related_documentation %}
                         <ul>
-                            <li>Lens brochure</li>
-                            <li>System manual</li>
+                            {% for doc in related_documentation %}
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('documentation_bp.documentation', selected_documentation_id=doc.documentation_id) }}">
+                                    {{ doc.title }}
+                                </a>
+                            </li>
+                            {% endfor %}
                         </ul>
+                        {% else %}
+                        <p>No lens documentation recorded.</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
+            {% else %}
+            <div class="placeholder-box">
+                <p style="margin: 0;">
+                    No lens selected yet. Use the filters and search above, then click <strong>View Detail</strong>.
+                </p>
+            </div>
+            {% endif %}
         </section>
     </div>
 
@@ -296,35 +378,40 @@
         <section class="card">
             <h2>Lens Scope</h2>
             <ul class="sidebar-list">
-                <li>Lenses are connected to camera systems through mount relationships.</li>
-                <li>Mount data will support compatibility between cameras and lenses.</li>
-                <li>Lens detail pages can later expand to documentation and saved profiles.</li>
-                <li>This page currently serves as the top-level browse page for lens records.</li>
+                <li>Lenses connect to camera systems through mount relationships.</li>
+                <li>This page supports mount-based compatibility between lenses, cameras, and camera variants.</li>
+                <li>Lens-specific documentation can now be explored directly from related records.</li>
+                <li>This page serves as the main browse page for lens records.</li>
             </ul>
         </section>
 
         <section class="card">
-            <h2>Lens Roadmap</h2>
+            <h2>Browse Lens Categories</h2>
 
-            <div class="roadmap-item">
-                <strong>Lens Index</strong>
-                Core browse page for lenses
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('lenses_bp.lenses') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Lens Index</h3>
+                <p>Browse core lens records.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Mounts</strong>
-                Top-level support page for lens and camera system relationships
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('mounts_bp.mounts') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Mounts</h3>
+                <p>Browse mount systems used across cameras and lenses.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Lens Detail Pages</strong>
-                Future compatibility and documentation drill-down
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('camera_bp.cameras') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Cameras</h3>
+                <p>Browse camera bodies compatible through mount relationships.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Saved Profiles</strong>
-                Future feature for saving lens-based compatibility bundles
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('camera_variants_bp.camera_variants') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Camera Variants</h3>
+                <p>Browse related camera submodels.</p>
+            </a>
+
+            <a class="mini-card homepage-link-card" href="{{ url_for('documentation_bp.documentation') }}" style="display:block;">
+                <h3>Documentation</h3>
+                <p>Browse manuals and system reference material.</p>
+            </a>
         </section>
     </aside>
 </section>
