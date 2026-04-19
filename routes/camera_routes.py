@@ -6,6 +6,7 @@ camera_bp = Blueprint("camera_bp", __name__)
 
 @camera_bp.route("/cameras")
 def cameras():
+    search = request.args.get("search", type=str)
     manufacturer_id = request.args.get("manufacturer_id", type=int)
     mount_id = request.args.get("mount_id", type=int)
     camera_type = request.args.get("camera_type", type=str)
@@ -53,6 +54,19 @@ def cameras():
     """
 
     values = []
+
+    if search:
+        query += """
+        AND (
+            c.camera_name LIKE %s
+            OR m.manufacturer_name LIKE %s
+            OR mo.mount_name LIKE %s
+            OR c.camera_type LIKE %s
+            OR c.notes LIKE %s
+        )
+        """
+        search_term = f"%{search}%"
+        values.extend([search_term, search_term, search_term, search_term, search_term])
 
     if manufacturer_id:
         query += " AND c.manufacturer_id = %s"
@@ -159,6 +173,7 @@ def cameras():
         compatible_lenses=compatible_lenses,
         compatible_accessories=compatible_accessories,
         documentation=documentation,
+        selected_search=search,
         selected_manufacturer_id=manufacturer_id,
         selected_mount_id=mount_id,
         selected_camera_type=camera_type,
@@ -229,6 +244,7 @@ def edit_camera(camera_id):
         compatible_lenses=[],
         compatible_accessories=[],
         documentation=[],
+        selected_search=None,
         selected_manufacturer_id=None,
         selected_mount_id=None,
         selected_camera_type=None,

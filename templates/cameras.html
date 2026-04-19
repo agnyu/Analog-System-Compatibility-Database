@@ -82,42 +82,22 @@
 {% else %}
 
 <section class="card">
-    <h2>Camera Search</h2>
-    <p class="subtext">Browse camera bodies by manufacturer, mount, type, and release year.</p>
-
-    <div class="search-grid">
-        <div class="form-control">
-            <label for="camera-search">Search</label>
-            <input type="text" id="camera-search" placeholder="Search camera, manufacturer, mount...">
-        </div>
-
-        <div class="form-control">
-            <label for="camera-search-type">Search Type</label>
-            <select id="camera-search-type">
-                <option>Cameras</option>
-                <option>Camera Variants</option>
-                <option>Manufacturers</option>
-                <option>Documentation</option>
-            </select>
-        </div>
-
-        <div class="button-row">
-            <button class="btn" type="button">Search</button>
-            <button class="btn-secondary" type="button">Reset</button>
-        </div>
-    </div>
-</section>
-
-<section class="card">
     <div class="table-header">
         <div>
-            <h2>Quick Filters</h2>
-            <p class="subtext">Filter the camera index by manufacturer, mount, type, and year range.</p>
+            <h2>Search and Filter Cameras</h2>
+            <p class="subtext">Browse cameras by keyword, manufacturer, mount, type, and year range.</p>
         </div>
     </div>
 
     <form method="GET" action="{{ url_for('camera_bp.cameras') }}">
         <div class="filter-grid">
+            <div class="form-control">
+                <label for="search">Search</label>
+                <input type="text" id="search" name="search"
+                       placeholder="Search camera, manufacturer, mount, type..."
+                       value="{{ selected_search if selected_search else '' }}">
+            </div>
+
             <div class="form-control">
                 <label for="manufacturer_id">Manufacturer</label>
                 <select id="manufacturer_id" name="manufacturer_id">
@@ -170,17 +150,10 @@
                        placeholder="e.g. 1990"
                        value="{{ selected_year_max if selected_year_max is not none else '' }}">
             </div>
-
-            <div class="form-control">
-                <label for="variant-filter">Variant Coverage</label>
-                <select id="variant-filter" disabled>
-                    <option>Coming Soon</option>
-                </select>
-            </div>
         </div>
 
         <div class="button-row" style="margin-top: 16px;">
-            <button class="btn" type="submit">Apply Filters</button>
+            <button class="btn" type="submit">Apply Search & Filters</button>
             <a class="btn-secondary" href="{{ url_for('camera_bp.cameras') }}">Reset</a>
         </div>
     </form>
@@ -203,7 +176,16 @@
 
                 <div class="button-row">
                     {% if selected_camera %}
-                    <a class="btn-secondary" href="{{ url_for('camera_bp.cameras') }}">Back to Full Camera Index</a>
+                    <a class="btn-secondary"
+                       href="{{ url_for('camera_bp.cameras',
+                           search=selected_search,
+                           manufacturer_id=selected_manufacturer_id,
+                           mount_id=selected_mount_id,
+                           camera_type=selected_camera_type,
+                           year_min=selected_year_min,
+                           year_max=selected_year_max) }}">
+                        Back to Full Camera Index
+                    </a>
                     {% endif %}
                     <a class="btn" href="{{ url_for('camera_bp.cameras', mode='add') }}">+ Add New Camera</a>
                 </div>
@@ -236,7 +218,14 @@
                             <td>
                                 <div class="actions">
                                     <a class="btn-secondary action-link"
-                                       href="{{ url_for('camera_bp.cameras', selected_camera_id=camera.camera_id) }}">
+                                       href="{{ url_for('camera_bp.cameras',
+                                           search=selected_search,
+                                           manufacturer_id=selected_manufacturer_id,
+                                           mount_id=selected_mount_id,
+                                           camera_type=selected_camera_type,
+                                           year_min=selected_year_min,
+                                           year_max=selected_year_max,
+                                           selected_camera_id=camera.camera_id) }}">
                                         View Compatibility
                                     </a>
 
@@ -256,7 +245,7 @@
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="8">No cameras match the selected filters.</td>
+                            <td colspan="8">No cameras match the current search and filters.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -337,7 +326,7 @@
             {% else %}
             <div class="placeholder-box">
                 <p style="margin: 0;">
-                    No camera selected yet. Click <strong>View Compatibility</strong> on a camera in the table below.
+                    No camera selected yet. Use the search and filters above, then click <strong>View Compatibility</strong>.
                 </p>
             </div>
             {% endif %}
