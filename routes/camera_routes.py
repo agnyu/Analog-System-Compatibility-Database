@@ -55,17 +55,17 @@ def cameras():
 
     values = []
 
-    if search:
+    if search and search.strip():
+        search_term = f"%{search.strip()}%"
         query += """
         AND (
             c.camera_name LIKE %s
             OR m.manufacturer_name LIKE %s
             OR mo.mount_name LIKE %s
-            OR c.camera_type LIKE %s
-            OR c.notes LIKE %s
+            OR COALESCE(c.camera_type, '') LIKE %s
+            OR COALESCE(c.notes, '') LIKE %s
         )
         """
-        search_term = f"%{search}%"
         values.extend([search_term, search_term, search_term, search_term, search_term])
 
     if manufacturer_id:
