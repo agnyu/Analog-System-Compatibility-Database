@@ -146,6 +146,16 @@ def camera_variants():
                 ORDER BY d.title;
             """, (selected_variant["camera_id"],))
 
+    browse_params = {
+        "search": search,
+        "camera_id": camera_id,
+        "frame_format": frame_format,
+        "year_min": year_min,
+        "year_max": year_max,
+        "production_end_min": production_end_min,
+        "production_end_max": production_end_max
+    }
+
     return render_template(
         "camera_variants.html",
         variants=variants,
@@ -163,7 +173,8 @@ def camera_variants():
         selected_year_min=year_min,
         selected_year_max=year_max,
         selected_production_end_min=production_end_min,
-        selected_production_end_max=production_end_max
+        selected_production_end_max=production_end_max,
+        browse_params=browse_params
     )
 
 
@@ -224,7 +235,8 @@ def edit_camera_variant(variant_id):
         selected_year_min=None,
         selected_year_max=None,
         selected_production_end_min=None,
-        selected_production_end_max=None
+        selected_production_end_max=None,
+        browse_params={}
     )
 
 

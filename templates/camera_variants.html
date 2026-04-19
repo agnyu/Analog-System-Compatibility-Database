@@ -157,7 +157,7 @@
 <section class="layout-grid">
     <div>
         <section class="card">
-            <div class="table-header">
+            <div class="table-header" style="align-items: flex-start;">
                 <div>
                     <h2>Camera Variant Index</h2>
                     <p class="subtext">
@@ -169,7 +169,7 @@
                     </p>
                 </div>
 
-                <div class="button-row">
+                <div class="button-row" style="margin-left: auto; flex-direction: column; align-items: flex-end; min-width: 240px;">
                     {% if selected_variant %}
                     <a class="btn-secondary"
                        href="{{ url_for('camera_variants_bp.camera_variants',
@@ -271,7 +271,12 @@
                         <h4>Parent Camera</h4>
                         {% if parent_camera %}
                         <ul>
-                            <li>{{ parent_camera.camera_name }}</li>
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('camera_bp.cameras', selected_camera_id=parent_camera.camera_id) }}">
+                                    {{ parent_camera.camera_name }}
+                                </a>
+                            </li>
                             <li>Type: {{ parent_camera.camera_type or 'N/A' }}</li>
                             <li>Release Year: {{ parent_camera.release_year or 'N/A' }}</li>
                         </ul>
@@ -285,7 +290,12 @@
                         {% if related_accessories %}
                         <ul>
                             {% for accessory in related_accessories %}
-                            <li>{{ accessory.accessory_name }}</li>
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('accessories_bp.accessories', selected_accessory_id=accessory.accessory_id) }}">
+                                    {{ accessory.accessory_name }}
+                                </a>
+                            </li>
                             {% endfor %}
                         </ul>
                         {% else %}
@@ -298,7 +308,12 @@
                         {% if related_documentation %}
                         <ul>
                             {% for doc in related_documentation %}
-                            <li>{{ doc.title }}</li>
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('documentation_bp.documentation', selected_documentation_id=doc.documentation_id) }}">
+                                    {{ doc.title }}
+                                </a>
+                            </li>
                             {% endfor %}
                         </ul>
                         {% else %}
