@@ -3,6 +3,43 @@
 {% block title %}Accessory Types{% endblock %}
 
 {% block content %}
+
+{% if mode == 'add' or accessory_type_to_edit %}
+<section class="card form-card">
+    <div class="table-header">
+        <div>
+            <h2>{% if accessory_type_to_edit %}Edit Accessory Type{% else %}Add New Accessory Type{% endif %}</h2>
+            <p class="subtext">
+                {% if accessory_type_to_edit %}
+                    Update an existing accessory type record.
+                {% else %}
+                    Create a new accessory type record for the prototype database.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <form method="POST"
+          action="{% if accessory_type_to_edit %}{{ url_for('accessory_types_bp.update_accessory_type', accessory_type_id=accessory_type_to_edit.accessory_type_id) }}{% else %}{{ url_for('accessory_types_bp.add_accessory_type') }}{% endif %}">
+        <div class="two-column-form">
+            <div class="form-control">
+                <label for="type_name">Type Name</label>
+                <input type="text" id="type_name" name="type_name"
+                       value="{{ accessory_type_to_edit.type_name if accessory_type_to_edit else '' }}" required>
+            </div>
+        </div>
+
+        <div class="button-row">
+            <button class="btn" type="submit">
+                {% if accessory_type_to_edit %}Update Accessory Type{% else %}Add Accessory Type{% endif %}
+            </button>
+            <a class="btn-secondary" href="{{ url_for('accessory_types_bp.accessory_types') }}">Cancel</a>
+        </div>
+    </form>
+</section>
+
+{% else %}
+
 <section class="card">
     <h2>Accessory Type Search</h2>
     <p class="subtext">Browse accessory categories used to organize system accessories across the database.</p>
@@ -97,6 +134,8 @@
                     <h2>Accessory Type Index</h2>
                     <p class="subtext">Accessory category records in the current database.</p>
                 </div>
+
+                <a class="btn" href="{{ url_for('accessory_types_bp.accessory_types', mode='add') }}">+ Add New Accessory Type</a>
             </div>
 
             <div class="table-wrapper">
@@ -105,6 +144,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Type Name</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -112,6 +152,21 @@
                         <tr>
                             <td>{{ accessory_type.accessory_type_id }}</td>
                             <td>{{ accessory_type.type_name }}</td>
+                            <td>
+                                <div class="actions">
+                                    <a class="btn-secondary action-link"
+                                       href="{{ url_for('accessory_types_bp.edit_accessory_type', accessory_type_id=accessory_type.accessory_type_id) }}">
+                                        Edit
+                                    </a>
+
+                                    <form action="{{ url_for('accessory_types_bp.delete_accessory_type', accessory_type_id=accessory_type.accessory_type_id) }}" method="POST">
+                                        <button class="btn-danger" type="submit"
+                                                onclick="return confirm('Are you sure you want to delete this accessory type?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -204,4 +259,7 @@
         </section>
     </aside>
 </section>
+
+{% endif %}
+
 {% endblock %}

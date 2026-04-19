@@ -3,6 +3,72 @@
 {% block title %}Accessory Compatibility{% endblock %}
 
 {% block content %}
+
+{% if mode == 'add' or compat_to_edit %}
+<section class="card form-card">
+    <div class="table-header">
+        <div>
+            <h2>{% if compat_to_edit %}Edit Accessory Compatibility{% else %}Add New Accessory Compatibility{% endif %}</h2>
+            <p class="subtext">
+                {% if compat_to_edit %}
+                    Update an existing accessory-to-variant compatibility record.
+                {% else %}
+                    Create a new accessory-to-variant compatibility record for the prototype database.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <form method="POST"
+          action="{% if compat_to_edit %}{{ url_for('accessory_compatibility_bp.update_accessory_compatibility', accessory_compat_id=compat_to_edit.accessory_compat_id) }}{% else %}{{ url_for('accessory_compatibility_bp.add_accessory_compatibility') }}{% endif %}">
+        <div class="two-column-form">
+            <div class="form-control">
+                <label for="accessory_id">Accessory</label>
+                <select id="accessory_id" name="accessory_id" required>
+                    {% for accessory in accessories %}
+                    <option value="{{ accessory.accessory_id }}"
+                        {% if compat_to_edit and accessory.accessory_id == compat_to_edit.accessory_id %}selected{% endif %}>
+                        {{ accessory.accessory_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="variant_id">Camera Variant</label>
+                <select id="variant_id" name="variant_id" required>
+                    {% for variant in variants %}
+                    <option value="{{ variant.variant_id }}"
+                        {% if compat_to_edit and variant.variant_id == compat_to_edit.variant_id %}selected{% endif %}>
+                        {{ variant.variant_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="compatibility_type">Compatibility Type</label>
+                <input type="text" id="compatibility_type" name="compatibility_type"
+                       value="{{ compat_to_edit.compatibility_type if compat_to_edit and compat_to_edit.compatibility_type else '' }}">
+            </div>
+        </div>
+
+        <div class="form-control">
+            <label for="notes">Notes</label>
+            <textarea id="notes" name="notes">{{ compat_to_edit.notes if compat_to_edit and compat_to_edit.notes else '' }}</textarea>
+        </div>
+
+        <div class="button-row">
+            <button class="btn" type="submit">
+                {% if compat_to_edit %}Update Accessory Compatibility{% else %}Add Accessory Compatibility{% endif %}
+            </button>
+            <a class="btn-secondary" href="{{ url_for('accessory_compatibility_bp.accessory_compatibility') }}">Cancel</a>
+        </div>
+    </form>
+</section>
+
+{% else %}
+
 <section class="card">
     <h2>Accessory Compatibility Search</h2>
     <p class="subtext">Browse compatibility relationships between accessories and camera variants.</p>
@@ -98,6 +164,8 @@
                     <h2>Accessory Compatibility Index</h2>
                     <p class="subtext">Compatibility relationships between accessories and camera variants.</p>
                 </div>
+
+                <a class="btn" href="{{ url_for('accessory_compatibility_bp.accessory_compatibility', mode='add') }}">+ Add New Compatibility Record</a>
             </div>
 
             <div class="table-wrapper">
@@ -109,6 +177,7 @@
                             <th>Camera Variant</th>
                             <th>Compatibility Type</th>
                             <th>Notes</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -119,6 +188,21 @@
                             <td>{{ compat.variant_name }}</td>
                             <td>{{ compat.compatibility_type }}</td>
                             <td>{{ compat.notes }}</td>
+                            <td>
+                                <div class="actions">
+                                    <a class="btn-secondary action-link"
+                                       href="{{ url_for('accessory_compatibility_bp.edit_accessory_compatibility', accessory_compat_id=compat.accessory_compat_id) }}">
+                                        Edit
+                                    </a>
+
+                                    <form action="{{ url_for('accessory_compatibility_bp.delete_accessory_compatibility', accessory_compat_id=compat.accessory_compat_id) }}" method="POST">
+                                        <button class="btn-danger" type="submit"
+                                                onclick="return confirm('Are you sure you want to delete this compatibility record?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -211,4 +295,7 @@
         </section>
     </aside>
 </section>
+
+{% endif %}
+
 {% endblock %}

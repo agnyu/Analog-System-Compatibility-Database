@@ -3,6 +3,54 @@
 {% block title %}Film Formats{% endblock %}
 
 {% block content %}
+
+{% if mode == 'add' or format_to_edit %}
+<section class="card form-card">
+    <div class="table-header">
+        <div>
+            <h2>{% if format_to_edit %}Edit Film Format{% else %}Add New Film Format{% endif %}</h2>
+            <p class="subtext">
+                {% if format_to_edit %}
+                    Update an existing film format record.
+                {% else %}
+                    Create a new film format record for the prototype database.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <form method="POST"
+          action="{% if format_to_edit %}{{ url_for('film_formats_bp.update_film_format', format_id=format_to_edit.format_id) }}{% else %}{{ url_for('film_formats_bp.add_film_format') }}{% endif %}">
+        <div class="two-column-form">
+            <div class="form-control">
+                <label for="format_name">Format Name</label>
+                <input type="text" id="format_name" name="format_name"
+                       value="{{ format_to_edit.format_name if format_to_edit else '' }}" required>
+            </div>
+
+            <div class="form-control">
+                <label for="format_type">Format Type</label>
+                <input type="text" id="format_type" name="format_type"
+                       value="{{ format_to_edit.format_type if format_to_edit and format_to_edit.format_type else '' }}">
+            </div>
+        </div>
+
+        <div class="form-control">
+            <label for="notes">Notes</label>
+            <textarea id="notes" name="notes">{{ format_to_edit.notes if format_to_edit and format_to_edit.notes else '' }}</textarea>
+        </div>
+
+        <div class="button-row">
+            <button class="btn" type="submit">
+                {% if format_to_edit %}Update Film Format{% else %}Add Film Format{% endif %}
+            </button>
+            <a class="btn-secondary" href="{{ url_for('film_formats_bp.film_formats') }}">Cancel</a>
+        </div>
+    </form>
+</section>
+
+{% else %}
+
 <section class="card">
     <h2>Film Format Search</h2>
     <p class="subtext">Browse film formats by name, format type, and related system usage across the database.</p>
@@ -98,6 +146,8 @@
                     <h2>Film Format Index</h2>
                     <p class="subtext">Format records in the current database.</p>
                 </div>
+
+                <a class="btn" href="{{ url_for('film_formats_bp.film_formats', mode='add') }}">+ Add New Film Format</a>
             </div>
 
             <div class="table-wrapper">
@@ -108,6 +158,7 @@
                             <th>Format Name</th>
                             <th>Format Type</th>
                             <th>Notes</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -117,6 +168,21 @@
                             <td>{{ format.format_name }}</td>
                             <td>{{ format.format_type }}</td>
                             <td>{{ format.notes }}</td>
+                            <td>
+                                <div class="actions">
+                                    <a class="btn-secondary action-link"
+                                       href="{{ url_for('film_formats_bp.edit_film_format', format_id=format.format_id) }}">
+                                        Edit
+                                    </a>
+
+                                    <form action="{{ url_for('film_formats_bp.delete_film_format', format_id=format.format_id) }}" method="POST">
+                                        <button class="btn-danger" type="submit"
+                                                onclick="return confirm('Are you sure you want to delete this film format?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -210,4 +276,7 @@
         </section>
     </aside>
 </section>
+
+{% endif %}
+
 {% endblock %}

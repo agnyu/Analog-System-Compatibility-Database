@@ -3,6 +3,95 @@
 {% block title %}Development Guide{% endblock %}
 
 {% block content %}
+
+{% if mode == 'add' or guide_to_edit %}
+<section class="card form-card">
+    <div class="table-header">
+        <div>
+            <h2>{% if guide_to_edit %}Edit Development Guide Entry{% else %}Add New Development Guide Entry{% endif %}</h2>
+            <p class="subtext">
+                {% if guide_to_edit %}
+                    Update an existing film-development workflow record.
+                {% else %}
+                    Create a new film-development workflow record for the prototype database.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <form method="POST"
+          action="{% if guide_to_edit %}{{ url_for('development_guide_bp.update_development_guide', development_id=guide_to_edit.development_id) }}{% else %}{{ url_for('development_guide_bp.add_development_guide') }}{% endif %}">
+        <div class="two-column-form">
+            <div class="form-control">
+                <label for="film_id">Film Stock</label>
+                <select id="film_id" name="film_id" required>
+                    {% for film in films %}
+                    <option value="{{ film.film_id }}"
+                        {% if guide_to_edit and film.film_id == guide_to_edit.film_id %}selected{% endif %}>
+                        {{ film.film_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="developer_id">Developer</label>
+                <select id="developer_id" name="developer_id" required>
+                    {% for developer in developers %}
+                    <option value="{{ developer.developer_id }}"
+                        {% if guide_to_edit and developer.developer_id == guide_to_edit.developer_id %}selected{% endif %}>
+                        {{ developer.developer_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="temperature_celsius">Temperature °C</label>
+                <input type="number" step="0.1" id="temperature_celsius" name="temperature_celsius"
+                       value="{{ guide_to_edit.temperature_celsius if guide_to_edit and guide_to_edit.temperature_celsius is not none else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="dilution">Dilution</label>
+                <input type="text" id="dilution" name="dilution"
+                       value="{{ guide_to_edit.dilution if guide_to_edit and guide_to_edit.dilution else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="shot_iso">Shot ISO</label>
+                <input type="number" id="shot_iso" name="shot_iso"
+                       value="{{ guide_to_edit.shot_iso if guide_to_edit and guide_to_edit.shot_iso is not none else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="development_time_minutes">Development Time (min)</label>
+                <input type="number" step="0.01" id="development_time_minutes" name="development_time_minutes"
+                       value="{{ guide_to_edit.development_time_minutes if guide_to_edit and guide_to_edit.development_time_minutes is not none else '' }}">
+            </div>
+        </div>
+
+        <div class="form-control">
+            <label for="agitation_notes">Agitation Notes</label>
+            <textarea id="agitation_notes" name="agitation_notes">{{ guide_to_edit.agitation_notes if guide_to_edit and guide_to_edit.agitation_notes else '' }}</textarea>
+        </div>
+
+        <div class="form-control">
+            <label for="notes">Notes</label>
+            <textarea id="notes" name="notes">{{ guide_to_edit.notes if guide_to_edit and guide_to_edit.notes else '' }}</textarea>
+        </div>
+
+        <div class="button-row">
+            <button class="btn" type="submit">
+                {% if guide_to_edit %}Update Development Guide{% else %}Add Development Guide{% endif %}
+            </button>
+            <a class="btn-secondary" href="{{ url_for('development_guide_bp.development_guide') }}">Cancel</a>
+        </div>
+    </form>
+</section>
+
+{% else %}
+
 <section class="card">
     <h2>Development Guide Search</h2>
     <p class="subtext">Browse development workflows by film stock, developer, ISO, dilution, temperature, and development time.</p>
@@ -89,6 +178,8 @@
                     <h2>Development Guide Index</h2>
                     <p class="subtext">Film-development workflow records in the current database.</p>
                 </div>
+
+                <a class="btn" href="{{ url_for('development_guide_bp.development_guide', mode='add') }}">+ Add New Development Guide Entry</a>
             </div>
 
             <div class="table-wrapper">
@@ -104,6 +195,7 @@
                             <th>Dev Time</th>
                             <th>Agitation Notes</th>
                             <th>Notes</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -118,6 +210,21 @@
                             <td>{{ guide.development_time_minutes }}</td>
                             <td>{{ guide.agitation_notes }}</td>
                             <td>{{ guide.notes }}</td>
+                            <td>
+                                <div class="actions">
+                                    <a class="btn-secondary action-link"
+                                       href="{{ url_for('development_guide_bp.edit_development_guide', development_id=guide.development_id) }}">
+                                        Edit
+                                    </a>
+
+                                    <form action="{{ url_for('development_guide_bp.delete_development_guide', development_id=guide.development_id) }}" method="POST">
+                                        <button class="btn-danger" type="submit"
+                                                onclick="return confirm('Are you sure you want to delete this development guide entry?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -210,4 +317,7 @@
         </section>
     </aside>
 </section>
+
+{% endif %}
+
 {% endblock %}
