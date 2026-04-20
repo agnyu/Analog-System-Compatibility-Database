@@ -21,3 +21,11 @@ The system stores information on manufacturers, cameras, lenses, mounts, film st
 The goal of this project is to provide a practical tool for organizing analog photography system data while demonstrating database design, relational modeling, and web-based CRUD functionality.
 
 This project uses a simple client-server architecture. The browser serves as the client-facing interface, while the Flask application handles routing, CRUD operations, and communication with the MySQL database. Although the system includes a frontend, backend, and database, it is not a true 3-tier architecture because the application logic and database access are handled together within the Flask layer.
+
+## Instructions to Use/Deploy
+1. Create a MySQL database named analog_photo_db
+2. Run schema.sql
+3. Run seed.sql
+4. Create a .env file based on .env.example
+5. Install requirements
+6. Run app.py
