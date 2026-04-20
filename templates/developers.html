@@ -64,101 +64,83 @@
 {% else %}
 
 <section class="card">
-    <h2>Developer Search</h2>
-    <p class="subtext">Browse film developers by manufacturer, developer type, and linked development workflows.</p>
-
-    <div class="search-grid">
-        <div class="form-control">
-            <label for="developer-search">Search</label>
-            <input type="text" id="developer-search" placeholder="Search developer, manufacturer, type...">
-        </div>
-
-        <div class="form-control">
-            <label for="developer-search-type">Search Type</label>
-            <select id="developer-search-type">
-                <option>Developers</option>
-                <option>Film Stocks</option>
-                <option>Development Guide</option>
-                <option>Manufacturers</option>
-            </select>
-        </div>
-
-        <div class="button-row">
-            <button class="btn" type="button">Search</button>
-            <button class="btn-secondary" type="button">Reset</button>
-        </div>
-    </div>
-</section>
-
-<section class="card">
     <div class="table-header">
         <div>
-            <h2>Quick Filters</h2>
-            <p class="subtext">Prototype filter layout for developers and related film-development records.</p>
+            <h2>Search and Filter Developers</h2>
+            <p class="subtext">Browse film developers by manufacturer, developer type, and linked development workflows.</p>
         </div>
     </div>
 
-    <div class="filter-grid">
-        <div class="form-control">
-            <label for="manufacturer-filter">Manufacturer</label>
-            <select id="manufacturer-filter">
-                <option>All</option>
-                {% for manufacturer in manufacturers %}
-                <option>{{ manufacturer.manufacturer_name }}</option>
-                {% endfor %}
-            </select>
+    <form method="GET" action="{{ url_for('developers_bp.developers') }}">
+        <div class="filter-grid">
+            <div class="form-control">
+                <label for="manufacturer_id">Manufacturer</label>
+                <select id="manufacturer_id" name="manufacturer_id">
+                    <option value="">All</option>
+                    {% for manufacturer in manufacturers %}
+                    <option value="{{ manufacturer.manufacturer_id }}"
+                        {% if selected_manufacturer_id == manufacturer.manufacturer_id %}selected{% endif %}>
+                        {{ manufacturer.manufacturer_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="developer_type">Developer Type</label>
+                <select id="developer_type" name="developer_type">
+                    <option value="">All</option>
+                    {% for type_row in developer_types %}
+                    <option value="{{ type_row.developer_type }}"
+                        {% if selected_developer_type == type_row.developer_type %}selected{% endif %}>
+                        {{ type_row.developer_type }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
 
-        <div class="form-control">
-            <label for="developer-type-filter">Developer Type</label>
-            <select id="developer-type-filter">
-                <option>All</option>
-                <option>Black and White</option>
-                <option>Monobath</option>
-                <option>Color</option>
-            </select>
+        <div class="form-control" style="margin-top: 18px;">
+            <label for="search">Search</label>
+            <input type="text" id="search" name="search"
+                   placeholder="Search developer, manufacturer, type, or notes..."
+                   value="{{ selected_search if selected_search else '' }}">
         </div>
 
-        <div class="form-control">
-            <label for="name-filter">Developer Name</label>
-            <input type="text" id="name-filter" placeholder="e.g. D-76">
+        <div class="button-row" style="margin-top: 16px;">
+            <button class="btn" type="submit">Apply Search & Filters</button>
+            <a class="btn-secondary" href="{{ url_for('developers_bp.developers') }}">Reset</a>
         </div>
-
-        <div class="form-control">
-            <label for="workflow-filter">Guide Coverage</label>
-            <select id="workflow-filter">
-                <option>All</option>
-                <option>Used in Development Guide</option>
-                <option>Not Yet Used</option>
-            </select>
-        </div>
-
-        <div class="form-control">
-            <label for="notes-filter">Notes</label>
-            <input type="text" id="notes-filter" placeholder="Search notes...">
-        </div>
-
-        <div class="form-control">
-            <label for="scope-filter">Scope</label>
-            <select id="scope-filter">
-                <option>All</option>
-                <option>Film-related</option>
-                <option>Guide-related</option>
-            </select>
-        </div>
-    </div>
+    </form>
 </section>
 
 <section class="layout-grid">
     <div>
         <section class="card">
-            <div class="table-header">
+            <div class="table-header" style="align-items: flex-start;">
                 <div>
                     <h2>Developer Index</h2>
-                    <p class="subtext">Core developer records in the current database.</p>
+                    <p class="subtext">
+                        {% if selected_developer %}
+                            Showing the selected developer and its linked workflow records.
+                        {% else %}
+                            Core developer records in the current database.
+                        {% endif %}
+                    </p>
                 </div>
 
-                <a class="btn" href="{{ url_for('developers_bp.developers', mode='add') }}">+ Add New Developer</a>
+                <div class="button-row" style="margin-left: auto; flex-direction: column; align-items: flex-end; min-width: 220px;">
+                    {% if selected_developer %}
+                    <a class="btn-secondary"
+                       href="{{ url_for('developers_bp.developers',
+                           search=selected_search,
+                           manufacturer_id=selected_manufacturer_id,
+                           developer_type=selected_developer_type) }}">
+                        Back to Full Developer Index
+                    </a>
+                    {% endif %}
+                    <a class="btn" href="{{ url_for('developers_bp.developers', mode='add') }}">+ Add New Developer</a>
+                </div>
             </div>
 
             <div class="table-wrapper">
@@ -184,6 +166,15 @@
                             <td>
                                 <div class="actions">
                                     <a class="btn-secondary action-link"
+                                       href="{{ url_for('developers_bp.developers',
+                                           search=selected_search,
+                                           manufacturer_id=selected_manufacturer_id,
+                                           developer_type=selected_developer_type,
+                                           selected_developer_id=developer.developer_id) }}">
+                                        View Detail
+                                    </a>
+
+                                    <a class="btn-secondary action-link"
                                        href="{{ url_for('developers_bp.edit_developer', developer_id=developer.developer_id) }}">
                                         Edit
                                     </a>
@@ -197,6 +188,10 @@
                                 </div>
                             </td>
                         </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6">No developers match the current search and filters.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -204,51 +199,83 @@
         </section>
 
         <section class="card">
-            <h2>Planned Developer Workflow View</h2>
+            <h2>Developer Workflow View</h2>
             <p class="subtext">
-                This section represents a visual placeholder for future developer detail and development-guide pages.
+                Select a developer to view linked films and development-guide entries.
             </p>
 
+            {% if selected_developer %}
             <div class="placeholder-box">
-                <h3 style="margin-bottom: 6px;">Example Selected Developer: Kodak D-76</h3>
+                <h3 style="margin-bottom: 6px;">Selected Developer: {{ selected_developer.developer_name }}</h3>
                 <p style="color:#666; margin-bottom: 14px;">
-                    Manufacturer: Kodak | Type: Black and White Developer
+                    Manufacturer: {{ selected_developer.manufacturer_name }}
+                    {% if selected_developer.developer_type %} | Type: {{ selected_developer.developer_type }}{% endif %}
                 </p>
 
                 <div class="placeholder-grid">
                     <div class="mini-card">
-                        <h4>Linked Films</h4>
+                        <h4>Developer Record</h4>
                         <ul>
-                            <li>Tri-X 400</li>
-                            <li>Panatomic X</li>
+                            <li>{{ selected_developer.developer_name }}</li>
+                            <li>{{ selected_developer.manufacturer_name }}</li>
+                            {% if selected_developer.developer_type %}
+                            <li>{{ selected_developer.developer_type }}</li>
+                            {% endif %}
                         </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Linked Films</h4>
+                        {% if linked_films %}
+                        <ul>
+                            {% for film in linked_films %}
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('film_bp.film', selected_film_id=film.film_id) }}">
+                                    {{ film.film_name }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p>No linked films recorded.</p>
+                        {% endif %}
                     </div>
 
                     <div class="mini-card">
                         <h4>Guide Usage</h4>
+                        {% if guide_entries %}
                         <ul>
-                            <li>D-76 1:1</li>
-                            <li>20°C workflows</li>
+                            {% for entry in guide_entries %}
+                            <li>
+                                {{ entry.film_name }}
+                                {% if entry.dilution %} | {{ entry.dilution }}{% endif %}
+                                {% if entry.development_time_min %} | {{ entry.development_time_min }} min{% endif %}
+                            </li>
+                            {% endfor %}
                         </ul>
+                        {% else %}
+                        <p>No development guide entries recorded.</p>
+                        {% endif %}
                     </div>
 
                     <div class="mini-card">
-                        <h4>Typical Use</h4>
-                        <ul>
-                            <li>General-purpose B&W development</li>
-                            <li>Traditional tonal rendering</li>
-                        </ul>
-                    </div>
-
-                    <div class="mini-card">
-                        <h4>Related Pages</h4>
-                        <ul>
-                            <li>Film Stocks</li>
-                            <li>Development Guide</li>
-                        </ul>
+                        <h4>Notes</h4>
+                        {% if selected_developer.notes %}
+                        <p>{{ selected_developer.notes }}</p>
+                        {% else %}
+                        <p>No notes recorded.</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
+            {% else %}
+            <div class="placeholder-box">
+                <p style="margin: 0;">
+                    No developer selected yet. Use the filters and search above, then click <strong>View Detail</strong>.
+                </p>
+            </div>
+            {% endif %}
         </section>
     </div>
 
@@ -258,33 +285,33 @@
             <ul class="sidebar-list">
                 <li>Developers are grouped by manufacturer and developer type.</li>
                 <li>This page serves as the main browse page for chemistry records used in the film workflow.</li>
-                <li>Developer records can later expand into linked film stocks and development guide entries.</li>
+                <li>Developer records connect naturally to linked film stocks and development guide entries.</li>
                 <li>This page supports the Film section as a key subcategory.</li>
             </ul>
         </section>
 
         <section class="card">
-            <h2>Developer Roadmap</h2>
+            <h2>Browse Development Categories</h2>
 
-            <div class="roadmap-item">
-                <strong>Developer Index</strong>
-                Core browse page for developer records
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('developers_bp.developers') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Developers</h3>
+                <p>Browse developer records.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Guide Relationships</strong>
-                Future drill-down into linked development workflows
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('development_guide_bp.development_guide') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Development Guide</h3>
+                <p>Browse film and developer pairings.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Film Relationships</strong>
-                Future drill-down into film stocks using the developer
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('film_bp.film') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Film Stocks</h3>
+                <p>Browse film records that connect to development workflows.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Saved Profiles</strong>
-                Future feature for saving film-development bundles
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('film_formats_bp.film_formats') }}" style="display:block;">
+                <h3>Formats</h3>
+                <p>Browse film format categories.</p>
+            </a>
         </section>
     </aside>
 </section>

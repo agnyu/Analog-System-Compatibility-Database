@@ -143,11 +143,10 @@ def film():
         if selected_film:
             development_entries = fetch_all("""
                 SELECT
-                    fdg.guide_id,
                     d.developer_name,
                     fdg.dilution,
-                    fdg.temperature_c,
-                    fdg.development_time_min,
+                    fdg.temperature_celsius,
+                    fdg.development_time_minutes,
                     fdg.notes
                 FROM film_development_guide fdg
                 JOIN film_developers d ON fdg.developer_id = d.developer_id
