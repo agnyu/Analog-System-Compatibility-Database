@@ -107,108 +107,127 @@
 {% else %}
 
 <section class="card">
-    <h2>Accessory Search</h2>
-    <p class="subtext">Browse accessories by manufacturer, accessory type, mount, format, and release year.</p>
-
-    <div class="button-row" style="margin-top: 16px;">
-        <a class="btn-secondary" href="{{ url_for('accessory_types_bp.accessory_types') }}">Browse Accessory Types</a>
-        <a class="btn-secondary" href="{{ url_for('accessory_compatibility_bp.accessory_compatibility') }}">Browse Compatibility</a>
-    </div>
-
-    <div class="search-grid">
-        <div class="form-control">
-            <label for="accessory-search">Search</label>
-            <input type="text" id="accessory-search" placeholder="Search accessory, manufacturer, type, mount...">
-        </div>
-
-        <div class="form-control">
-            <label for="accessory-search-type">Search Type</label>
-            <select id="accessory-search-type">
-                <option>Accessories</option>
-                <option>Accessory Types</option>
-                <option>Accessory Compatibility</option>
-                <option>Documentation</option>
-            </select>
-        </div>
-
-        <div class="button-row">
-            <button class="btn" type="button">Search</button>
-            <button class="btn-secondary" type="button">Reset</button>
-        </div>
-    </div>
-</section>
-
-<section class="card">
     <div class="table-header">
         <div>
-            <h2>Quick Filters</h2>
-            <p class="subtext">Prototype filter layout for accessories and their compatibility relationships.</p>
+            <h2>Search and Filter Accessories</h2>
+            <p class="subtext">Browse accessories by manufacturer, accessory type, mount, format, year, and keyword.</p>
         </div>
     </div>
 
-    <div class="filter-grid">
-        <div class="form-control">
-            <label for="manufacturer-filter">Manufacturer</label>
-            <select id="manufacturer-filter">
-                <option>All</option>
-                {% for manufacturer in manufacturers %}
-                <option>{{ manufacturer.manufacturer_name }}</option>
-                {% endfor %}
-            </select>
+    <form method="GET" action="{{ url_for('accessories_bp.accessories') }}">
+        <div class="filter-grid">
+            <div class="form-control">
+                <label for="manufacturer_id">Manufacturer</label>
+                <select id="manufacturer_id" name="manufacturer_id">
+                    <option value="">All</option>
+                    {% for manufacturer in manufacturers %}
+                    <option value="{{ manufacturer.manufacturer_id }}"
+                        {% if selected_manufacturer_id == manufacturer.manufacturer_id %}selected{% endif %}>
+                        {{ manufacturer.manufacturer_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="accessory_type_id">Accessory Type</label>
+                <select id="accessory_type_id" name="accessory_type_id">
+                    <option value="">All</option>
+                    {% for accessory_type in accessory_types %}
+                    <option value="{{ accessory_type.accessory_type_id }}"
+                        {% if selected_accessory_type_id == accessory_type.accessory_type_id %}selected{% endif %}>
+                        {{ accessory_type.type_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="mount_id">Mount</label>
+                <select id="mount_id" name="mount_id">
+                    <option value="">All</option>
+                    {% for mount in mounts %}
+                    <option value="{{ mount.mount_id }}"
+                        {% if selected_mount_id == mount.mount_id %}selected{% endif %}>
+                        {{ mount.mount_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="format_id">Format</label>
+                <select id="format_id" name="format_id">
+                    <option value="">All</option>
+                    {% for format in formats %}
+                    <option value="{{ format.format_id }}"
+                        {% if selected_format_id == format.format_id %}selected{% endif %}>
+                        {{ format.format_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="year_min">Year Min</label>
+                <input type="number" id="year_min" name="year_min"
+                       placeholder="e.g. 1970"
+                       value="{{ selected_year_min if selected_year_min is not none else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="year_max">Year Max</label>
+                <input type="number" id="year_max" name="year_max"
+                       placeholder="e.g. 1990"
+                       value="{{ selected_year_max if selected_year_max is not none else '' }}">
+            </div>
         </div>
 
-        <div class="form-control">
-            <label for="type-filter">Accessory Type</label>
-            <select id="type-filter">
-                <option>All</option>
-                {% for accessory_type in accessory_types %}
-                <option>{{ accessory_type.type_name }}</option>
-                {% endfor %}
-            </select>
+        <div class="form-control" style="margin-top: 18px;">
+            <label for="search">Search</label>
+            <input type="text" id="search" name="search"
+                   placeholder="Search accessory, manufacturer, type, mount, format, description..."
+                   value="{{ selected_search if selected_search else '' }}">
         </div>
 
-        <div class="form-control">
-            <label for="mount-filter">Mount</label>
-            <select id="mount-filter">
-                <option>All</option>
-                {% for mount in mounts %}
-                <option>{{ mount.mount_name }}</option>
-                {% endfor %}
-            </select>
+        <div class="button-row" style="margin-top: 16px;">
+            <button class="btn" type="submit">Apply Search & Filters</button>
+            <a class="btn-secondary" href="{{ url_for('accessories_bp.accessories') }}">Reset</a>
         </div>
-
-        <div class="form-control">
-            <label for="format-filter">Format</label>
-            <select id="format-filter">
-                <option>All</option>
-                {% for format in formats %}
-                <option>{{ format.format_name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="form-control">
-            <label for="year-min">Year Min</label>
-            <input type="number" id="year-min" placeholder="e.g. 1970">
-        </div>
-
-        <div class="form-control">
-            <label for="year-max">Year Max</label>
-            <input type="number" id="year-max" placeholder="e.g. 1990">
-        </div>
-    </div>
+    </form>
 </section>
 
 <section class="layout-grid">
     <div>
         <section class="card">
-            <div class="table-header">
+            <div class="table-header" style="align-items: flex-start;">
                 <div>
                     <h2>Accessory Index</h2>
-                    <p class="subtext">Core accessory records in the current database.</p>
+                    <p class="subtext">
+                        {% if selected_accessory %}
+                            Showing the selected accessory and its related records.
+                        {% else %}
+                            Core accessory records in the current database.
+                        {% endif %}
+                    </p>
                 </div>
 
-                <a class="btn" href="{{ url_for('accessories_bp.accessories', mode='add') }}">+ Add New Accessory</a>
+                <div class="button-row" style="margin-left: auto; flex-direction: column; align-items: flex-end; min-width: 230px;">
+                    {% if selected_accessory %}
+                    <a class="btn-secondary"
+                       href="{{ url_for('accessories_bp.accessories',
+                           search=selected_search,
+                           manufacturer_id=selected_manufacturer_id,
+                           accessory_type_id=selected_accessory_type_id,
+                           mount_id=selected_mount_id,
+                           format_id=selected_format_id,
+                           year_min=selected_year_min,
+                           year_max=selected_year_max) }}">
+                        Back to Full Accessory Index
+                    </a>
+                    {% endif %}
+                    <a class="btn" href="{{ url_for('accessories_bp.accessories', mode='add') }}">+ Add New Accessory</a>
+                </div>
             </div>
 
             <div class="table-wrapper">
@@ -242,6 +261,19 @@
                             <td>
                                 <div class="actions">
                                     <a class="btn-secondary action-link"
+                                       href="{{ url_for('accessories_bp.accessories',
+                                           search=selected_search,
+                                           manufacturer_id=selected_manufacturer_id,
+                                           accessory_type_id=selected_accessory_type_id,
+                                           mount_id=selected_mount_id,
+                                           format_id=selected_format_id,
+                                           year_min=selected_year_min,
+                                           year_max=selected_year_max,
+                                           selected_accessory_id=accessory.accessory_id) }}">
+                                        View Detail
+                                    </a>
+
+                                    <a class="btn-secondary action-link"
                                        href="{{ url_for('accessories_bp.edit_accessory', accessory_id=accessory.accessory_id) }}">
                                         Edit
                                     </a>
@@ -255,6 +287,10 @@
                                 </div>
                             </td>
                         </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="10">No accessories match the current search and filters.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -262,50 +298,109 @@
         </section>
 
         <section class="card">
-            <h2>Planned Accessory Compatibility View</h2>
+            <h2>Accessory Detail View</h2>
             <p class="subtext">
-                This section represents a visual placeholder for future accessory detail and compatibility pages.
+                Select an accessory to view linked systems, compatibility context, and related records.
             </p>
 
+            {% if selected_accessory %}
             <div class="placeholder-box">
-                <h3 style="margin-bottom: 6px;">Example Selected Accessory: Canon Speedlite 155A</h3>
+                <h3 style="margin-bottom: 6px;">Selected Accessory: {{ selected_accessory.accessory_name }}</h3>
                 <p style="color:#666; margin-bottom: 14px;">
-                    Manufacturer: Canon | Type: Flash | Mount: Canon FD | Format: 35mm
+                    Manufacturer: {{ selected_accessory.manufacturer_name }}
+                    | Type: {{ selected_accessory.type_name }}
+                    {% if selected_accessory.mount_name %} | Mount: {{ selected_accessory.mount_name }}{% endif %}
+                    {% if selected_accessory.format_name %} | Format: {{ selected_accessory.format_name }}{% endif %}
+                    {% if selected_accessory.release_year %} | Release Year: {{ selected_accessory.release_year }}{% endif %}
                 </p>
 
                 <div class="placeholder-grid">
                     <div class="mini-card">
                         <h4>Accessory Type</h4>
                         <ul>
-                            <li>Flash</li>
-                            <li>Branded system accessory</li>
+                            <li>{{ selected_accessory.type_name }}</li>
+                            {% if selected_accessory.description %}
+                            <li>{{ selected_accessory.description }}</li>
+                            {% endif %}
                         </ul>
                     </div>
 
+                    {% if linked_cameras %}
                     <div class="mini-card">
                         <h4>Compatible Cameras</h4>
                         <ul>
-                            <li>Canon AE-1</li>
-                            <li>Canon AE-1 Program</li>
+                            {% for camera in linked_cameras %}
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('camera_bp.cameras', selected_camera_id=camera.camera_id) }}">
+                                    {{ camera.camera_name }}
+                                </a>
+                            </li>
+                            {% endfor %}
                         </ul>
                     </div>
+                    {% endif %}
 
+                    {% if linked_variants %}
                     <div class="mini-card">
                         <h4>Compatible Variants</h4>
                         <ul>
-                            <li>Canon AE-1 Program</li>
+                            {% for variant in linked_variants %}
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('camera_variants_bp.camera_variants', selected_variant_id=variant.variant_id) }}">
+                                    {{ variant.variant_name }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <div class="mini-card">
+                        <h4>System Context</h4>
+                        <ul>
+                            {% if selected_accessory.mount_name %}
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('mounts_bp.mounts', selected_mount_id=selected_accessory.mount_id) }}">
+                                    {{ selected_accessory.mount_name }}
+                                </a>
+                            </li>
+                            {% endif %}
+                            {% if selected_accessory.format_name %}
+                            <li>{{ selected_accessory.format_name }}</li>
+                            {% endif %}
+                            {% if selected_accessory.compatibility_notes %}
+                            <li>{{ selected_accessory.compatibility_notes }}</li>
+                            {% endif %}
                         </ul>
                     </div>
 
+                    {% if related_documentation %}
                     <div class="mini-card">
-                        <h4>Documentation</h4>
+                        <h4>Related Documentation</h4>
                         <ul>
-                            <li>Accessory guide</li>
-                            <li>System brochure</li>
+                            {% for doc in related_documentation %}
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('documentation_bp.documentation', selected_documentation_id=doc.documentation_id) }}">
+                                    {{ doc.title }}
+                                </a>
+                            </li>
+                            {% endfor %}
                         </ul>
                     </div>
+                    {% endif %}
                 </div>
             </div>
+            {% else %}
+            <div class="placeholder-box">
+                <p style="margin: 0;">
+                    No accessory selected yet. Use the filters and search above, then click <strong>View Detail</strong>.
+                </p>
+            </div>
+            {% endif %}
         </section>
     </div>
 
@@ -313,35 +408,40 @@
         <section class="card">
             <h2>Accessory Scope</h2>
             <ul class="sidebar-list">
-                <li>Accessories are grouped by accessory type and linked to systems through mount and format fields.</li>
-                <li>Accessory Compatibility records can later connect accessories to specific camera variants.</li>
-                <li>This page currently serves as the top-level browse page for accessory records.</li>
-                <li>Further detail pages can expand into compatibility bundles and linked documentation.</li>
+                <li>Accessories are grouped by type and linked to systems through mount and format fields.</li>
+                <li>This page supports accessory browsing alongside connected cameras, variants, and system records.</li>
+                <li>Accessory Compatibility can extend this with more explicit variant-level relationships.</li>
+                <li>This page serves as the main browse page for accessory records.</li>
             </ul>
         </section>
 
         <section class="card">
-            <h2>Accessory Roadmap</h2>
+            <h2>Browse Accessory Categories</h2>
 
-            <div class="roadmap-item">
-                <strong>Accessory Index</strong>
-                Core browse page for accessories
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('accessories_bp.accessories') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Accessory Index</h3>
+                <p>Browse core accessory records.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Accessory Types</strong>
-                Support page for accessory categorization
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('accessory_types_bp.accessory_types') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Accessory Types</h3>
+                <p>Browse accessory type categories.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Accessory Compatibility</strong>
-                Future drill-down page for camera variant relationships
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('accessory_compatibility_bp.accessory_compatibility') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Accessory Compatibility</h3>
+                <p>Browse explicit compatibility mappings.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Saved Profiles</strong>
-                Future feature for saving accessory-based compatibility bundles
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('mounts_bp.mounts') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Mounts</h3>
+                <p>Browse connected mount systems.</p>
+            </a>
+
+            <a class="mini-card homepage-link-card" href="{{ url_for('documentation_bp.documentation') }}" style="display:block;">
+                <h3>Documentation</h3>
+                <p>Browse related manuals and reference material.</p>
+            </a>
         </section>
     </aside>
 </section>

@@ -41,101 +41,65 @@
 {% else %}
 
 <section class="card">
-    <h2>Accessory Type Search</h2>
-    <p class="subtext">Browse accessory categories used to organize system accessories across the database.</p>
-
-    <div class="search-grid">
-        <div class="form-control">
-            <label for="type-search">Search</label>
-            <input type="text" id="type-search" placeholder="Search accessory type...">
-        </div>
-
-        <div class="form-control">
-            <label for="type-search-type">Search Type</label>
-            <select id="type-search-type">
-                <option>Accessory Types</option>
-                <option>Accessories</option>
-                <option>Accessory Compatibility</option>
-            </select>
-        </div>
-
-        <div class="button-row">
-            <button class="btn" type="button">Search</button>
-            <button class="btn-secondary" type="button">Reset</button>
-        </div>
-    </div>
-</section>
-
-<section class="card">
     <div class="table-header">
         <div>
-            <h2>Quick Filters</h2>
-            <p class="subtext">Prototype filter layout for accessory categories and related accessory records.</p>
+            <h2>Search and Filter Accessory Types</h2>
+            <p class="subtext">Browse accessory categories used to organize accessories across the database.</p>
         </div>
     </div>
 
-    <div class="filter-grid">
-        <div class="form-control">
-            <label for="category-filter">Category Name</label>
-            <input type="text" id="category-filter" placeholder="e.g. Flash">
+    <form method="GET" action="{{ url_for('accessory_types_bp.accessory_types') }}">
+        <div class="filter-grid">
+            <div class="form-control">
+                <label for="has_accessories">Linked Accessories</label>
+                <select id="has_accessories" name="has_accessories">
+                    <option value="">All</option>
+                    <option value="yes" {% if selected_has_accessories == 'yes' %}selected{% endif %}>Has Accessories</option>
+                    <option value="no" {% if selected_has_accessories == 'no' %}selected{% endif %}>No Accessories Yet</option>
+                </select>
+            </div>
         </div>
 
-        <div class="form-control">
-            <label for="usage-filter">Usage Scope</label>
-            <select id="usage-filter">
-                <option>All</option>
-                <option>Camera Support</option>
-                <option>Optical</option>
-                <option>Carrying / Protection</option>
-                <option>Film Handling</option>
-            </select>
+        <div class="form-control" style="margin-top: 18px;">
+            <label for="search">Search</label>
+            <input type="text" id="search" name="search"
+                   placeholder="Search accessory type..."
+                   value="{{ selected_search if selected_search else '' }}">
         </div>
 
-        <div class="form-control">
-            <label for="linked-records-filter">Linked Records</label>
-            <select id="linked-records-filter">
-                <option>All</option>
-                <option>Has Accessories</option>
-                <option>No Accessories Yet</option>
-            </select>
+        <div class="button-row" style="margin-top: 16px;">
+            <button class="btn" type="submit">Apply Search & Filters</button>
+            <a class="btn-secondary" href="{{ url_for('accessory_types_bp.accessory_types') }}">Reset</a>
         </div>
-
-        <div class="form-control">
-            <label for="system-filter">System Scope</label>
-            <select id="system-filter">
-                <option>All</option>
-                <option>35mm</option>
-                <option>120</option>
-                <option>Cross-System</option>
-            </select>
-        </div>
-
-        <div class="form-control">
-            <label for="notes-filter">Notes</label>
-            <input type="text" id="notes-filter" placeholder="Search notes...">
-        </div>
-
-        <div class="form-control">
-            <label for="status-filter">Status</label>
-            <select id="status-filter">
-                <option>All</option>
-                <option>Core Category</option>
-                <option>Specialized Category</option>
-            </select>
-        </div>
-    </div>
+    </form>
 </section>
 
 <section class="layout-grid">
     <div>
         <section class="card">
-            <div class="table-header">
+            <div class="table-header" style="align-items: flex-start;">
                 <div>
                     <h2>Accessory Type Index</h2>
-                    <p class="subtext">Accessory category records in the current database.</p>
+                    <p class="subtext">
+                        {% if selected_accessory_type %}
+                            Showing the selected accessory type and its linked records.
+                        {% else %}
+                            Accessory category records in the current database.
+                        {% endif %}
+                    </p>
                 </div>
 
-                <a class="btn" href="{{ url_for('accessory_types_bp.accessory_types', mode='add') }}">+ Add New Accessory Type</a>
+                <div class="button-row" style="margin-left: auto; flex-direction: column; align-items: flex-end; min-width: 220px;">
+                    {% if selected_accessory_type %}
+                    <a class="btn-secondary"
+                       href="{{ url_for('accessory_types_bp.accessory_types',
+                           search=selected_search,
+                           has_accessories=selected_has_accessories) }}">
+                        Back to Full Accessory Type Index
+                    </a>
+                    {% endif %}
+                    <a class="btn" href="{{ url_for('accessory_types_bp.accessory_types', mode='add') }}">+ Add New Accessory Type</a>
+                </div>
             </div>
 
             <div class="table-wrapper">
@@ -144,6 +108,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Type Name</th>
+                            <th>Linked Accessories</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -152,8 +117,17 @@
                         <tr>
                             <td>{{ accessory_type.accessory_type_id }}</td>
                             <td>{{ accessory_type.type_name }}</td>
+                            <td>{{ accessory_type.accessory_count }}</td>
                             <td>
                                 <div class="actions">
+                                    <a class="btn-secondary action-link"
+                                       href="{{ url_for('accessory_types_bp.accessory_types',
+                                           search=selected_search,
+                                           has_accessories=selected_has_accessories,
+                                           selected_accessory_type_id=accessory_type.accessory_type_id) }}">
+                                        View Detail
+                                    </a>
+
                                     <a class="btn-secondary action-link"
                                        href="{{ url_for('accessory_types_bp.edit_accessory_type', accessory_type_id=accessory_type.accessory_type_id) }}">
                                         Edit
@@ -168,6 +142,10 @@
                                 </div>
                             </td>
                         </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4">No accessory types match the current search and filters.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -175,51 +153,76 @@
         </section>
 
         <section class="card">
-            <h2>Planned Accessory Type Detail View</h2>
+            <h2>Accessory Type Detail View</h2>
             <p class="subtext">
-                This section represents a visual placeholder for future accessory type detail and linked-record pages.
+                Select an accessory type to view linked accessories and category context.
             </p>
 
+            {% if selected_accessory_type %}
             <div class="placeholder-box">
-                <h3 style="margin-bottom: 6px;">Example Selected Type: Flash</h3>
+                <h3 style="margin-bottom: 6px;">Selected Type: {{ selected_accessory_type.type_name }}</h3>
                 <p style="color:#666; margin-bottom: 14px;">
-                    Category: Flash | Scope: Camera accessory | Common System Use: 35mm
+                    Category record for accessory organization and browsing.
                 </p>
 
                 <div class="placeholder-grid">
                     <div class="mini-card">
+                        <h4>Category Summary</h4>
+                        <ul>
+                            <li>{{ selected_accessory_type.type_name }}</li>
+                            <li>{{ linked_accessories|length }} linked accessory record(s)</li>
+                        </ul>
+                    </div>
+
+                    {% if linked_accessories %}
+                    <div class="mini-card">
                         <h4>Linked Accessories</h4>
                         <ul>
-                            <li>Canon Speedlite 155A</li>
-                            <li>Pentax AF200S</li>
+                            {% for accessory in linked_accessories %}
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('accessories_bp.accessories', selected_accessory_id=accessory.accessory_id) }}">
+                                    {{ accessory.accessory_name }}
+                                </a>
+                            </li>
+                            {% endfor %}
                         </ul>
                     </div>
 
                     <div class="mini-card">
-                        <h4>Common Purpose</h4>
+                        <h4>Manufacturers Seen</h4>
                         <ul>
-                            <li>Low-light support</li>
-                            <li>System-specific flash use</li>
+                            {% for accessory in linked_accessories %}
+                            <li>{{ accessory.manufacturer_name }}</li>
+                            {% endfor %}
                         </ul>
                     </div>
 
                     <div class="mini-card">
-                        <h4>Category Use</h4>
+                        <h4>System Context</h4>
                         <ul>
-                            <li>Branded accessory grouping</li>
-                            <li>Supports accessory browsing</li>
+                            {% for accessory in linked_accessories %}
+                            <li>
+                                {% if accessory.mount_name %}Mount: {{ accessory.mount_name }}{% elif accessory.format_name %}Format: {{ accessory.format_name }}{% else %}General accessory{% endif %}
+                            </li>
+                            {% endfor %}
                         </ul>
                     </div>
-
+                    {% else %}
                     <div class="mini-card">
-                        <h4>Related Pages</h4>
-                        <ul>
-                            <li>Accessories</li>
-                            <li>Accessory Compatibility</li>
-                        </ul>
+                        <h4>Linked Accessories</h4>
+                        <p>No accessories are currently assigned to this type.</p>
                     </div>
+                    {% endif %}
                 </div>
             </div>
+            {% else %}
+            <div class="placeholder-box">
+                <p style="margin: 0;">
+                    No accessory type selected yet. Use the search above, then click <strong>View Detail</strong>.
+                </p>
+            </div>
+            {% endif %}
         </section>
     </div>
 
@@ -229,33 +232,33 @@
             <ul class="sidebar-list">
                 <li>Accessory types classify accessory records into consistent categories.</li>
                 <li>This page supports the Accessories section as a reference layer for browsing and grouping.</li>
-                <li>Accessory type records can later expand into linked accessory detail pages.</li>
-                <li>This page currently serves as the main browse page for accessory type records.</li>
+                <li>Accessory types connect naturally to linked accessory records.</li>
+                <li>This page serves as the main browse page for accessory type records.</li>
             </ul>
         </section>
 
         <section class="card">
-            <h2>Accessory Type Roadmap</h2>
+            <h2>Browse Accessory Categories</h2>
 
-            <div class="roadmap-item">
-                <strong>Accessory Type Index</strong>
-                Core browse page for accessory categories
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('accessory_types_bp.accessory_types') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Accessory Type Index</h3>
+                <p>Browse accessory category records.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Linked Accessories</strong>
-                Future drill-down into accessories using the category
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('accessories_bp.accessories') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Accessories</h3>
+                <p>Browse linked accessories using these categories.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Category Detail View</strong>
-                Future grouped view by system or usage
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('accessory_compatibility_bp.accessory_compatibility') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Accessory Compatibility</h3>
+                <p>Browse explicit compatibility mappings.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Saved Profiles</strong>
-                Future feature for category-based accessory bundles
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('mounts_bp.mounts') }}" style="display:block;">
+                <h3>Mounts</h3>
+                <p>Browse related system context through mount-linked accessories.</p>
+            </a>
         </section>
     </aside>
 </section>
