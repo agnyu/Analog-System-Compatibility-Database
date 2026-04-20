@@ -592,3 +592,19 @@ tr:hover {
     text-decoration: underline;
     border: none;
 }
+
+.featured-carousel-window {
+    overflow: hidden;
+    width: 100%;
+}
+
+.featured-carousel-track {
+    display: flex;
+    transition: transform 0.3s ease;
+    width: 100%;
+}
+
+.featured-carousel-slide {
+    min-width: 100%;
+    box-sizing: border-box;
+}

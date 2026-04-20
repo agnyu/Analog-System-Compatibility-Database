@@ -4,126 +4,295 @@
 
 {% block content %}
 
-<section class="card homepage-search-card">
-    <div class="homepage-search-bar">
-        <input type="text" placeholder="Search cameras, film stocks, lenses, mounts, accessories, documentation...">
-        <button class="btn" type="button">Search</button>
-    </div>
-</section>
-
 <section class="card featured-card">
     <div class="featured-top">
         <div>
-            <h2>Camera of the Day</h2>
-            <p class="subtext">Featured archive item from the current database.</p>
+            <h2>Featured Records</h2>
+            <p class="subtext">A rotating snapshot of cameras, film stocks, and lenses from the current database.</p>
         </div>
 
         <div class="carousel-controls">
-            <button class="btn-secondary" type="button">←</button>
-            <button class="btn-secondary" type="button">→</button>
+            <button class="btn-secondary" type="button" onclick="moveFeaturedCarousel(-1)">←</button>
+            <button class="btn-secondary" type="button" onclick="moveFeaturedCarousel(1)">→</button>
         </div>
     </div>
 
-    <div class="featured-grid">
-        <div class="featured-image-box">
-            <div class="image-placeholder">Featured Camera Image</div>
-        </div>
+    <div class="featured-carousel-window">
+        <div class="featured-carousel-track" id="featuredCarouselTrack">
+            <div class="featured-carousel-slide">
+                <div class="featured-grid">
+                    <div class="featured-image-box">
+                        <div class="image-placeholder">Featured Camera</div>
+                    </div>
 
-        <div class="featured-copy">
-            <p class="badge">Featured Record</p>
-            <h3>Canon AE-1</h3>
+                    <div class="featured-copy">
+                        <p class="badge">Featured Camera</p>
+                        {% if featured_camera %}
+                        <h3>{{ featured_camera.camera_name }}</h3>
+                        <p class="subtext">
+                            {{ featured_camera.manufacturer_name }}
+                            {% if featured_camera.release_year %} | {{ featured_camera.release_year }}{% endif %}
+                        </p>
+
+                        <div class="featured-meta">
+                            {% if featured_camera.camera_type %}<div><strong>Type:</strong> {{ featured_camera.camera_type }}</div>{% endif %}
+                            {% if featured_camera.mount_name %}<div><strong>Mount:</strong> {{ featured_camera.mount_name }}</div>{% endif %}
+                        </div>
+
+                        <div class="button-row" style="margin-top: 16px;">
+                            <a class="btn" href="{{ url_for('camera_bp.cameras', selected_camera_id=featured_camera.camera_id) }}">View Camera</a>
+                        </div>
+                        {% else %}
+                        <p class="subtext">No camera record available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="featured-carousel-slide">
+                <div class="featured-grid">
+                    <div class="featured-image-box">
+                        <div class="image-placeholder">Featured Film</div>
+                    </div>
+
+                    <div class="featured-copy">
+                        <p class="badge">Featured Film</p>
+                        {% if featured_film %}
+                        <h3>{{ featured_film.film_name }}</h3>
+                        <p class="subtext">
+                            {{ featured_film.manufacturer_name }}
+                            {% if featured_film.release_year %} | {{ featured_film.release_year }}{% endif %}
+                        </p>
+
+                        <div class="featured-meta">
+                            {% if featured_film.iso %}<div><strong>ISO:</strong> {{ featured_film.iso }}</div>{% endif %}
+                            {% if featured_film.format_name %}<div><strong>Format:</strong> {{ featured_film.format_name }}</div>{% endif %}
+                            {% if featured_film.color_type %}<div><strong>Type:</strong> {{ featured_film.color_type }}</div>{% endif %}
+                            <div><strong>Status:</strong> {% if featured_film.discontinued %}Discontinued{% else %}Active{% endif %}</div>
+                        </div>
+
+                        <div class="button-row" style="margin-top: 16px;">
+                            <a class="btn" href="{{ url_for('film_bp.film', selected_film_id=featured_film.film_id) }}">View Film</a>
+                        </div>
+                        {% else %}
+                        <p class="subtext">No film record available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="featured-carousel-slide">
+                <div class="featured-grid">
+                    <div class="featured-image-box">
+                        <div class="image-placeholder">Featured Lens</div>
+                    </div>
+
+                    <div class="featured-copy">
+                        <p class="badge">Featured Lens</p>
+                        {% if featured_lens %}
+                        <h3>{{ featured_lens.lens_name }}</h3>
+                        <p class="subtext">
+                            {{ featured_lens.manufacturer_name }}
+                            {% if featured_lens.release_year %} | {{ featured_lens.release_year }}{% endif %}
+                        </p>
+
+                        <div class="featured-meta">
+                            {% if featured_lens.mount_name %}<div><strong>Mount:</strong> {{ featured_lens.mount_name }}</div>{% endif %}
+                            {% if featured_lens.focal_length %}<div><strong>Focal Length:</strong> {{ featured_lens.focal_length }}</div>{% endif %}
+                            {% if featured_lens.max_aperture %}<div><strong>Max Aperture:</strong> {{ featured_lens.max_aperture }}</div>{% endif %}
+                        </div>
+
+                        <div class="button-row" style="margin-top: 16px;">
+                            <a class="btn" href="{{ url_for('lenses_bp.lenses', selected_lens_id=featured_lens.lens_id) }}">View Lens</a>
+                        </div>
+                        {% else %}
+                        <p class="subtext">No lens record available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="card homepage-search-card">
+    <div class="table-header">
+        <div>
+            <h2>Quick Search</h2>
             <p class="subtext">
-                A widely used 35mm SLR known for its accessibility, strong FD lens ecosystem,
-                and broad documentation coverage. A good representative entry for the database.
+                Jump directly into the section you want to explore.
             </p>
-
-            <div class="featured-meta">
-                <div><strong>Manufacturer:</strong> Canon</div>
-                <div><strong>Release Year:</strong> 1976</div>
-                <div><strong>Mount:</strong> Canon FD</div>
-                <div><strong>Format:</strong> 35mm</div>
-            </div>
-
-            <div class="button-row" style="margin-top: 16px;">
-                <a class="btn" href="{{ url_for('camera_bp.cameras') }}">View Camera Record</a>
-                <a class="btn-secondary" href="{{ url_for('documentation_bp.documentation') }}">View Documentation</a>
-            </div>
         </div>
+    </div>
+
+    <div class="homepage-search-bar">
+        <input type="text" id="homepageSearchInput" placeholder="Search cameras, film stocks, lenses, accessories, or documentation...">
+        <button class="btn" type="button" onclick="runHomepageSearch()">Search</button>
     </div>
 </section>
 
 <section class="card">
     <div class="table-header">
         <div>
-            <h2>Explore the Database</h2>
-            <p class="subtext">Use the homepage as a starting point, then jump into a working module.</p>
+            <h2>Browse Core Sections</h2>
+            <p class="subtext">Use the homepage as a launch point into the main working areas of the database.</p>
         </div>
     </div>
 
     <div class="homepage-card-grid">
         <a class="mini-card homepage-link-card" href="{{ url_for('film_bp.film') }}">
             <h3>Film Stocks</h3>
-            <p>Open the current working CRUD table for film stock records.</p>
+            <p>Browse film stock records by manufacturer, format, ISO, color type, and production status.</p>
+        </a>
+
+        <a class="mini-card homepage-link-card" href="{{ url_for('development_guide_bp.development_guide') }}">
+            <h3>Development Guide</h3>
+            <p>Browse film and developer pairings with timing, dilution, ISO, and agitation workflow notes.</p>
         </a>
 
         <a class="mini-card homepage-link-card" href="{{ url_for('camera_bp.cameras') }}">
             <h3>Cameras</h3>
-            <p>Browse camera bodies, model families, and variants.</p>
+            <p>Browse camera bodies, parent systems, and connected records.</p>
         </a>
 
         <a class="mini-card homepage-link-card" href="{{ url_for('lenses_bp.lenses') }}">
             <h3>Lenses</h3>
-            <p>Explore lenses through manufacturer and mount relationships.</p>
+            <p>Review lens records through mount and compatibility relationships.</p>
         </a>
 
         <a class="mini-card homepage-link-card" href="{{ url_for('accessories_bp.accessories') }}">
             <h3>Accessories</h3>
-            <p>Reference flashes, grips, filters, straps, and system accessories.</p>
+            <p>Reference flashes, grips, filters, straps, and related system accessories.</p>
         </a>
 
         <a class="mini-card homepage-link-card" href="{{ url_for('documentation_bp.documentation') }}">
             <h3>Documentation</h3>
-            <p>Open linked manuals and archival references from the documentation table.</p>
-        </a>
-
-        <a class="mini-card homepage-link-card" href="{{ url_for('mounts_bp.mounts') }}">
-            <h3>Mounts & Formats</h3>
-            <p>Review foundational compatibility relationships across systems.</p>
+            <p>Open manuals, brochures, and archival references linked to cameras, variants, and lenses.</p>
         </a>
     </div>
 </section>
 
 <section class="layout-grid">
     <section class="card">
-        <h2>Recent Documentation Highlights</h2>
-        <p class="subtext">Real manuals and reference documents linked from your documentation table.</p>
+        <h2>Documentation Highlight</h2>
+        <p class="subtext">A featured record from the linked documentation table.</p>
 
-        <div class="roadmap-item">
-            <strong>Canon AE-1 Instruction Manual</strong>
-            Linked archival documentation for the Canon AE-1 parent model.
-        </div>
+        {% if featured_documentation %}
+        <div class="mini-card">
+            <h3>{{ featured_documentation.title }}</h3>
+            <p class="subtext">
+                {% if featured_documentation.document_type %}{{ featured_documentation.document_type }}{% endif %}
+                {% if featured_documentation.source %} | {{ featured_documentation.source }}{% endif %}
+                {% if featured_documentation.publication_year %} | {{ featured_documentation.publication_year }}{% endif %}
+            </p>
 
-        <div class="roadmap-item">
-            <strong>Nikon FM2 Instruction Manual</strong>
-            Official Nikon archive manual for the FM2 system.
+            <div class="button-row" style="margin-top: 16px;">
+                <a class="btn" href="{{ url_for('documentation_bp.documentation', selected_documentation_id=featured_documentation.documentation_id) }}">
+                    View Record
+                </a>
+                {% if featured_documentation.url %}
+                <a class="btn-secondary" href="{{ featured_documentation.url }}" target="_blank" rel="noopener noreferrer">
+                    Open Link
+                </a>
+                {% endif %}
+            </div>
         </div>
-
-        <div class="roadmap-item">
-            <strong>Leica M6 TTL Instructions</strong>
-            Variant-specific documentation for Leica M6 TTL.
+        {% else %}
+        <div class="mini-card">
+            <p class="subtext">No documentation record available.</p>
         </div>
+        {% endif %}
     </section>
 
     <aside>
         <section class="card">
-            <h2>Prototype Scope</h2>
+            <h2>What This Database Helps You Do</h2>
             <ul class="sidebar-list">
-                <li>Homepage provides curated navigation and featured database entries.</li>
-                <li>Film Stocks remains the live CRUD module.</li>
-                <li>Documentation links resolve to real reference material.</li>
-                <li>Additional entity detail pages can be expanded later.</li>
+                <li>Identify analog photography gear through connected record types.</li>
+                <li>Check film stock status, format, and development workflow information.</li>
+                <li>Browse cameras, lenses, and accessories through mount and compatibility relationships.</li>
+                <li>Open linked manuals, brochures, and archival reference material.</li>
             </ul>
         </section>
     </aside>
 </section>
+
+<script>
+let featuredCarouselIndex = 0;
+
+function moveFeaturedCarousel(direction) {
+    const track = document.getElementById("featuredCarouselTrack");
+    const slides = document.querySelectorAll(".featured-carousel-slide");
+
+    if (!track || slides.length === 0) return;
+
+    featuredCarouselIndex += direction;
+
+    if (featuredCarouselIndex < 0) {
+        featuredCarouselIndex = slides.length - 1;
+    }
+
+    if (featuredCarouselIndex >= slides.length) {
+        featuredCarouselIndex = 0;
+    }
+
+    track.style.transform = `translateX(-${featuredCarouselIndex * 100}%)`;
+}
+
+function runHomepageSearch() {
+    const input = document.getElementById("homepageSearchInput");
+    if (!input) return;
+
+    const query = input.value.trim();
+    if (!query) return;
+
+    const lowerQuery = query.toLowerCase();
+
+    if (
+        lowerQuery.includes("film") ||
+        lowerQuery.includes("iso") ||
+        lowerQuery.includes("developer") ||
+        lowerQuery.includes("develop")
+    ) {
+        window.location.href = "{{ url_for('film_bp.film') }}" + "?search=" + encodeURIComponent(query);
+    } else if (
+        lowerQuery.includes("lens") ||
+        lowerQuery.includes("mount") ||
+        lowerQuery.includes("aperture") ||
+        lowerQuery.includes("focal")
+    ) {
+        window.location.href = "{{ url_for('lenses_bp.lenses') }}" + "?search=" + encodeURIComponent(query);
+    } else if (
+        lowerQuery.includes("accessory") ||
+        lowerQuery.includes("flash") ||
+        lowerQuery.includes("grip") ||
+        lowerQuery.includes("strap") ||
+        lowerQuery.includes("filter")
+    ) {
+        window.location.href = "{{ url_for('accessories_bp.accessories') }}" + "?search=" + encodeURIComponent(query);
+    } else if (
+        lowerQuery.includes("manual") ||
+        lowerQuery.includes("documentation") ||
+        lowerQuery.includes("brochure") ||
+        lowerQuery.includes("guide")
+    ) {
+        window.location.href = "{{ url_for('documentation_bp.documentation') }}" + "?search=" + encodeURIComponent(query);
+    } else {
+        window.location.href = "{{ url_for('camera_bp.cameras') }}" + "?search=" + encodeURIComponent(query);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("homepageSearchInput");
+    if (input) {
+        input.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                runHomepageSearch();
+            }
+        });
+    }
+});
+</script>
+
 {% endblock %}
