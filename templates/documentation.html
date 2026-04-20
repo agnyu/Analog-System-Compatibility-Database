@@ -30,7 +30,8 @@
 
             <div class="form-control">
                 <label for="camera_id">Camera</label>
-                <select id="camera_id" name="camera_id" required>
+                <select id="camera_id" name="camera_id">
+                    <option value="">None</option>
                     {% for camera in cameras %}
                     <option value="{{ camera.camera_id }}"
                         {% if doc_to_edit and camera.camera_id == doc_to_edit.camera_id %}selected{% endif %}>
@@ -48,6 +49,19 @@
                     <option value="{{ variant.variant_id }}"
                         {% if doc_to_edit and doc_to_edit.variant_id == variant.variant_id %}selected{% endif %}>
                         {{ variant.variant_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="lens_id">Lens</label>
+                <select id="lens_id" name="lens_id">
+                    <option value="">None</option>
+                    {% for lens in lenses %}
+                    <option value="{{ lens.lens_id }}"
+                        {% if doc_to_edit and doc_to_edit.lens_id == lens.lens_id %}selected{% endif %}>
+                        {{ lens.lens_name }}
                     </option>
                     {% endfor %}
                 </select>
@@ -95,100 +109,135 @@
 {% else %}
 
 <section class="card">
-    <h2>Documentation Search</h2>
-    <p class="subtext">Browse manuals, brochures, guides, and archival references by camera, variant, source, and publication year.</p>
-
-    <div class="search-grid">
-        <div class="form-control">
-            <label for="documentation-search">Search</label>
-            <input type="text" id="documentation-search" placeholder="Search title, camera, variant, source...">
-        </div>
-
-        <div class="form-control">
-            <label for="documentation-search-type">Search Type</label>
-            <select id="documentation-search-type">
-                <option>Documentation</option>
-                <option>Cameras</option>
-                <option>Camera Variants</option>
-                <option>Sources</option>
-            </select>
-        </div>
-
-        <div class="button-row">
-            <button class="btn" type="button">Search</button>
-            <button class="btn-secondary" type="button">Reset</button>
-        </div>
-    </div>
-</section>
-
-<section class="card">
     <div class="table-header">
         <div>
-            <h2>Quick Filters</h2>
-            <p class="subtext">Prototype filter layout for documentation records and linked archive sources.</p>
+            <h2>Search and Filter Documentation</h2>
+            <p class="subtext">Browse manuals, brochures, guides, and archival references by camera, variant, lens, type, source, and publication year.</p>
         </div>
     </div>
 
-    <div class="filter-grid">
-        <div class="form-control">
-            <label for="camera-filter">Camera</label>
-            <select id="camera-filter">
-                <option>All</option>
-                {% for camera in cameras %}
-                <option>{{ camera.camera_name }}</option>
-                {% endfor %}
-            </select>
+    <form method="GET" action="{{ url_for('documentation_bp.documentation') }}">
+        <div class="filter-grid">
+            <div class="form-control">
+                <label for="camera_id">Camera</label>
+                <select id="camera_id" name="camera_id">
+                    <option value="">All</option>
+                    {% for camera in cameras %}
+                    <option value="{{ camera.camera_id }}"
+                        {% if selected_camera_id == camera.camera_id %}selected{% endif %}>
+                        {{ camera.camera_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="variant_id">Variant</label>
+                <select id="variant_id" name="variant_id">
+                    <option value="">All</option>
+                    {% for variant in variants %}
+                    <option value="{{ variant.variant_id }}"
+                        {% if selected_variant_id == variant.variant_id %}selected{% endif %}>
+                        {{ variant.variant_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="lens_id">Lens</label>
+                <select id="lens_id" name="lens_id">
+                    <option value="">All</option>
+                    {% for lens in lenses %}
+                    <option value="{{ lens.lens_id }}"
+                        {% if selected_lens_id == lens.lens_id %}selected{% endif %}>
+                        {{ lens.lens_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="document_type">Document Type</label>
+                <select id="document_type" name="document_type">
+                    <option value="">All</option>
+                    {% for type_row in document_types %}
+                    <option value="{{ type_row.document_type }}"
+                        {% if selected_document_type == type_row.document_type %}selected{% endif %}>
+                        {{ type_row.document_type }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="year_min">Year Min</label>
+                <input type="number" id="year_min" name="year_min"
+                       placeholder="e.g. 1970"
+                       value="{{ selected_year_min if selected_year_min is not none else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="year_max">Year Max</label>
+                <input type="number" id="year_max" name="year_max"
+                       placeholder="e.g. 1995"
+                       value="{{ selected_year_max if selected_year_max is not none else '' }}">
+            </div>
+        </div>
+
+        <div class="form-control" style="margin-top: 18px;">
+            <label for="search">Search</label>
+            <input type="text" id="search" name="search"
+                   placeholder="Search title, camera, variant, lens, type, source, or notes..."
+                   value="{{ selected_search if selected_search else '' }}">
         </div>
 
         <div class="form-control">
-            <label for="variant-filter">Variant</label>
-            <select id="variant-filter">
-                <option>All</option>
-                {% for variant in variants %}
-                <option>{{ variant.variant_name }}</option>
-                {% endfor %}
-            </select>
+            <label for="source">Source</label>
+            <input type="text" id="source" name="source"
+                   placeholder="e.g. Butkus Camera Manual Library"
+                   value="{{ selected_source if selected_source else '' }}">
         </div>
 
-        <div class="form-control">
-            <label for="document-type-filter">Document Type</label>
-            <select id="document-type-filter">
-                <option>All</option>
-                <option>Manual</option>
-                <option>Brochure</option>
-                <option>Guide</option>
-                <option>Catalog</option>
-                <option>Instructions</option>
-            </select>
+        <div class="button-row" style="margin-top: 16px;">
+            <button class="btn" type="submit">Apply Search & Filters</button>
+            <a class="btn-secondary" href="{{ url_for('documentation_bp.documentation') }}">Reset</a>
         </div>
-
-        <div class="form-control">
-            <label for="source-filter">Source</label>
-            <input type="text" id="source-filter" placeholder="e.g. Nikon Archive">
-        </div>
-
-        <div class="form-control">
-            <label for="year-min">Year Min</label>
-            <input type="number" id="year-min" placeholder="e.g. 1970">
-        </div>
-
-        <div class="form-control">
-            <label for="year-max">Year Max</label>
-            <input type="number" id="year-max" placeholder="e.g. 1995">
-        </div>
-    </div>
+    </form>
 </section>
 
 <section class="layout-grid">
     <div>
         <section class="card">
-            <div class="table-header">
+            <div class="table-header" style="align-items: flex-start;">
                 <div>
                     <h2>Documentation Index</h2>
-                    <p class="subtext">Linked archival and reference documentation records in the current database.</p>
+                    <p class="subtext">
+                        {% if selected_document %}
+                            Showing the selected documentation record and its linked entities.
+                        {% else %}
+                            Linked archival and reference documentation records in the current database.
+                        {% endif %}
+                    </p>
                 </div>
 
-                <a class="btn" href="{{ url_for('documentation_bp.documentation', mode='add') }}">+ Add New Documentation</a>
+                <div class="button-row" style="margin-left: auto; flex-direction: column; align-items: flex-end; min-width: 240px;">
+                    {% if selected_document %}
+                    <a class="btn-secondary"
+                       href="{{ url_for('documentation_bp.documentation',
+                           search=selected_search,
+                           camera_id=selected_camera_id,
+                           variant_id=selected_variant_id,
+                           lens_id=selected_lens_id,
+                           document_type=selected_document_type,
+                           source=selected_source,
+                           year_min=selected_year_min,
+                           year_max=selected_year_max) }}">
+                        Back to Full Documentation Index
+                    </a>
+                    {% endif %}
+                    <a class="btn" href="{{ url_for('documentation_bp.documentation', mode='add') }}">+ Add New Documentation</a>
+                </div>
             </div>
 
             <div class="table-wrapper">
@@ -199,6 +248,7 @@
                             <th>Title</th>
                             <th>Camera</th>
                             <th>Variant</th>
+                            <th>Lens</th>
                             <th>Document Type</th>
                             <th>Source</th>
                             <th>Publication Year</th>
@@ -212,8 +262,9 @@
                         <tr>
                             <td>{{ doc.documentation_id }}</td>
                             <td>{{ doc.title }}</td>
-                            <td>{{ doc.camera_name }}</td>
+                            <td>{{ doc.camera_name or 'N/A' }}</td>
                             <td>{{ doc.variant_name or 'N/A' }}</td>
+                            <td>{{ doc.lens_name or 'N/A' }}</td>
                             <td>{{ doc.document_type }}</td>
                             <td>{{ doc.source }}</td>
                             <td>{{ doc.publication_year }}</td>
@@ -228,6 +279,20 @@
                             <td>
                                 <div class="actions">
                                     <a class="btn-secondary action-link"
+                                       href="{{ url_for('documentation_bp.documentation',
+                                           search=selected_search,
+                                           camera_id=selected_camera_id,
+                                           variant_id=selected_variant_id,
+                                           lens_id=selected_lens_id,
+                                           document_type=selected_document_type,
+                                           source=selected_source,
+                                           year_min=selected_year_min,
+                                           year_max=selected_year_max,
+                                           selected_documentation_id=doc.documentation_id) }}">
+                                        View Detail
+                                    </a>
+
+                                    <a class="btn-secondary action-link"
                                        href="{{ url_for('documentation_bp.edit_documentation', documentation_id=doc.documentation_id) }}">
                                         Edit
                                     </a>
@@ -241,6 +306,10 @@
                                 </div>
                             </td>
                         </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="11">No documentation records match the current search and filters.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -248,49 +317,125 @@
         </section>
 
         <section class="card">
-            <h2>Planned Documentation Detail View</h2>
+            <h2>Documentation Detail View</h2>
             <p class="subtext">
-                This section represents a visual placeholder for future documentation detail and linked-reference pages.
+                Select a documentation record to view linked entities, document type, source, and live reference access.
             </p>
 
+            {% if selected_document %}
             <div class="placeholder-box">
-                <h3 style="margin-bottom: 6px;">Example Selected Record: Canon AE-1 Instruction Manual</h3>
+                <h3 style="margin-bottom: 6px;">Selected Record: {{ selected_document.title }}</h3>
+
                 <p style="color:#666; margin-bottom: 14px;">
-                    Camera: Canon AE-1 | Variant: N/A | Type: Manual | Source: Archive
+                    {% if selected_document.camera_name %}
+                        Camera: {{ selected_document.camera_name }}
+                    {% endif %}
+                    {% if selected_document.variant_name %}
+                        {% if selected_document.camera_name %} | {% endif %}
+                        Variant: {{ selected_document.variant_name }}
+                    {% endif %}
+                    {% if selected_document.lens_name %}
+                        {% if selected_document.camera_name or selected_document.variant_name %} | {% endif %}
+                        Lens: {{ selected_document.lens_name }}
+                    {% endif %}
+                    {% if selected_document.document_type %}
+                        {% if selected_document.camera_name or selected_document.variant_name or selected_document.lens_name %} | {% endif %}
+                        Type: {{ selected_document.document_type }}
+                    {% endif %}
                 </p>
 
                 <div class="placeholder-grid">
+                    {% if linked_camera %}
                     <div class="mini-card">
                         <h4>Linked Camera</h4>
                         <ul>
-                            <li>Canon AE-1</li>
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('camera_bp.cameras', selected_camera_id=linked_camera.camera_id) }}">
+                                    {{ linked_camera.camera_name }}
+                                </a>
+                            </li>
+                            <li>Type: {{ linked_camera.camera_type or 'N/A' }}</li>
+                            <li>Release Year: {{ linked_camera.release_year or 'N/A' }}</li>
                         </ul>
                     </div>
+                    {% endif %}
 
+                    {% if linked_variant %}
                     <div class="mini-card">
                         <h4>Linked Variant</h4>
                         <ul>
-                            <li>Canon AE-1 Program</li>
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('camera_variants_bp.camera_variants', selected_variant_id=linked_variant.variant_id) }}">
+                                    {{ linked_variant.variant_name }}
+                                </a>
+                            </li>
+                            <li>Frame Format: {{ linked_variant.frame_format or 'N/A' }}</li>
+                            <li>Release Year: {{ linked_variant.release_year or 'N/A' }}</li>
                         </ul>
                     </div>
+                    {% endif %}
 
+                    {% if linked_lens %}
                     <div class="mini-card">
-                        <h4>Document Type</h4>
+                        <h4>Linked Lens</h4>
                         <ul>
-                            <li>Manual</li>
-                            <li>Archival reference</li>
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('lenses_bp.lenses', selected_lens_id=linked_lens.lens_id) }}">
+                                    {{ linked_lens.lens_name }}
+                                </a>
+                            </li>
+                            <li>Focal Length: {{ linked_lens.focal_length or 'N/A' }}</li>
+                            <li>Max Aperture: {{ linked_lens.max_aperture or 'N/A' }}</li>
                         </ul>
                     </div>
+                    {% endif %}
 
                     <div class="mini-card">
-                        <h4>Demo Action</h4>
+                        <h4>Reference Details</h4>
                         <ul>
-                            <li>Open real manual link</li>
-                            <li>Verify model match</li>
+                            {% if selected_document.document_type %}
+                            <li>Document Type: {{ selected_document.document_type }}</li>
+                            {% endif %}
+
+                            {% if selected_document.source %}
+                            <li>Source: {{ selected_document.source }}</li>
+                            {% endif %}
+
+                            {% if selected_document.publication_year %}
+                            <li>Publication Year: {{ selected_document.publication_year }}</li>
+                            {% endif %}
+
+                            {% if selected_document.url %}
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ selected_document.url }}"
+                                   target="_blank"
+                                   rel="noopener noreferrer">
+                                    Open Documentation Link
+                                </a>
+                            </li>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>
+
+                {% if selected_document.notes %}
+                <div class="mini-card" style="margin-top: 14px;">
+                    <h4>Notes</h4>
+                    <p>{{ selected_document.notes }}</p>
+                </div>
+                {% endif %}
             </div>
+            {% else %}
+            <div class="placeholder-box">
+                <p style="margin: 0;">
+                    No documentation selected yet. Use the filters and search above, then click <strong>View Detail</strong>.
+                </p>
+            </div>
+            {% endif %}
         </section>
     </div>
 
@@ -298,39 +443,43 @@
         <section class="card">
             <h2>Documentation Scope</h2>
             <ul class="sidebar-list">
-                <li>Documentation records are linked to parent camera models and optional variants.</li>
-                <li>This page highlights real manuals, brochures, and archival references.</li>
+                <li>Documentation records can be linked to cameras, variants, and lenses.</li>
+                <li>This page highlights real manuals, brochures, guides, and archival references.</li>
                 <li>Documentation is one of the strongest demo sections because links resolve to usable sources.</li>
-                <li>Future detail pages can group records by camera family or variant.</li>
+                <li>This page serves as the main browse page for linked reference records.</li>
             </ul>
         </section>
 
         <section class="card">
-            <h2>Documentation Roadmap</h2>
+            <h2>Browse Documentation Categories</h2>
 
-            <div class="roadmap-item">
-                <strong>Documentation Index</strong>
-                Core browse page for reference records
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('documentation_bp.documentation') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Documentation Index</h3>
+                <p>Browse all reference records.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Browse by Camera</strong>
-                Future grouped view by parent model
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('camera_bp.cameras') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Cameras</h3>
+                <p>Browse camera-linked documentation and related systems.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Browse by Variant</strong>
-                Future grouped view for submodels
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('camera_variants_bp.camera_variants') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Camera Variants</h3>
+                <p>Browse variant-linked documentation records.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Saved Profiles</strong>
-                Future feature for saving documentation-related bundles
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('lenses_bp.lenses') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Lenses</h3>
+                <p>Browse lens-linked manuals and brochures.</p>
+            </a>
+
+            <a class="mini-card homepage-link-card" href="{{ url_for('mounts_bp.mounts') }}" style="display:block;">
+                <h3>Mounts</h3>
+                <p>Browse related camera and lens systems.</p>
+            </a>
         </section>
     </aside>
 </section>
 
 {% endif %}
-
 {% endblock %}
