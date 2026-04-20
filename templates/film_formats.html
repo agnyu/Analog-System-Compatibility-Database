@@ -52,102 +52,81 @@
 {% else %}
 
 <section class="card">
-    <h2>Film Format Search</h2>
-    <p class="subtext">Browse film formats by name, format type, and related system usage across the database.</p>
-
-    <div class="search-grid">
-        <div class="form-control">
-            <label for="format-search">Search</label>
-            <input type="text" id="format-search" placeholder="Search format, type, notes...">
-        </div>
-
-        <div class="form-control">
-            <label for="format-search-type">Search Type</label>
-            <select id="format-search-type">
-                <option>Film Formats</option>
-                <option>Film Stocks</option>
-                <option>Accessories</option>
-                <option>Cameras</option>
-            </select>
-        </div>
-
-        <div class="button-row">
-            <button class="btn" type="button">Search</button>
-            <button class="btn-secondary" type="button">Reset</button>
-        </div>
-    </div>
-</section>
-
-<section class="card">
     <div class="table-header">
         <div>
-            <h2>Quick Filters</h2>
-            <p class="subtext">Prototype filter layout for film formats and related records.</p>
+            <h2>Search and Filter Film Formats</h2>
+            <p class="subtext">Browse film formats by name, type, and related system usage across the database.</p>
         </div>
     </div>
 
-    <div class="filter-grid">
-        <div class="form-control">
-            <label for="format-name-filter">Format Name</label>
-            <input type="text" id="format-name-filter" placeholder="e.g. 35mm">
+    <form method="GET" action="{{ url_for('film_formats_bp.film_formats') }}">
+        <div class="filter-grid">
+            <div class="form-control">
+                <label for="format_type">Format Type</label>
+                <select id="format_type" name="format_type">
+                    <option value="">All</option>
+                    {% for type_row in format_types %}
+                    <option value="{{ type_row.format_type }}"
+                        {% if selected_format_type == type_row.format_type %}selected{% endif %}>
+                        {{ type_row.format_type }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="usage_scope">Usage Scope</label>
+                <select id="usage_scope" name="usage_scope">
+                    <option value="">All</option>
+                    <option value="film_only" {% if selected_usage_scope == 'film_only' %}selected{% endif %}>Used by Film Stocks Only</option>
+                    <option value="accessory_only" {% if selected_usage_scope == 'accessory_only' %}selected{% endif %}>Used by Accessories Only</option>
+                    <option value="both" {% if selected_usage_scope == 'both' %}selected{% endif %}>Used by Both</option>
+                    <option value="unused" {% if selected_usage_scope == 'unused' %}selected{% endif %}>Unused</option>
+                </select>
+            </div>
         </div>
 
-        <div class="form-control">
-            <label for="format-type-filter">Format Type</label>
-            <select id="format-type-filter">
-                <option>All</option>
-                <option>Roll Film</option>
-                <option>Sheet Film</option>
-                <option>Cartridge Film</option>
-            </select>
+        <div class="form-control" style="margin-top: 18px;">
+            <label for="search">Search</label>
+            <input type="text" id="search" name="search"
+                   placeholder="Search format name, type, or notes..."
+                   value="{{ selected_search if selected_search else '' }}">
         </div>
 
-        <div class="form-control">
-            <label for="usage-filter">Usage Scope</label>
-            <select id="usage-filter">
-                <option>All</option>
-                <option>Used by Film Stocks</option>
-                <option>Used by Accessories</option>
-                <option>Used by Both</option>
-            </select>
+        <div class="button-row" style="margin-top: 16px;">
+            <button class="btn" type="submit">Apply Search & Filters</button>
+            <a class="btn-secondary" href="{{ url_for('film_formats_bp.film_formats') }}">Reset</a>
         </div>
-
-        <div class="form-control">
-            <label for="notes-filter">Notes</label>
-            <input type="text" id="notes-filter" placeholder="Search notes...">
-        </div>
-
-        <div class="form-control">
-            <label for="scale-filter">Scale</label>
-            <select id="scale-filter">
-                <option>All</option>
-                <option>35mm</option>
-                <option>120</option>
-                <option>Large Format</option>
-            </select>
-        </div>
-
-        <div class="form-control">
-            <label for="status-filter">Category</label>
-            <select id="status-filter">
-                <option>All</option>
-                <option>Core Format</option>
-                <option>Specialized Format</option>
-            </select>
-        </div>
-    </div>
+    </form>
 </section>
 
 <section class="layout-grid">
     <div>
         <section class="card">
-            <div class="table-header">
+            <div class="table-header" style="align-items: flex-start;">
                 <div>
                     <h2>Film Format Index</h2>
-                    <p class="subtext">Format records in the current database.</p>
+                    <p class="subtext">
+                        {% if selected_format %}
+                            Showing the selected format and its linked records.
+                        {% else %}
+                            Format records in the current database.
+                        {% endif %}
+                    </p>
                 </div>
 
-                <a class="btn" href="{{ url_for('film_formats_bp.film_formats', mode='add') }}">+ Add New Film Format</a>
+                <div class="button-row" style="margin-left: auto; flex-direction: column; align-items: flex-end; min-width: 220px;">
+                    {% if selected_format %}
+                    <a class="btn-secondary"
+                       href="{{ url_for('film_formats_bp.film_formats',
+                           search=selected_search,
+                           format_type=selected_format_type,
+                           usage_scope=selected_usage_scope) }}">
+                        Back to Full Format Index
+                    </a>
+                    {% endif %}
+                    <a class="btn" href="{{ url_for('film_formats_bp.film_formats', mode='add') }}">+ Add New Film Format</a>
+                </div>
             </div>
 
             <div class="table-wrapper">
@@ -157,6 +136,8 @@
                             <th>ID</th>
                             <th>Format Name</th>
                             <th>Format Type</th>
+                            <th>Linked Films</th>
+                            <th>Linked Accessories</th>
                             <th>Notes</th>
                             <th>Actions</th>
                         </tr>
@@ -167,9 +148,20 @@
                             <td>{{ format.format_id }}</td>
                             <td>{{ format.format_name }}</td>
                             <td>{{ format.format_type }}</td>
+                            <td>{{ format.film_count }}</td>
+                            <td>{{ format.accessory_count }}</td>
                             <td>{{ format.notes }}</td>
                             <td>
                                 <div class="actions">
+                                    <a class="btn-secondary action-link"
+                                       href="{{ url_for('film_formats_bp.film_formats',
+                                           search=selected_search,
+                                           format_type=selected_format_type,
+                                           usage_scope=selected_usage_scope,
+                                           selected_format_id=format.format_id) }}">
+                                        View Detail
+                                    </a>
+
                                     <a class="btn-secondary action-link"
                                        href="{{ url_for('film_formats_bp.edit_film_format', format_id=format.format_id) }}">
                                         Edit
@@ -184,6 +176,10 @@
                                 </div>
                             </td>
                         </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7">No film formats match the current search and filters.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -191,52 +187,84 @@
         </section>
 
         <section class="card">
-            <h2>Planned Format Detail View</h2>
+            <h2>Format Detail View</h2>
             <p class="subtext">
-                This section represents a visual placeholder for future format detail and linked-record pages.
+                Select a format to view linked film stocks and accessories.
             </p>
 
+            {% if selected_format %}
             <div class="placeholder-box">
-                <h3 style="margin-bottom: 6px;">Example Selected Format: 35mm</h3>
+                <h3 style="margin-bottom: 6px;">Selected Format: {{ selected_format.format_name }}</h3>
                 <p style="color:#666; margin-bottom: 14px;">
-                    Format: 35mm | Type: Cartridge Film | Scope: Common still photography format
+                    {% if selected_format.format_type %}Type: {{ selected_format.format_type }}{% endif %}
                 </p>
 
                 <div class="placeholder-grid">
                     <div class="mini-card">
-                        <h4>Linked Film Stocks</h4>
+                        <h4>Format Record</h4>
                         <ul>
-                            <li>HP5 Plus</li>
-                            <li>Tri-X 400</li>
-                            <li>Portra 400</li>
+                            <li>{{ selected_format.format_name }}</li>
+                            {% if selected_format.format_type %}
+                            <li>{{ selected_format.format_type }}</li>
+                            {% endif %}
+                            {% if selected_format.notes %}
+                            <li>{{ selected_format.notes }}</li>
+                            {% endif %}
                         </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Linked Film Stocks</h4>
+                        {% if linked_films %}
+                        <ul>
+                            {% for film in linked_films %}
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('film_bp.film', selected_film_id=film.film_id) }}">
+                                    {{ film.film_name }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p>No film stocks linked to this format.</p>
+                        {% endif %}
                     </div>
 
                     <div class="mini-card">
                         <h4>Linked Accessories</h4>
+                        {% if linked_accessories %}
                         <ul>
-                            <li>Canon Speedlite 155A</li>
-                            <li>Leica Ever-Ready Case</li>
+                            {% for accessory in linked_accessories %}
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('accessories_bp.accessories', selected_accessory_id=accessory.accessory_id) }}">
+                                    {{ accessory.accessory_name }}
+                                </a>
+                            </li>
+                            {% endfor %}
                         </ul>
+                        {% else %}
+                        <p>No accessories linked to this format.</p>
+                        {% endif %}
                     </div>
 
                     <div class="mini-card">
-                        <h4>System Role</h4>
+                        <h4>System Usage</h4>
                         <ul>
-                            <li>Common format for SLR and rangefinder systems</li>
-                            <li>Used widely across branded camera lines</li>
-                        </ul>
-                    </div>
-
-                    <div class="mini-card">
-                        <h4>Related Pages</h4>
-                        <ul>
-                            <li>Film Stocks</li>
-                            <li>Accessories</li>
+                            <li>{{ linked_films|length }} linked film stock(s)</li>
+                            <li>{{ linked_accessories|length }} linked accessory record(s)</li>
                         </ul>
                     </div>
                 </div>
             </div>
+            {% else %}
+            <div class="placeholder-box">
+                <p style="margin: 0;">
+                    No format selected yet. Use the filters and search above, then click <strong>View Detail</strong>.
+                </p>
+            </div>
+            {% endif %}
         </section>
     </div>
 
@@ -246,33 +274,33 @@
             <ul class="sidebar-list">
                 <li>Film formats classify the physical format used by film stocks and some accessory records.</li>
                 <li>This page supports the Film section as a reference layer for browsing and grouping.</li>
-                <li>Format records can later expand into linked film stocks and system-level compatibility views.</li>
-                <li>This page currently serves as the main browse page for film format records.</li>
+                <li>Format records connect to both film stocks and accessory records.</li>
+                <li>This page serves as the main browse page for film format records.</li>
             </ul>
         </section>
 
         <section class="card">
-            <h2>Format Roadmap</h2>
+            <h2>Browse Format Categories</h2>
 
-            <div class="roadmap-item">
-                <strong>Format Index</strong>
-                Core browse page for film format records
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('film_formats_bp.film_formats') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Format Index</h3>
+                <p>Browse film format records.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Linked Film Stocks</strong>
-                Future drill-down into stocks using the format
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('film_bp.film') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Film Stocks</h3>
+                <p>Browse linked film records.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Linked Accessories</strong>
-                Future drill-down into accessories tied to the format
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('accessories_bp.accessories') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Accessories</h3>
+                <p>Browse accessories tied to film formats.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Saved Profiles</strong>
-                Future feature for format-based browsing bundles
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('development_guide_bp.development_guide') }}" style="display:block;">
+                <h3>Development Guide</h3>
+                <p>Browse workflow records related to films using these formats.</p>
+            </a>
         </section>
     </aside>
 </section>

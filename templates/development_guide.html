@@ -93,93 +93,137 @@
 {% else %}
 
 <section class="card">
-    <h2>Development Guide Search</h2>
-    <p class="subtext">Browse development workflows by film stock, developer, ISO, dilution, temperature, and development time.</p>
-
-    <div class="search-grid">
-        <div class="form-control">
-            <label for="guide-search">Search</label>
-            <input type="text" id="guide-search" placeholder="Search film, developer, dilution, notes...">
-        </div>
-
-        <div class="form-control">
-            <label for="guide-search-type">Search Type</label>
-            <select id="guide-search-type">
-                <option>Development Guide</option>
-                <option>Film Stocks</option>
-                <option>Developers</option>
-                <option>Formats</option>
-            </select>
-        </div>
-
-        <div class="button-row">
-            <button class="btn" type="button">Search</button>
-            <button class="btn-secondary" type="button">Reset</button>
-        </div>
-    </div>
-</section>
-
-<section class="card">
     <div class="table-header">
         <div>
-            <h2>Quick Filters</h2>
-            <p class="subtext">Prototype filter layout for film-development workflows and chemistry pairings.</p>
+            <h2>Search and Filter Development Guide</h2>
+            <p class="subtext">Browse development workflows by film stock, developer, ISO, dilution, temperature, and development time.</p>
         </div>
     </div>
 
-    <div class="filter-grid">
-        <div class="form-control">
-            <label for="film-filter">Film Stock</label>
-            <select id="film-filter">
-                <option>All</option>
-                {% for film in films %}
-                <option>{{ film.film_name }}</option>
-                {% endfor %}
-            </select>
+    <form method="GET" action="{{ url_for('development_guide_bp.development_guide') }}">
+        <div class="filter-grid">
+            <div class="form-control">
+                <label for="film_id">Film Stock</label>
+                <select id="film_id" name="film_id">
+                    <option value="">All</option>
+                    {% for film in films %}
+                    <option value="{{ film.film_id }}"
+                        {% if selected_film_id == film.film_id %}selected{% endif %}>
+                        {{ film.film_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="developer_id">Developer</label>
+                <select id="developer_id" name="developer_id">
+                    <option value="">All</option>
+                    {% for developer in developers %}
+                    <option value="{{ developer.developer_id }}"
+                        {% if selected_developer_id == developer.developer_id %}selected{% endif %}>
+                        {{ developer.developer_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="dilution">Dilution</label>
+                <select id="dilution" name="dilution">
+                    <option value="">All</option>
+                    {% for dilution_row in dilutions %}
+                    <option value="{{ dilution_row.dilution }}"
+                        {% if selected_dilution == dilution_row.dilution %}selected{% endif %}>
+                        {{ dilution_row.dilution }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="shot_iso">Shot ISO</label>
+                <input type="number" id="shot_iso" name="shot_iso"
+                       placeholder="e.g. 400"
+                       value="{{ selected_shot_iso if selected_shot_iso is not none else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="temp_min">Temp Min °C</label>
+                <input type="number" step="0.1" id="temp_min" name="temp_min"
+                       placeholder="e.g. 20.0"
+                       value="{{ selected_temp_min if selected_temp_min is not none else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="temp_max">Temp Max °C</label>
+                <input type="number" step="0.1" id="temp_max" name="temp_max"
+                       placeholder="e.g. 24.0"
+                       value="{{ selected_temp_max if selected_temp_max is not none else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="time_min">Time Min</label>
+                <input type="number" step="0.01" id="time_min" name="time_min"
+                       placeholder="e.g. 8.0"
+                       value="{{ selected_time_min if selected_time_min is not none else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="time_max">Time Max</label>
+                <input type="number" step="0.01" id="time_max" name="time_max"
+                       placeholder="e.g. 12.0"
+                       value="{{ selected_time_max if selected_time_max is not none else '' }}">
+            </div>
         </div>
 
-        <div class="form-control">
-            <label for="developer-filter">Developer</label>
-            <select id="developer-filter">
-                <option>All</option>
-                {% for developer in developers %}
-                <option>{{ developer.developer_name }}</option>
-                {% endfor %}
-            </select>
+        <div class="form-control" style="margin-top: 18px;">
+            <label for="search">Search</label>
+            <input type="text" id="search" name="search"
+                   placeholder="Search film, developer, dilution, agitation notes, or notes..."
+                   value="{{ selected_search if selected_search else '' }}">
         </div>
 
-        <div class="form-control">
-            <label for="iso-filter">Shot ISO</label>
-            <input type="number" id="iso-filter" placeholder="e.g. 400">
+        <div class="button-row" style="margin-top: 16px;">
+            <button class="btn" type="submit">Apply Search & Filters</button>
+            <a class="btn-secondary" href="{{ url_for('development_guide_bp.development_guide') }}">Reset</a>
         </div>
-
-        <div class="form-control">
-            <label for="temp-filter">Temperature °C</label>
-            <input type="number" step="0.1" id="temp-filter" placeholder="e.g. 20.0">
-        </div>
-
-        <div class="form-control">
-            <label for="time-filter">Dev Time (min)</label>
-            <input type="number" step="0.1" id="time-filter" placeholder="e.g. 9.75">
-        </div>
-
-        <div class="form-control">
-            <label for="dilution-filter">Dilution</label>
-            <input type="text" id="dilution-filter" placeholder="e.g. 1:1 or Stock">
-        </div>
-    </div>
+    </form>
 </section>
 
 <section class="layout-grid">
     <div>
         <section class="card">
-            <div class="table-header">
+            <div class="table-header" style="align-items: flex-start;">
                 <div>
                     <h2>Development Guide Index</h2>
-                    <p class="subtext">Film-development workflow records in the current database.</p>
+                    <p class="subtext">
+                        {% if selected_guide %}
+                            Showing the selected workflow and its linked film/developer records.
+                        {% else %}
+                            Film-development workflow records in the current database.
+                        {% endif %}
+                    </p>
                 </div>
 
-                <a class="btn" href="{{ url_for('development_guide_bp.development_guide', mode='add') }}">+ Add New Development Guide Entry</a>
+                <div class="button-row" style="margin-left: auto; flex-direction: column; align-items: flex-end; min-width: 240px;">
+                    {% if selected_guide %}
+                    <a class="btn-secondary"
+                       href="{{ url_for('development_guide_bp.development_guide',
+                           search=selected_search,
+                           film_id=selected_film_id,
+                           developer_id=selected_developer_id,
+                           shot_iso=selected_shot_iso,
+                           dilution=selected_dilution,
+                           temp_min=selected_temp_min,
+                           temp_max=selected_temp_max,
+                           time_min=selected_time_min,
+                           time_max=selected_time_max) }}">
+                        Back to Full Guide Index
+                    </a>
+                    {% endif %}
+                    <a class="btn" href="{{ url_for('development_guide_bp.development_guide', mode='add') }}">+ Add New Development Guide Entry</a>
+                </div>
             </div>
 
             <div class="table-wrapper">
@@ -213,6 +257,21 @@
                             <td>
                                 <div class="actions">
                                     <a class="btn-secondary action-link"
+                                       href="{{ url_for('development_guide_bp.development_guide',
+                                           search=selected_search,
+                                           film_id=selected_film_id,
+                                           developer_id=selected_developer_id,
+                                           shot_iso=selected_shot_iso,
+                                           dilution=selected_dilution,
+                                           temp_min=selected_temp_min,
+                                           temp_max=selected_temp_max,
+                                           time_min=selected_time_min,
+                                           time_max=selected_time_max,
+                                           selected_development_id=guide.development_id) }}">
+                                        View Detail
+                                    </a>
+
+                                    <a class="btn-secondary action-link"
                                        href="{{ url_for('development_guide_bp.edit_development_guide', development_id=guide.development_id) }}">
                                         Edit
                                     </a>
@@ -226,6 +285,10 @@
                                 </div>
                             </td>
                         </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="10">No development guide records match the current search and filters.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -233,51 +296,100 @@
         </section>
 
         <section class="card">
-            <h2>Planned Workflow Detail View</h2>
+            <h2>Workflow Detail View</h2>
             <p class="subtext">
-                This section represents a visual placeholder for future development workflow detail pages.
+                Select a workflow to view the linked film, linked developer, and the core processing details.
             </p>
 
+            {% if selected_guide %}
             <div class="placeholder-box">
-                <h3 style="margin-bottom: 6px;">Example Workflow: Tri-X 400 in Kodak D-76</h3>
+                <h3 style="margin-bottom: 6px;">Selected Workflow</h3>
                 <p style="color:#666; margin-bottom: 14px;">
-                    Film: Tri-X 400 | Developer: Kodak D-76 | ISO: 400 | Temperature: 20°C
+                    Film: {{ selected_guide.film_name }}
+                    | Developer: {{ selected_guide.developer_name }}
+                    {% if selected_guide.shot_iso %} | ISO: {{ selected_guide.shot_iso }}{% endif %}
+                    {% if selected_guide.temperature_celsius %} | Temp: {{ selected_guide.temperature_celsius }}°C{% endif %}
                 </p>
 
                 <div class="placeholder-grid">
+                    {% if linked_film %}
                     <div class="mini-card">
                         <h4>Film Record</h4>
                         <ul>
-                            <li>Tri-X 400</li>
-                            <li>Black and White</li>
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('film_bp.film', selected_film_id=linked_film.film_id) }}">
+                                    {{ linked_film.film_name }}
+                                </a>
+                            </li>
+                            <li>Manufacturer: {{ linked_film.manufacturer_name }}</li>
+                            <li>Format: {{ linked_film.format_name }}</li>
+                            {% if linked_film.iso %}
+                            <li>ISO: {{ linked_film.iso }}</li>
+                            {% endif %}
                         </ul>
                     </div>
+                    {% endif %}
 
+                    {% if linked_developer %}
                     <div class="mini-card">
                         <h4>Developer Record</h4>
                         <ul>
-                            <li>Kodak D-76</li>
-                            <li>Black and White Developer</li>
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('developers_bp.developers', selected_developer_id=linked_developer.developer_id) }}">
+                                    {{ linked_developer.developer_name }}
+                                </a>
+                            </li>
+                            <li>Manufacturer: {{ linked_developer.manufacturer_name }}</li>
+                            {% if linked_developer.developer_type %}
+                            <li>Type: {{ linked_developer.developer_type }}</li>
+                            {% endif %}
                         </ul>
                     </div>
+                    {% endif %}
 
                     <div class="mini-card">
                         <h4>Workflow Details</h4>
                         <ul>
-                            <li>Dilution: 1:1</li>
-                            <li>Development Time: 9.75 min</li>
+                            {% if selected_guide.temperature_celsius is not none %}
+                            <li>Temperature: {{ selected_guide.temperature_celsius }}°C</li>
+                            {% endif %}
+                            {% if selected_guide.dilution %}
+                            <li>Dilution: {{ selected_guide.dilution }}</li>
+                            {% endif %}
+                            {% if selected_guide.shot_iso %}
+                            <li>Shot ISO: {{ selected_guide.shot_iso }}</li>
+                            {% endif %}
+                            {% if selected_guide.development_time_minutes is not none %}
+                            <li>Development Time: {{ selected_guide.development_time_minutes }} min</li>
+                            {% endif %}
                         </ul>
                     </div>
 
                     <div class="mini-card">
-                        <h4>Use Case</h4>
+                        <h4>Agitation / Notes</h4>
                         <ul>
-                            <li>Traditional B&W workflow</li>
-                            <li>Repeatable lab reference</li>
+                            {% if selected_guide.agitation_notes %}
+                            <li>{{ selected_guide.agitation_notes }}</li>
+                            {% endif %}
+                            {% if selected_guide.notes %}
+                            <li>{{ selected_guide.notes }}</li>
+                            {% endif %}
+                            {% if not selected_guide.agitation_notes and not selected_guide.notes %}
+                            <li>No notes recorded.</li>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>
             </div>
+            {% else %}
+            <div class="placeholder-box">
+                <p style="margin: 0;">
+                    No workflow selected yet. Use the filters and search above, then click <strong>View Detail</strong>.
+                </p>
+            </div>
+            {% endif %}
         </section>
     </div>
 
@@ -288,32 +400,32 @@
                 <li>The development guide links film stocks to developers through practical workflow records.</li>
                 <li>This page acts as the bridge between the Film Stocks and Developers subpages.</li>
                 <li>Guide records capture ISO, temperature, dilution, timing, and agitation notes.</li>
-                <li>This page currently serves as the main browse page for film-development workflows.</li>
+                <li>This page serves as the main browse page for film-development workflows.</li>
             </ul>
         </section>
 
         <section class="card">
-            <h2>Development Guide Roadmap</h2>
+            <h2>Browse Development Categories</h2>
 
-            <div class="roadmap-item">
-                <strong>Guide Index</strong>
-                Core browse page for development workflows
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('development_guide_bp.development_guide') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Development Guide</h3>
+                <p>Browse workflow records.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Film Links</strong>
-                Future drill-down into film-specific workflow sets
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('film_bp.film') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Film Stocks</h3>
+                <p>Browse linked film records.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Developer Links</strong>
-                Future drill-down into developer-specific usage
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('developers_bp.developers') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Developers</h3>
+                <p>Browse linked developer records.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Saved Profiles</strong>
-                Future feature for saving film-development combinations
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('film_formats_bp.film_formats') }}" style="display:block;">
+                <h3>Formats</h3>
+                <p>Browse film format categories.</p>
+            </a>
         </section>
     </aside>
 </section>
