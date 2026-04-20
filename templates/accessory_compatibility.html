@@ -70,102 +70,97 @@
 {% else %}
 
 <section class="card">
-    <h2>Accessory Compatibility Search</h2>
-    <p class="subtext">Browse compatibility relationships between accessories and camera variants.</p>
-
-    <div class="search-grid">
-        <div class="form-control">
-            <label for="compat-search">Search</label>
-            <input type="text" id="compat-search" placeholder="Search accessory, variant, compatibility type...">
-        </div>
-
-        <div class="form-control">
-            <label for="compat-search-type">Search Type</label>
-            <select id="compat-search-type">
-                <option>Accessory Compatibility</option>
-                <option>Accessories</option>
-                <option>Camera Variants</option>
-                <option>Accessory Types</option>
-            </select>
-        </div>
-
-        <div class="button-row">
-            <button class="btn" type="button">Search</button>
-            <button class="btn-secondary" type="button">Reset</button>
-        </div>
-    </div>
-</section>
-
-<section class="card">
     <div class="table-header">
         <div>
-            <h2>Quick Filters</h2>
-            <p class="subtext">Prototype filter layout for accessory-to-variant compatibility records.</p>
+            <h2>Search and Filter Accessory Compatibility</h2>
+            <p class="subtext">Browse compatibility relationships between accessories and camera variants.</p>
         </div>
     </div>
 
-    <div class="filter-grid">
-        <div class="form-control">
-            <label for="accessory-filter">Accessory</label>
-            <select id="accessory-filter">
-                <option>All</option>
-                {% for accessory in accessories %}
-                <option>{{ accessory.accessory_name }}</option>
-                {% endfor %}
-            </select>
+    <form method="GET" action="{{ url_for('accessory_compatibility_bp.accessory_compatibility') }}">
+        <div class="filter-grid">
+            <div class="form-control">
+                <label for="accessory_id">Accessory</label>
+                <select id="accessory_id" name="accessory_id">
+                    <option value="">All</option>
+                    {% for accessory in accessories %}
+                    <option value="{{ accessory.accessory_id }}"
+                        {% if selected_accessory_id == accessory.accessory_id %}selected{% endif %}>
+                        {{ accessory.accessory_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="variant_id">Camera Variant</label>
+                <select id="variant_id" name="variant_id">
+                    <option value="">All</option>
+                    {% for variant in variants %}
+                    <option value="{{ variant.variant_id }}"
+                        {% if selected_variant_id == variant.variant_id %}selected{% endif %}>
+                        {{ variant.variant_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="compatibility_type">Compatibility Type</label>
+                <select id="compatibility_type" name="compatibility_type">
+                    <option value="">All</option>
+                    {% for type_row in compatibility_types %}
+                    <option value="{{ type_row.compatibility_type }}"
+                        {% if selected_compatibility_type == type_row.compatibility_type %}selected{% endif %}>
+                        {{ type_row.compatibility_type }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
 
-        <div class="form-control">
-            <label for="variant-filter">Camera Variant</label>
-            <select id="variant-filter">
-                <option>All</option>
-                {% for variant in variants %}
-                <option>{{ variant.variant_name }}</option>
-                {% endfor %}
-            </select>
+        <div class="form-control" style="margin-top: 18px;">
+            <label for="search">Search</label>
+            <input type="text" id="search" name="search"
+                   placeholder="Search accessory, variant, compatibility type, or notes..."
+                   value="{{ selected_search if selected_search else '' }}">
         </div>
 
-        <div class="form-control">
-            <label for="compat-type-filter">Compatibility Type</label>
-            <input type="text" id="compat-type-filter" placeholder="e.g. Compatible">
+        <div class="button-row" style="margin-top: 16px;">
+            <button class="btn" type="submit">Apply Search & Filters</button>
+            <a class="btn-secondary" href="{{ url_for('accessory_compatibility_bp.accessory_compatibility') }}">Reset</a>
         </div>
-
-        <div class="form-control">
-            <label for="notes-filter">Notes</label>
-            <input type="text" id="notes-filter" placeholder="Search notes...">
-        </div>
-
-        <div class="form-control">
-            <label for="scope-filter">Relationship Scope</label>
-            <select id="scope-filter">
-                <option>All</option>
-                <option>Direct Match</option>
-                <option>Conditional</option>
-                <option>System-Based</option>
-            </select>
-        </div>
-
-        <div class="form-control">
-            <label for="status-filter">Status</label>
-            <select id="status-filter">
-                <option>All</option>
-                <option>Linked Record</option>
-                <option>Needs Review</option>
-            </select>
-        </div>
-    </div>
+    </form>
 </section>
 
 <section class="layout-grid">
     <div>
         <section class="card">
-            <div class="table-header">
+            <div class="table-header" style="align-items: flex-start;">
                 <div>
                     <h2>Accessory Compatibility Index</h2>
-                    <p class="subtext">Compatibility relationships between accessories and camera variants.</p>
+                    <p class="subtext">
+                        {% if selected_compatibility %}
+                            Showing the selected compatibility record and its linked entities.
+                        {% else %}
+                            Compatibility relationships between accessories and camera variants.
+                        {% endif %}
+                    </p>
                 </div>
 
-                <a class="btn" href="{{ url_for('accessory_compatibility_bp.accessory_compatibility', mode='add') }}">+ Add New Compatibility Record</a>
+                <div class="button-row" style="margin-left: auto; flex-direction: column; align-items: flex-end; min-width: 240px;">
+                    {% if selected_compatibility %}
+                    <a class="btn-secondary"
+                       href="{{ url_for('accessory_compatibility_bp.accessory_compatibility',
+                           search=selected_search,
+                           accessory_id=selected_accessory_id,
+                           variant_id=selected_variant_id,
+                           compatibility_type=selected_compatibility_type) }}">
+                        Back to Full Compatibility Index
+                    </a>
+                    {% endif %}
+                    <a class="btn" href="{{ url_for('accessory_compatibility_bp.accessory_compatibility', mode='add') }}">+ Add New Compatibility Record</a>
+                </div>
             </div>
 
             <div class="table-wrapper">
@@ -191,6 +186,16 @@
                             <td>
                                 <div class="actions">
                                     <a class="btn-secondary action-link"
+                                       href="{{ url_for('accessory_compatibility_bp.accessory_compatibility',
+                                           search=selected_search,
+                                           accessory_id=selected_accessory_id,
+                                           variant_id=selected_variant_id,
+                                           compatibility_type=selected_compatibility_type,
+                                           selected_accessory_compat_id=compat.accessory_compat_id) }}">
+                                        View Detail
+                                    </a>
+
+                                    <a class="btn-secondary action-link"
                                        href="{{ url_for('accessory_compatibility_bp.edit_accessory_compatibility', accessory_compat_id=compat.accessory_compat_id) }}">
                                         Edit
                                     </a>
@@ -204,6 +209,10 @@
                                 </div>
                             </td>
                         </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6">No compatibility records match the current search and filters.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -211,51 +220,114 @@
         </section>
 
         <section class="card">
-            <h2>Planned Compatibility Detail View</h2>
+            <h2>Compatibility Detail View</h2>
             <p class="subtext">
-                This section represents a visual placeholder for future accessory-variant detail pages.
+                Select a compatibility record to view the linked accessory, the linked camera variant, and the relationship context.
             </p>
 
+            {% if selected_compatibility %}
             <div class="placeholder-box">
-                <h3 style="margin-bottom: 6px;">Example Compatibility Record</h3>
+                <h3 style="margin-bottom: 6px;">Selected Compatibility Record</h3>
                 <p style="color:#666; margin-bottom: 14px;">
-                    Accessory: Canon Speedlite 155A | Variant: Canon AE-1 Program | Type: Compatible
+                    Accessory: {{ selected_compatibility.accessory_name }}
+                    | Variant: {{ selected_compatibility.variant_name }}
+                    {% if selected_compatibility.compatibility_type %} | Type: {{ selected_compatibility.compatibility_type }}{% endif %}
                 </p>
 
                 <div class="placeholder-grid">
+                    {% if linked_accessory %}
                     <div class="mini-card">
                         <h4>Accessory Record</h4>
                         <ul>
-                            <li>Canon Speedlite 155A</li>
-                            <li>Flash accessory</li>
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('accessories_bp.accessories', selected_accessory_id=linked_accessory.accessory_id) }}">
+                                    {{ linked_accessory.accessory_name }}
+                                </a>
+                            </li>
+                            <li>Manufacturer: {{ linked_accessory.manufacturer_name }}</li>
+                            <li>Type: {{ linked_accessory.type_name }}</li>
+                            {% if linked_accessory.mount_name %}
+                            <li>Mount: {{ linked_accessory.mount_name }}</li>
+                            {% endif %}
+                            {% if linked_accessory.format_name %}
+                            <li>Format: {{ linked_accessory.format_name }}</li>
+                            {% endif %}
                         </ul>
                     </div>
+                    {% endif %}
 
+                    {% if linked_variant %}
                     <div class="mini-card">
                         <h4>Variant Record</h4>
                         <ul>
-                            <li>Canon AE-1 Program</li>
-                            <li>35mm variant</li>
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('camera_variants_bp.camera_variants', selected_variant_id=linked_variant.variant_id) }}">
+                                    {{ linked_variant.variant_name }}
+                                </a>
+                            </li>
+                            <li>
+                                Parent Camera:
+                                <a class="compatibility-link"
+                                   href="{{ url_for('camera_bp.cameras', selected_camera_id=linked_variant.camera_id) }}">
+                                    {{ linked_variant.camera_name }}
+                                </a>
+                            </li>
+                            {% if linked_variant.frame_format %}
+                            <li>Frame Format: {{ linked_variant.frame_format }}</li>
+                            {% endif %}
+                            {% if linked_variant.release_year %}
+                            <li>Release Year: {{ linked_variant.release_year }}</li>
+                            {% endif %}
                         </ul>
                     </div>
+                    {% endif %}
 
                     <div class="mini-card">
                         <h4>Compatibility Meaning</h4>
                         <ul>
-                            <li>Directly associated system match</li>
-                            <li>Useful for compatibility browsing</li>
+                            {% if selected_compatibility.compatibility_type %}
+                            <li>{{ selected_compatibility.compatibility_type }}</li>
+                            {% endif %}
+                            {% if selected_compatibility.notes %}
+                            <li>{{ selected_compatibility.notes }}</li>
+                            {% else %}
+                            <li>No notes recorded.</li>
+                            {% endif %}
                         </ul>
                     </div>
 
                     <div class="mini-card">
-                        <h4>Related Pages</h4>
+                        <h4>Related Navigation</h4>
                         <ul>
-                            <li>Accessories</li>
-                            <li>Camera Variants</li>
+                            {% if linked_accessory %}
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('accessories_bp.accessories', selected_accessory_id=linked_accessory.accessory_id) }}">
+                                    Open Accessory Record
+                                </a>
+                            </li>
+                            {% endif %}
+                            {% if linked_variant %}
+                            <li>
+                                <a class="compatibility-link"
+                                   href="{{ url_for('camera_variants_bp.camera_variants', selected_variant_id=linked_variant.variant_id) }}">
+                                    Open Variant Record
+                                </a>
+                            </li>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>
             </div>
+            {% else %}
+            <div class="placeholder-box">
+                <p style="margin: 0;">
+                    No compatibility record selected yet. Use the filters and search above, then click <strong>View Detail</strong>.
+                </p>
+            </div>
+            {% endif %}
         </section>
     </div>
 
@@ -266,32 +338,32 @@
                 <li>Accessory Compatibility links accessories to specific camera variants.</li>
                 <li>This page acts as a relationship layer inside the Accessories section.</li>
                 <li>These records help demonstrate how the database supports compatibility browsing.</li>
-                <li>This page currently serves as the main browse page for accessory compatibility records.</li>
+                <li>This page serves as the main browse page for accessory compatibility records.</li>
             </ul>
         </section>
 
         <section class="card">
-            <h2>Compatibility Roadmap</h2>
+            <h2>Browse Compatibility Categories</h2>
 
-            <div class="roadmap-item">
-                <strong>Compatibility Index</strong>
-                Core browse page for accessory-to-variant relationships
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('accessory_compatibility_bp.accessory_compatibility') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Compatibility Index</h3>
+                <p>Browse accessory-to-variant relationships.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Accessory Links</strong>
-                Future drill-down into accessory-based compatibility sets
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('accessories_bp.accessories') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Accessories</h3>
+                <p>Browse accessory records used in these compatibility mappings.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Variant Links</strong>
-                Future drill-down into variant-based accessory matches
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('camera_variants_bp.camera_variants') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Camera Variants</h3>
+                <p>Browse the variant records connected to accessory compatibility.</p>
+            </a>
 
-            <div class="roadmap-item">
-                <strong>Saved Profiles</strong>
-                Future feature for saving accessory compatibility bundles
-            </div>
+            <a class="mini-card homepage-link-card" href="{{ url_for('camera_bp.cameras') }}" style="display:block;">
+                <h3>Cameras</h3>
+                <p>Browse parent camera records connected through variant compatibility.</p>
+            </a>
         </section>
     </aside>
 </section>
