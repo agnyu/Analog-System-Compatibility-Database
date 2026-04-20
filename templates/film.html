@@ -90,72 +90,338 @@
         </div>
     </form>
 </section>
+
 {% else %}
+
 <section class="card">
     <div class="table-header">
         <div>
-            <h2>Film Stocks Index</h2>
-            <p class="subtext">Current working CRUD table</p>
+            <h2>Search and Filter Film Stocks</h2>
+            <p class="subtext">Browse film by manufacturer, format, color type, ISO, release year, and production status.</p>
+        </div>
+    </div>
+
+    <form method="GET" action="{{ url_for('film_bp.film') }}">
+        <div class="filter-grid">
+            <div class="form-control">
+                <label for="manufacturer_id">Manufacturer</label>
+                <select id="manufacturer_id" name="manufacturer_id">
+                    <option value="">All</option>
+                    {% for manufacturer in manufacturers %}
+                    <option value="{{ manufacturer.manufacturer_id }}"
+                        {% if selected_manufacturer_id == manufacturer.manufacturer_id %}selected{% endif %}>
+                        {{ manufacturer.manufacturer_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="format_id">Format</label>
+                <select id="format_id" name="format_id">
+                    <option value="">All</option>
+                    {% for format in formats %}
+                    <option value="{{ format.format_id }}"
+                        {% if selected_format_id == format.format_id %}selected{% endif %}>
+                        {{ format.format_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="color_type">Color Type</label>
+                <select id="color_type" name="color_type">
+                    <option value="">All</option>
+                    {% for type_row in color_types %}
+                    <option value="{{ type_row.color_type }}"
+                        {% if selected_color_type == type_row.color_type %}selected{% endif %}>
+                        {{ type_row.color_type }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="iso_min">ISO Min</label>
+                <input type="number" id="iso_min" name="iso_min"
+                       placeholder="e.g. 100"
+                       value="{{ selected_iso_min if selected_iso_min is not none else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="iso_max">ISO Max</label>
+                <input type="number" id="iso_max" name="iso_max"
+                       placeholder="e.g. 800"
+                       value="{{ selected_iso_max if selected_iso_max is not none else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="discontinued">Production Status</label>
+                <select id="discontinued" name="discontinued">
+                    <option value="">All</option>
+                    <option value="active" {% if selected_discontinued == 'active' %}selected{% endif %}>Active</option>
+                    <option value="discontinued" {% if selected_discontinued == 'discontinued' %}selected{% endif %}>Discontinued</option>
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="year_min">Release Year Min</label>
+                <input type="number" id="year_min" name="year_min"
+                       placeholder="e.g. 1950"
+                       value="{{ selected_year_min if selected_year_min is not none else '' }}">
+            </div>
+
+            <div class="form-control">
+                <label for="year_max">Release Year Max</label>
+                <input type="number" id="year_max" name="year_max"
+                       placeholder="e.g. 2020"
+                       value="{{ selected_year_max if selected_year_max is not none else '' }}">
+            </div>
         </div>
 
-        <a class="btn" href="{{ url_for('film_bp.film', mode='add') }}">+ Add New Film</a>
-    </div>
+        <div class="form-control" style="margin-top: 18px;">
+            <label for="search">Search</label>
+            <input type="text" id="search" name="search"
+                   placeholder="Search film name, manufacturer, format, color type, or notes..."
+                   value="{{ selected_search if selected_search else '' }}">
+        </div>
 
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Film Name</th>
-                    <th>Manufacturer</th>
-                    <th>ISO</th>
-                    <th>Format</th>
-                    <th>Color Type</th>
-                    <th>Release Year</th>
-                    <th>Status</th>
-                    <th>Notes</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for film in films %}
-                <tr>
-                    <td>{{ film.film_id }}</td>
-                    <td>{{ film.film_name }}</td>
-                    <td>{{ film.manufacturer_name }}</td>
-                    <td>{{ film.iso }}</td>
-                    <td>{{ film.format_name }}</td>
-                    <td>{{ film.color_type }}</td>
-                    <td>{{ film.release_year }}</td>
-                    <td>
-                        {% if film.discontinued %}
-                            <span class="status-pill discontinued">Discontinued</span>
-                        {% else %}
-                            <span class="status-pill">Active</span>
-                        {% endif %}
-                    </td>
-                    <td>{{ film.notes }}</td>
-                    <td>
-                        <div class="actions">
-                            <a class="btn-secondary action-link"
-                               href="{{ url_for('film_bp.edit_film', film_id=film.film_id) }}">
-                                Edit
-                            </a>
-
-                            <form action="{{ url_for('film_bp.delete_film', film_id=film.film_id) }}" method="POST">
-                                <button class="btn-danger" type="submit"
-                                        onclick="return confirm('Are you sure you want to delete this film?');">
-                                    Delete
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+        <div class="button-row" style="margin-top: 16px;">
+            <button class="btn" type="submit">Apply Search & Filters</button>
+            <a class="btn-secondary" href="{{ url_for('film_bp.film') }}">Reset</a>
+        </div>
+    </form>
 </section>
+
+<section class="layout-grid">
+    <div>
+        <section class="card">
+            <div class="table-header" style="align-items: flex-start;">
+                <div>
+                    <h2>Film Stock Index</h2>
+                    <p class="subtext">
+                        {% if selected_film %}
+                            Showing the selected film stock and its development context.
+                        {% else %}
+                            Film stock records in the current database.
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="button-row" style="margin-left: auto; flex-direction: column; align-items: flex-end; min-width: 220px;">
+                    {% if selected_film %}
+                    <a class="btn-secondary"
+                       href="{{ url_for('film_bp.film',
+                           search=selected_search,
+                           manufacturer_id=selected_manufacturer_id,
+                           format_id=selected_format_id,
+                           color_type=selected_color_type,
+                           iso_min=selected_iso_min,
+                           iso_max=selected_iso_max,
+                           year_min=selected_year_min,
+                           year_max=selected_year_max,
+                           discontinued=selected_discontinued) }}">
+                        Back to Full Film Index
+                    </a>
+                    {% endif %}
+                    <a class="btn" href="{{ url_for('film_bp.film', mode='add') }}">+ Add New Film</a>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Film Name</th>
+                            <th>Manufacturer</th>
+                            <th>ISO</th>
+                            <th>Format</th>
+                            <th>Color Type</th>
+                            <th>Release Year</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for film in films %}
+                        <tr>
+                            <td>{{ film.film_id }}</td>
+                            <td>{{ film.film_name }}</td>
+                            <td>{{ film.manufacturer_name }}</td>
+                            <td>{{ film.iso }}</td>
+                            <td>{{ film.format_name }}</td>
+                            <td>{{ film.color_type }}</td>
+                            <td>{{ film.release_year }}</td>
+                            <td>
+                                {% if film.discontinued %}
+                                    <span class="status-pill discontinued">Discontinued</span>
+                                {% else %}
+                                    <span class="status-pill">Active</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ film.notes }}</td>
+                            <td>
+                                <div class="actions">
+                                    <a class="btn-secondary action-link"
+                                       href="{{ url_for('film_bp.film',
+                                           search=selected_search,
+                                           manufacturer_id=selected_manufacturer_id,
+                                           format_id=selected_format_id,
+                                           color_type=selected_color_type,
+                                           iso_min=selected_iso_min,
+                                           iso_max=selected_iso_max,
+                                           year_min=selected_year_min,
+                                           year_max=selected_year_max,
+                                           discontinued=selected_discontinued,
+                                           selected_film_id=film.film_id) }}">
+                                        View Detail
+                                    </a>
+
+                                    <a class="btn-secondary action-link"
+                                       href="{{ url_for('film_bp.edit_film', film_id=film.film_id) }}">
+                                        Edit
+                                    </a>
+
+                                    <form action="{{ url_for('film_bp.delete_film', film_id=film.film_id) }}" method="POST">
+                                        <button class="btn-danger" type="submit"
+                                                onclick="return confirm('Are you sure you want to delete this film?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="10">No film stocks match the current search and filters.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Film Detail View</h2>
+            <p class="subtext">
+                Select a film stock to view production status, format context, and development-guide records.
+            </p>
+
+            {% if selected_film %}
+            <div class="placeholder-box">
+                <h3 style="margin-bottom: 6px;">Selected Film: {{ selected_film.film_name }}</h3>
+                <p style="color:#666; margin-bottom: 14px;">
+                    Manufacturer: {{ selected_film.manufacturer_name }}
+                    | ISO: {{ selected_film.iso or 'N/A' }}
+                    | Format: {{ selected_film.format_name }}
+                    | Color Type: {{ selected_film.color_type or 'N/A' }}
+                    | Status: {% if selected_film.discontinued %}Discontinued{% else %}Active{% endif %}
+                </p>
+
+                <div class="placeholder-grid">
+                    <div class="mini-card">
+                        <h4>Film Record</h4>
+                        <ul>
+                            <li>{{ selected_film.film_name }}</li>
+                            <li>{{ selected_film.manufacturer_name }}</li>
+                            <li>{{ selected_film.format_name }}</li>
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Production Status</h4>
+                        <ul>
+                            <li>{% if selected_film.discontinued %}Discontinued{% else %}Active{% endif %}</li>
+                            {% if selected_film.release_year %}
+                            <li>Release Year: {{ selected_film.release_year }}</li>
+                            {% endif %}
+                            {% if selected_film.notes %}
+                            <li>{{ selected_film.notes }}</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Format Context</h4>
+                        <ul>
+                            <li>{{ selected_film.format_name }}</li>
+                            {% if selected_film.color_type %}
+                            <li>{{ selected_film.color_type }}</li>
+                            {% endif %}
+                            {% if selected_film.iso %}
+                            <li>ISO {{ selected_film.iso }}</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Development Guide</h4>
+                        {% if development_entries %}
+                        <ul>
+                            {% for entry in development_entries %}
+                            <li>
+                                {{ entry.developer_name }}
+                                {% if entry.dilution %} | {{ entry.dilution }}{% endif %}
+                                {% if entry.development_time_min %} | {{ entry.development_time_min }} min{% endif %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p>No development guide entries recorded.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="placeholder-box">
+                <p style="margin: 0;">
+                    No film selected yet. Use the filters and search above, then click <strong>View Detail</strong>.
+                </p>
+            </div>
+            {% endif %}
+        </section>
+    </div>
+
+    <aside>
+        <section class="card">
+            <h2>Film Scope</h2>
+            <ul class="sidebar-list">
+                <li>Film stocks act as one of the main user-facing records in the database.</li>
+                <li>This page helps users browse film by format, ISO, color type, and production status.</li>
+                <li>Development-guide records extend this page with processing context.</li>
+                <li>This page serves as the main browse page for film stock records.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Browse Film Categories</h2>
+
+            <a class="mini-card homepage-link-card" href="{{ url_for('film_bp.film') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Film Index</h3>
+                <p>Browse film stock records.</p>
+            </a>
+
+            <a class="mini-card homepage-link-card" href="{{ url_for('development_guide_bp.development_guide') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Development Guide</h3>
+                <p>Browse developer pairings and processing times.</p>
+            </a>
+
+            <a class="mini-card homepage-link-card" href="{{ url_for('developers_bp.developers') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Developers</h3>
+                <p>Browse film developers used in guide records.</p>
+            </a>
+
+            <a class="mini-card homepage-link-card" href="{{ url_for('film_formats_bp.film_formats') }}" style="display:block;">
+                <h3>Formats</h3>
+                <p>Browse film format categories.</p>
+            </a>
+        </section>
+    </aside>
+</section>
+
 {% endif %}
 
 {% endblock %}
