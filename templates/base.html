@@ -172,6 +172,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     <a href="{{ url_for('documentation_bp.documentation') }}">Documentation Index</a>
                 </div>
             </div>
+                <a href="{{ url_for('reports_bp.reports') }}"
+                class="{% if request.endpoint == 'reports_bp.reports' %}active-tab{% endif %}">
+                 Reports
+                </a>
         </nav>
 
         {% block content %}{% endblock %}

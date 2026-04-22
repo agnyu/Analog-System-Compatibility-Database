@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Reports</h2>
+            <p class="subtext">
+                Aggregated reports for camera systems, film workflow coverage, accessory compatibility, and developer usage.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Camera System Support Report</h2>
+            <p class="subtext">
+                Summary of camera systems by linked variants, lenses, documentation, and accessory compatibility coverage.
+            </p>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Camera</th>
+                    <th>Manufacturer</th>
+                    <th>Mount</th>
+                    <th>Type</th>
+                    <th>Release Year</th>
+                    <th>Variants</th>
+                    <th>Compatible Lenses</th>
+                    <th>Documentation</th>
+                    <th>Accessory Links</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in camera_system_report %}
+                <tr>
+                    <td>{{ row.camera_name }}</td>
+                    <td>{{ row.manufacturer_name }}</td>
+                    <td>{{ row.mount_name or 'N/A' }}</td>
+                    <td>{{ row.camera_type or 'N/A' }}</td>
+                    <td>{{ row.release_year or 'N/A' }}</td>
+                    <td>{{ row.variant_count }}</td>
+                    <td>{{ row.compatible_lens_count }}</td>
+                    <td>{{ row.documentation_count }}</td>
+                    <td>{{ row.accessory_compatibility_count }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9">No camera system report data available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Film Workflow Coverage Report</h2>
+            <p class="subtext">
+                Summary of film stocks by workflow coverage, developer count, and development time ranges.
+            </p>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Film</th>
+                    <th>Manufacturer</th>
+                    <th>Format</th>
+                    <th>Box ISO</th>
+                    <th>Color Type</th>
+                    <th>Status</th>
+                    <th>Workflow Entries</th>
+                    <th>Developers</th>
+                    <th>Avg Dev Time</th>
+                    <th>Min Dev Time</th>
+                    <th>Max Dev Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in film_workflow_report %}
+                <tr>
+                    <td>{{ row.film_name }}</td>
+                    <td>{{ row.manufacturer_name }}</td>
+                    <td>{{ row.format_name or 'N/A' }}</td>
+                    <td>{{ row.box_iso or 'N/A' }}</td>
+                    <td>{{ row.color_type or 'N/A' }}</td>
+                    <td>
+                        {% if row.discontinued %}
+                            <span class="status-pill discontinued">Discontinued</span>
+                        {% else %}
+                            <span class="status-pill">Active</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ row.workflow_count }}</td>
+                    <td>{{ row.developer_count }}</td>
+                    <td>{{ row.avg_development_time_minutes or 'N/A' }}</td>
+                    <td>{{ row.min_development_time_minutes or 'N/A' }}</td>
+                    <td>{{ row.max_development_time_minutes or 'N/A' }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="11">No film workflow coverage data available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Accessory Compatibility Summary Report</h2>
+            <p class="subtext">
+                Summary of accessories by compatibility coverage across variants and parent camera systems.
+            </p>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Accessory</th>
+                    <th>Manufacturer</th>
+                    <th>Accessory Type</th>
+                    <th>Mount</th>
+                    <th>Format</th>
+                    <th>Release Year</th>
+                    <th>Compatible Variants</th>
+                    <th>Parent Cameras</th>
+                    <th>Compatibility Types</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in accessory_compatibility_report %}
+                <tr>
+                    <td>{{ row.accessory_name }}</td>
+                    <td>{{ row.manufacturer_name }}</td>
+                    <td>{{ row.accessory_type }}</td>
+                    <td>{{ row.mount_name or 'N/A' }}</td>
+                    <td>{{ row.format_name or 'N/A' }}</td>
+                    <td>{{ row.release_year or 'N/A' }}</td>
+                    <td>{{ row.compatible_variant_count }}</td>
+                    <td>{{ row.parent_camera_count }}</td>
+                    <td>{{ row.compatibility_type_count }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9">No accessory compatibility summary data available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Developer Usage Report</h2>
+            <p class="subtext">
+                Summary of developers by workflow usage, distinct films covered, and average development time.
+            </p>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Developer</th>
+                    <th>Manufacturer</th>
+                    <th>Developer Type</th>
+                    <th>Workflow Entries</th>
+                    <th>Distinct Films</th>
+                    <th>Avg Dev Time</th>
+                    <th>Min Dev Time</th>
+                    <th>Max Dev Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in developer_usage_report %}
+                <tr>
+                    <td>{{ row.developer_name }}</td>
+                    <td>{{ row.manufacturer_name }}</td>
+                    <td>{{ row.developer_type or 'N/A' }}</td>
+                    <td>{{ row.workflow_entry_count }}</td>
+                    <td>{{ row.distinct_film_count }}</td>
+                    <td>{{ row.avg_development_time_minutes or 'N/A' }}</td>
+                    <td>{{ row.min_development_time_minutes or 'N/A' }}</td>
+                    <td>{{ row.max_development_time_minutes or 'N/A' }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8">No developer usage report data available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="layout-grid">
+    <section class="card">
+        <h2>Report Scope</h2>
+        <ul class="sidebar-list">
+            <li>These reports summarize database activity and support coverage using aggregation.</li>
+            <li>The page is intended to demonstrate grouped reporting beyond standard CRUD browsing.</li>
+            <li>Each report focuses on a different system area: cameras, film workflows, accessories, and developers.</li>
+            <li>This page supports the project rubric requirement for several reports with aggregation.</li>
+        </ul>
+    </section>
+
+    <aside>
+        <section class="card">
+            <h2>Browse Related Sections</h2>
+
+            <a class="mini-card homepage-link-card" href="{{ url_for('camera_bp.cameras') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Cameras</h3>
+                <p>Browse camera records and related system detail pages.</p>
+            </a>
+
+            <a class="mini-card homepage-link-card" href="{{ url_for('film_bp.film') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Film Stocks</h3>
+                <p>Browse film stock records and workflow coverage context.</p>
+            </a>
+
+            <a class="mini-card homepage-link-card" href="{{ url_for('accessories_bp.accessories') }}" style="display:block; margin-bottom: 12px;">
+                <h3>Accessories</h3>
+                <p>Browse accessory records and compatibility relationships.</p>
+            </a>
+
+            <a class="mini-card homepage-link-card" href="{{ url_for('developers_bp.developers') }}" style="display:block;">
+                <h3>Developers</h3>
+                <p>Browse developer records linked to workflow guide entries.</p>
+            </a>
+        </section>
+    </aside>
+</section>
+
+{% endblock %}

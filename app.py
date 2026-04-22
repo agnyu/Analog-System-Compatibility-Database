@@ -13,6 +13,7 @@ from routes.developers_routes import developers_bp
 from routes.development_guide_routes import development_guide_bp
 from routes.accessory_types_routes import accessory_types_bp
 from routes.accessory_compatibility_routes import accessory_compatibility_bp
+from routes.reports_routes import reports_bp
 
 app = Flask(__name__)
 
@@ -28,6 +29,7 @@ app.register_blueprint(developers_bp)
 app.register_blueprint(development_guide_bp)
 app.register_blueprint(accessory_types_bp)
 app.register_blueprint(accessory_compatibility_bp)
+app.register_blueprint(reports_bp)
 
 
 @app.route("/")
