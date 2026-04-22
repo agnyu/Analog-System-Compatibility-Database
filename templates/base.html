@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 </button>
                 <div class="dropdown-menu">
                     <a href="{{ url_for('accessories_bp.accessories') }}">Accessory Index</a>
-                    <!-- <a href="{{ url_for('accessory_types_bp.accessory_types') }}">Accessory Types</a> -->
+                    <a href="{{ url_for('accessory_types_bp.accessory_types') }}">Accessory Types</a>
                     <a href="{{ url_for('accessory_compatibility_bp.accessory_compatibility') }}">Accessory Compatibility</a>
                 </div>
             </div>
@@ -175,6 +175,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 <a href="{{ url_for('reports_bp.reports') }}"
                 class="{% if request.endpoint == 'reports_bp.reports' %}active-tab{% endif %}">
                  Reports
+                </a>
+
+                <a href="{{ url_for('database_features_bp.database_features') }}"
+                 class="{% if request.endpoint in [
+                    'database_features_bp.database_features',
+                    'database_features_bp.run_add_accessory_compatibility',
+                    'database_features_bp.run_variant_film_workflow',
+                    'database_features_bp.run_lens_camera_function'
+                    ] %}active-tab{% endif %}">
+                    Database Features
                 </a>
         </nav>
 

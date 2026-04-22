@@ -1,0 +1,484 @@
+{% extends "base.html" %}
+
+{% block title %}Database Features{% endblock %}
+
+{% block content %}
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Database Features</h2>
+            <p class="subtext">
+                This page demonstrates database views, stored procedures, function logic, and trigger-generated audit logs through the user interface.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Views</h2>
+            <p class="subtext">
+                Read-only query objects used to present multi-table reference and workflow data.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>View: Documentation Reference</h2>
+            <p class="subtext">
+                Combines documentation records with parent camera and variant names for easier archival browsing.
+            </p>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Document Type</th>
+                    <th>Source</th>
+                    <th>Publication Year</th>
+                    <th>Parent Camera</th>
+                    <th>Variant</th>
+                    <th>URL</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in documentation_reference_rows %}
+                <tr>
+                    <td>{{ row.title }}</td>
+                    <td>{{ row.document_type or 'N/A' }}</td>
+                    <td>{{ row.source or 'N/A' }}</td>
+                    <td>{{ row.publication_year or 'N/A' }}</td>
+                    <td>{{ row.parent_camera or 'N/A' }}</td>
+                    <td>{{ row.variant_name or 'N/A' }}</td>
+                    <td>
+                        {% if row.url %}
+                        <a class="table-link" href="{{ row.url }}" target="_blank" rel="noopener noreferrer">Open Link</a>
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+                    <td>{{ row.notes or 'N/A' }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8">No documentation reference rows available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>View: Film Development Workflow</h2>
+            <p class="subtext">
+                Consolidates film stocks, formats, developers, and workflow guide information into a single workflow reference view.
+            </p>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Film</th>
+                    <th>Box ISO</th>
+                    <th>Format</th>
+                    <th>Color Type</th>
+                    <th>Developer</th>
+                    <th>Developer Type</th>
+                    <th>Shot ISO</th>
+                    <th>Temp °C</th>
+                    <th>Dilution</th>
+                    <th>Dev Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in film_workflow_rows %}
+                <tr>
+                    <td>{{ row.film_name }}</td>
+                    <td>{{ row.box_iso or 'N/A' }}</td>
+                    <td>{{ row.format_name or 'N/A' }}</td>
+                    <td>{{ row.color_type or 'N/A' }}</td>
+                    <td>{{ row.developer_name or 'N/A' }}</td>
+                    <td>{{ row.developer_type or 'N/A' }}</td>
+                    <td>{{ row.shot_iso or 'N/A' }}</td>
+                    <td>{{ row.temperature_celsius or 'N/A' }}</td>
+                    <td>{{ row.dilution or 'N/A' }}</td>
+                    <td>{{ row.development_time_minutes or 'N/A' }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="10">No film workflow rows available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>View: Variant Compatibility Overview</h2>
+            <p class="subtext">
+                Combines camera variants, parent cameras, accessories, compatibility types, and notes into a compatibility report.
+            </p>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Variant</th>
+                    <th>Parent Camera</th>
+                    <th>Frame Format</th>
+                    <th>Accessory</th>
+                    <th>Accessory Type</th>
+                    <th>Compatibility Type</th>
+                    <th>Compatibility Notes</th>
+                    <th>Accessory Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in variant_compatibility_rows %}
+                <tr>
+                    <td>{{ row.variant_name }}</td>
+                    <td>{{ row.parent_camera }}</td>
+                    <td>{{ row.frame_format or 'N/A' }}</td>
+                    <td>{{ row.accessory_name }}</td>
+                    <td>{{ row.accessory_type or 'N/A' }}</td>
+                    <td>{{ row.compatibility_type or 'N/A' }}</td>
+                    <td>{{ row.compatibility_notes or 'N/A' }}</td>
+                    <td>{{ row.accessory_description or 'N/A' }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8">No variant compatibility rows available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Stored Procedures</h2>
+            <p class="subtext">
+                Procedure logic is exposed through form-based UI actions.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="layout-grid">
+    <div>
+        <section class="card">
+            <div class="table-header">
+                <div>
+                    <h2>Procedure: Add Accessory Compatibility</h2>
+                    <p class="subtext">
+                        Adds a validated accessory-to-variant compatibility record and prevents invalid or duplicate entries.
+                    </p>
+                </div>
+            </div>
+
+            <form method="POST" action="{{ url_for('database_features_bp.run_add_accessory_compatibility') }}">
+                <div class="two-column-form">
+                    <div class="form-control">
+                        <label for="accessory_id">Accessory</label>
+                        <select id="accessory_id" name="accessory_id" required>
+                            {% for accessory in accessories %}
+                            <option value="{{ accessory.accessory_id }}">{{ accessory.accessory_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-control">
+                        <label for="variant_id">Camera Variant</label>
+                        <select id="variant_id" name="variant_id" required>
+                            {% for variant in variants %}
+                            <option value="{{ variant.variant_id }}">{{ variant.variant_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-control">
+                        <label for="compatibility_type">Compatibility Type</label>
+                        <input type="text" id="compatibility_type" name="compatibility_type" placeholder="e.g. Compatible">
+                    </div>
+                </div>
+
+                <div class="form-control">
+                    <label for="procedure_notes">Notes</label>
+                    <textarea id="procedure_notes" name="notes" placeholder="Optional compatibility notes..."></textarea>
+                </div>
+
+                <div class="button-row">
+                    <button class="btn" type="submit">Run Procedure</button>
+                </div>
+            </form>
+
+            {% if procedure_message %}
+            <div class="mini-card" style="margin-top: 16px;">
+                <h4>Procedure Result</h4>
+                <p>{{ procedure_message }}</p>
+            </div>
+            {% endif %}
+
+            {% if procedure_error %}
+            <div class="mini-card" style="margin-top: 16px;">
+                <h4>Procedure Error</h4>
+                <p>{{ procedure_error }}</p>
+            </div>
+            {% endif %}
+        </section>
+
+        <section class="card">
+            <div class="table-header">
+                <div>
+                    <h2>Procedure: Get Variant Film Workflow</h2>
+                    <p class="subtext">
+                        Returns film-development workflows relevant to a selected camera variant.
+                    </p>
+                </div>
+            </div>
+
+            <form method="POST" action="{{ url_for('database_features_bp.run_variant_film_workflow') }}">
+                <div class="form-control">
+                    <label for="workflow_variant_id">Camera Variant</label>
+                    <select id="workflow_variant_id" name="variant_id" required>
+                        {% for variant in variants %}
+                        <option value="{{ variant.variant_id }}">{{ variant.variant_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="button-row">
+                    <button class="btn" type="submit">Run Procedure</button>
+                </div>
+            </form>
+
+            {% if variant_workflow_results %}
+            <div class="table-wrapper" style="margin-top: 18px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parent Camera</th>
+                            <th>Variant</th>
+                            <th>Frame Format</th>
+                            <th>Film</th>
+                            <th>Box ISO</th>
+                            <th>Color Type</th>
+                            <th>Developer</th>
+                            <th>Shot ISO</th>
+                            <th>Temp °C</th>
+                            <th>Dilution</th>
+                            <th>Dev Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in variant_workflow_results %}
+                        <tr>
+                            <td>{{ row.parent_camera }}</td>
+                            <td>{{ row.variant_name }}</td>
+                            <td>{{ row.frame_format }}</td>
+                            <td>{{ row.film_name }}</td>
+                            <td>{{ row.box_iso or 'N/A' }}</td>
+                            <td>{{ row.color_type or 'N/A' }}</td>
+                            <td>{{ row.developer_name or 'N/A' }}</td>
+                            <td>{{ row.shot_iso or 'N/A' }}</td>
+                            <td>{{ row.temperature_celsius or 'N/A' }}</td>
+                            <td>{{ row.dilution or 'N/A' }}</td>
+                            <td>{{ row.development_time_minutes or 'N/A' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </section>
+    </div>
+
+    <aside>
+        <section class="card">
+            <h2>Procedure Notes</h2>
+            <ul class="sidebar-list">
+                <li>Accessory compatibility procedure validates referenced IDs and blocks duplicate rows.</li>
+                <li>Variant workflow procedure connects camera variants to compatible film-development workflow records.</li>
+                <li>These procedures are demonstrated through the UI rather than only through a SQL client.</li>
+            </ul>
+        </section>
+    </aside>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Function</h2>
+            <p class="subtext">
+                Reusable SQL logic exposed through a small compatibility checker.
+            </p>
+        </div>
+    </div>
+
+    <form method="POST" action="{{ url_for('database_features_bp.run_lens_camera_function') }}">
+        <div class="two-column-form">
+            <div class="form-control">
+                <label for="camera_id">Camera</label>
+                <select id="camera_id" name="camera_id" required>
+                    {% for camera in cameras %}
+                    <option value="{{ camera.camera_id }}">{{ camera.camera_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label for="lens_id">Lens</label>
+                <select id="lens_id" name="lens_id" required>
+                    {% for lens in lenses %}
+                    <option value="{{ lens.lens_id }}">{{ lens.lens_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="button-row">
+            <button class="btn" type="submit">Check Compatibility</button>
+        </div>
+    </form>
+
+    {% if function_result %}
+    <div class="mini-card" style="margin-top: 16px;">
+        <h4>Function Result</h4>
+        <p>{{ function_result }}</p>
+    </div>
+    {% endif %}
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Trigger Audit Logs</h2>
+            <p class="subtext">
+                These tables show records written automatically by triggers after updates.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Camera Audit Log</h2>
+            <p class="subtext">
+                Trigger-populated audit entries capturing before/after changes to camera records.
+            </p>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Camera ID</th>
+                    <th>Old Name</th>
+                    <th>New Name</th>
+                    <th>Old Mount</th>
+                    <th>New Mount</th>
+                    <th>Old Manufacturer</th>
+                    <th>New Manufacturer</th>
+                    <th>Old Type</th>
+                    <th>New Type</th>
+                    <th>Changed At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in camera_audit_rows %}
+                <tr>
+                    <td>{{ row.camera_id }}</td>
+                    <td>{{ row.old_camera_name or 'N/A' }}</td>
+                    <td>{{ row.new_camera_name or 'N/A' }}</td>
+                    <td>{{ row.old_mount_id or 'N/A' }}</td>
+                    <td>{{ row.new_mount_id or 'N/A' }}</td>
+                    <td>{{ row.old_manufacturer_id or 'N/A' }}</td>
+                    <td>{{ row.new_manufacturer_id or 'N/A' }}</td>
+                    <td>{{ row.old_camera_type or 'N/A' }}</td>
+                    <td>{{ row.new_camera_type or 'N/A' }}</td>
+                    <td>{{ row.changed_at }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="10">No camera audit rows available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="card">
+    <div class="table-header">
+        <div>
+            <h2>Film Development Guide Audit Log</h2>
+            <p class="subtext">
+                Trigger-populated audit entries capturing before/after changes to development workflow records.
+            </p>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Development ID</th>
+                    <th>Old Film</th>
+                    <th>New Film</th>
+                    <th>Old Developer</th>
+                    <th>New Developer</th>
+                    <th>Old Temp</th>
+                    <th>New Temp</th>
+                    <th>Old Dilution</th>
+                    <th>New Dilution</th>
+                    <th>Changed At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in film_development_guide_audit_rows %}
+                <tr>
+                    <td>{{ row.development_id }}</td>
+                    <td>{{ row.old_film_id or 'N/A' }}</td>
+                    <td>{{ row.new_film_id or 'N/A' }}</td>
+                    <td>{{ row.old_developer_id or 'N/A' }}</td>
+                    <td>{{ row.new_developer_id or 'N/A' }}</td>
+                    <td>{{ row.old_temperature_celsius or 'N/A' }}</td>
+                    <td>{{ row.new_temperature_celsius or 'N/A' }}</td>
+                    <td>{{ row.old_dilution or 'N/A' }}</td>
+                    <td>{{ row.new_dilution or 'N/A' }}</td>
+                    <td>{{ row.changed_at }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="10">No film development guide audit rows available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% endblock %}
