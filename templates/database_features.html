@@ -9,7 +9,7 @@
         <div>
             <h2>Database Features</h2>
             <p class="subtext">
-                This page demonstrates database views, stored procedures, function logic, and trigger-generated audit logs through the user interface.
+                This page demonstrates stored procedures, function logic, and trigger-generated audit logs through the user interface.
             </p>
         </div>
     </div>
@@ -18,159 +18,31 @@
 <section class="card">
     <div class="table-header">
         <div>
-            <h2>Views</h2>
+            <h2>Views Used in the Project</h2>
             <p class="subtext">
-                Read-only query objects used to present multi-table reference and workflow data.
-            </p>
-        </div>
-    </div>
-</section>
-
-<section class="card">
-    <div class="table-header">
-        <div>
-            <h2>View: Documentation Reference</h2>
-            <p class="subtext">
-                Combines documentation records with parent camera and variant names for easier archival browsing.
+                The project uses both detailed reference views and aggregated reporting views throughout the application.
             </p>
         </div>
     </div>
 
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Document Type</th>
-                    <th>Source</th>
-                    <th>Publication Year</th>
-                    <th>Parent Camera</th>
-                    <th>Variant</th>
-                    <th>URL</th>
-                    <th>Notes</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in documentation_reference_rows %}
-                <tr>
-                    <td>{{ row.title }}</td>
-                    <td>{{ row.document_type or 'N/A' }}</td>
-                    <td>{{ row.source or 'N/A' }}</td>
-                    <td>{{ row.publication_year or 'N/A' }}</td>
-                    <td>{{ row.parent_camera or 'N/A' }}</td>
-                    <td>{{ row.variant_name or 'N/A' }}</td>
-                    <td>
-                        {% if row.url %}
-                        <a class="table-link" href="{{ row.url }}" target="_blank" rel="noopener noreferrer">Open Link</a>
-                        {% else %}
-                        N/A
-                        {% endif %}
-                    </td>
-                    <td>{{ row.notes or 'N/A' }}</td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="8">No documentation reference rows available.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</section>
-
-<section class="card">
-    <div class="table-header">
-        <div>
-            <h2>View: Film Development Workflow</h2>
-            <p class="subtext">
-                Consolidates film stocks, formats, developers, and workflow guide information into a single workflow reference view.
-            </p>
+    <div class="homepage-card-grid">
+        <div class="mini-card">
+            <h3>Detailed / Reference Views</h3>
+            <ul class="sidebar-list">
+                <li><code>vw_documentation_reference</code></li>
+                <li><code>vw_film_development_workflow</code></li>
+                <li><code>vw_variant_compatibility_overview</code></li>
+            </ul>
         </div>
-    </div>
 
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>Film</th>
-                    <th>Box ISO</th>
-                    <th>Format</th>
-                    <th>Color Type</th>
-                    <th>Developer</th>
-                    <th>Developer Type</th>
-                    <th>Shot ISO</th>
-                    <th>Temp °C</th>
-                    <th>Dilution</th>
-                    <th>Dev Time</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in film_workflow_rows %}
-                <tr>
-                    <td>{{ row.film_name }}</td>
-                    <td>{{ row.box_iso or 'N/A' }}</td>
-                    <td>{{ row.format_name or 'N/A' }}</td>
-                    <td>{{ row.color_type or 'N/A' }}</td>
-                    <td>{{ row.developer_name or 'N/A' }}</td>
-                    <td>{{ row.developer_type or 'N/A' }}</td>
-                    <td>{{ row.shot_iso or 'N/A' }}</td>
-                    <td>{{ row.temperature_celsius or 'N/A' }}</td>
-                    <td>{{ row.dilution or 'N/A' }}</td>
-                    <td>{{ row.development_time_minutes or 'N/A' }}</td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="10">No film workflow rows available.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</section>
-
-<section class="card">
-    <div class="table-header">
-        <div>
-            <h2>View: Variant Compatibility Overview</h2>
-            <p class="subtext">
-                Combines camera variants, parent cameras, accessories, compatibility types, and notes into a compatibility report.
-            </p>
+        <div class="mini-card">
+            <h3>Aggregated / Reporting Views</h3>
+            <ul class="sidebar-list">
+                <li><code>vw_camera_system_summary</code></li>
+                <li><code>vw_film_workflow_coverage</code></li>
+                <li><code>vw_accessory_compatibility_summary</code></li>
+            </ul>
         </div>
-    </div>
-
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>Variant</th>
-                    <th>Parent Camera</th>
-                    <th>Frame Format</th>
-                    <th>Accessory</th>
-                    <th>Accessory Type</th>
-                    <th>Compatibility Type</th>
-                    <th>Compatibility Notes</th>
-                    <th>Accessory Description</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in variant_compatibility_rows %}
-                <tr>
-                    <td>{{ row.variant_name }}</td>
-                    <td>{{ row.parent_camera }}</td>
-                    <td>{{ row.frame_format or 'N/A' }}</td>
-                    <td>{{ row.accessory_name }}</td>
-                    <td>{{ row.accessory_type or 'N/A' }}</td>
-                    <td>{{ row.compatibility_type or 'N/A' }}</td>
-                    <td>{{ row.compatibility_notes or 'N/A' }}</td>
-                    <td>{{ row.accessory_description or 'N/A' }}</td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="8">No variant compatibility rows available.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
 </section>
 
@@ -232,28 +104,14 @@
                     <button class="btn" type="submit">Run Procedure</button>
                 </div>
             </form>
-
-            {% if procedure_message %}
-            <div class="mini-card" style="margin-top: 16px;">
-                <h4>Procedure Result</h4>
-                <p>{{ procedure_message }}</p>
-            </div>
-            {% endif %}
-
-            {% if procedure_error %}
-            <div class="mini-card" style="margin-top: 16px;">
-                <h4>Procedure Error</h4>
-                <p>{{ procedure_error }}</p>
-            </div>
-            {% endif %}
         </section>
 
         <section class="card">
             <div class="table-header">
                 <div>
-                    <h2>Procedure: Get Variant Film Workflow</h2>
+                    <h2>Procedure: Get Compatible Film Workflow for Variant</h2>
                     <p class="subtext">
-                        Returns film-development workflows relevant to a selected camera variant.
+                        Select a camera variant to retrieve film stocks and development workflow records that match its frame format.
                     </p>
                 </div>
             </div>
@@ -269,11 +127,16 @@
                 </div>
 
                 <div class="button-row">
-                    <button class="btn" type="submit">Run Procedure</button>
+                    <button class="btn" type="submit">Find Matching Film Workflows</button>
                 </div>
             </form>
 
             {% if variant_workflow_results %}
+            <div class="mini-card" style="margin-top: 16px;">
+                <h4>Matching Film Workflow Results</h4>
+                <p>These results show film stocks and workflow records related to the selected variant's frame format.</p>
+            </div>
+
             <div class="table-wrapper" style="margin-top: 18px;">
                 <table>
                     <thead>
@@ -312,6 +175,20 @@
             </div>
             {% endif %}
         </section>
+
+        {% if procedure_message %}
+        <section class="card">
+            <h2>Procedure Result</h2>
+            <p>{{ procedure_message }}</p>
+        </section>
+        {% endif %}
+
+        {% if procedure_error %}
+        <section class="card">
+            <h2>Procedure Error</h2>
+            <p>{{ procedure_error }}</p>
+        </section>
+        {% endif %}
     </div>
 
     <aside>
@@ -362,10 +239,17 @@
         </div>
     </form>
 
-    {% if function_result %}
+    {% if function_result is not none %}
     <div class="mini-card" style="margin-top: 16px;">
         <h4>Function Result</h4>
         <p>{{ function_result }}</p>
+    </div>
+    {% endif %}
+
+    {% if function_error %}
+    <div class="mini-card" style="margin-top: 16px;">
+        <h4>Function Error</h4>
+        <p>{{ function_error }}</p>
     </div>
     {% endif %}
 </section>

@@ -8,58 +8,9 @@ def load_database_features_context(
     procedure_message=None,
     procedure_error=None,
     variant_workflow_results=None,
-    function_result=None
+    function_result=None,
+    function_error=None
 ):
-    documentation_reference_rows = fetch_all("""
-        SELECT
-            documentation_id,
-            title,
-            document_type,
-            source,
-            publication_year,
-            url,
-            parent_camera,
-            variant_name,
-            notes
-        FROM vw_documentation_reference
-        ORDER BY publication_year DESC, title
-        LIMIT 10;
-    """)
-
-    film_workflow_rows = fetch_all("""
-        SELECT
-            development_id,
-            film_name,
-            box_iso,
-            format_name,
-            color_type,
-            developer_name,
-            developer_type,
-            shot_iso,
-            temperature_celsius,
-            dilution,
-            development_time_minutes
-        FROM vw_film_development_workflow
-        ORDER BY film_name, developer_name
-        LIMIT 10;
-    """)
-
-    variant_compatibility_rows = fetch_all("""
-        SELECT
-            variant_id,
-            variant_name,
-            parent_camera,
-            frame_format,
-            accessory_name,
-            accessory_type,
-            compatibility_type,
-            compatibility_notes,
-            accessory_description
-        FROM vw_variant_compatibility_overview
-        ORDER BY parent_camera, variant_name, accessory_name
-        LIMIT 10;
-    """)
-
     accessories = fetch_all("""
         SELECT accessory_id, accessory_name
         FROM accessories
@@ -86,7 +37,7 @@ def load_database_features_context(
 
     camera_audit_rows = fetch_all("""
         SELECT
-            camera_audit_id,
+            audit_id,
             camera_id,
             old_camera_name,
             new_camera_name,
@@ -121,9 +72,6 @@ def load_database_features_context(
     """)
 
     return {
-        "documentation_reference_rows": documentation_reference_rows,
-        "film_workflow_rows": film_workflow_rows,
-        "variant_compatibility_rows": variant_compatibility_rows,
         "accessories": accessories,
         "variants": variants,
         "cameras": cameras,
@@ -133,7 +81,8 @@ def load_database_features_context(
         "procedure_message": procedure_message,
         "procedure_error": procedure_error,
         "variant_workflow_results": variant_workflow_results or [],
-        "function_result": function_result
+        "function_result": function_result,
+        "function_error": function_error
     }
 
 
@@ -183,10 +132,33 @@ def run_variant_film_workflow():
     variant_workflow_results = []
 
     try:
-        variant_workflow_results = fetch_all(
-            "CALL sp_get_variant_film_workflow(%s);",
-            (variant_id,)
-        )
+        variant_workflow_results = fetch_all("""
+            SELECT
+                c.camera_name AS parent_camera,
+                cv.variant_name,
+                cv.frame_format,
+                fs.film_name,
+                fs.iso AS box_iso,
+                fs.color_type,
+                fd.developer_name,
+                fdg.shot_iso,
+                fdg.temperature_celsius,
+                fdg.dilution,
+                fdg.development_time_minutes
+            FROM camera_variants cv
+            JOIN cameras c
+                ON cv.camera_id = c.camera_id
+            JOIN film_formats ff
+                ON ff.format_name = cv.frame_format
+            JOIN film_stocks fs
+                ON fs.format_id = ff.format_id
+            LEFT JOIN film_development_guide fdg
+                ON fs.film_id = fdg.film_id
+            LEFT JOIN film_developers fd
+                ON fdg.developer_id = fd.developer_id
+            WHERE cv.variant_id = %s
+            ORDER BY fs.film_name, fd.developer_name, fdg.shot_iso;
+        """, (variant_id,))
         procedure_message = "Variant film workflow procedure executed successfully."
     except Exception as e:
         procedure_error = str(e)
@@ -205,22 +177,23 @@ def run_lens_camera_function():
     lens_id = request.form.get("lens_id", type=int)
 
     function_result = None
-    procedure_error = None
+    function_error = None
 
     try:
-        result_row = fetch_one("""
-            SELECT fn_is_lens_compatible_with_camera(%s, %s) AS compatibility_result;
-        """, (camera_id, lens_id))
+        result_row = fetch_one(
+            "SELECT fn_is_lens_compatible_with_camera(%s, %s) AS compatibility_result;",
+            (camera_id, lens_id)
+        )
 
-        if result_row:
-            function_result = result_row["compatibility_result"]
+        if result_row is not None:
+            function_result = result_row.get("compatibility_result")
         else:
             function_result = "No result returned."
     except Exception as e:
-        procedure_error = str(e)
+        function_error = str(e)
 
     context = load_database_features_context(
-        procedure_error=procedure_error,
-        function_result=function_result
+        function_result=function_result,
+        function_error=function_error
     )
     return render_template("database_features.html", **context)
