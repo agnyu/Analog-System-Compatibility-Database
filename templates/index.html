@@ -4,117 +4,6 @@
 
 {% block content %}
 
-<section class="card featured-card">
-    <div class="featured-top">
-        <div>
-            <h2>Featured Records</h2>
-            <p class="subtext">A rotating snapshot of cameras, film stocks, and lenses from the current database.</p>
-        </div>
-
-        <div class="carousel-controls">
-            <button class="btn-secondary" type="button" onclick="moveFeaturedCarousel(-1)">←</button>
-            <button class="btn-secondary" type="button" onclick="moveFeaturedCarousel(1)">→</button>
-        </div>
-    </div>
-
-    <div class="featured-carousel-window">
-        <div class="featured-carousel-track" id="featuredCarouselTrack">
-            <div class="featured-carousel-slide">
-                <div class="featured-grid">
-                    <div class="featured-image-box">
-                        <div class="image-placeholder">Featured Camera</div>
-                    </div>
-
-                    <div class="featured-copy">
-                        <p class="badge">Featured Camera</p>
-                        {% if featured_camera %}
-                        <h3>{{ featured_camera.camera_name }}</h3>
-                        <p class="subtext">
-                            {{ featured_camera.manufacturer_name }}
-                            {% if featured_camera.release_year %} | {{ featured_camera.release_year }}{% endif %}
-                        </p>
-
-                        <div class="featured-meta">
-                            {% if featured_camera.camera_type %}<div><strong>Type:</strong> {{ featured_camera.camera_type }}</div>{% endif %}
-                            {% if featured_camera.mount_name %}<div><strong>Mount:</strong> {{ featured_camera.mount_name }}</div>{% endif %}
-                        </div>
-
-                        <div class="button-row" style="margin-top: 16px;">
-                            <a class="btn" href="{{ url_for('camera_bp.cameras', selected_camera_id=featured_camera.camera_id) }}">View Camera</a>
-                        </div>
-                        {% else %}
-                        <p class="subtext">No camera record available.</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <div class="featured-carousel-slide">
-                <div class="featured-grid">
-                    <div class="featured-image-box">
-                        <div class="image-placeholder">Featured Film</div>
-                    </div>
-
-                    <div class="featured-copy">
-                        <p class="badge">Featured Film</p>
-                        {% if featured_film %}
-                        <h3>{{ featured_film.film_name }}</h3>
-                        <p class="subtext">
-                            {{ featured_film.manufacturer_name }}
-                            {% if featured_film.release_year %} | {{ featured_film.release_year }}{% endif %}
-                        </p>
-
-                        <div class="featured-meta">
-                            {% if featured_film.iso %}<div><strong>ISO:</strong> {{ featured_film.iso }}</div>{% endif %}
-                            {% if featured_film.format_name %}<div><strong>Format:</strong> {{ featured_film.format_name }}</div>{% endif %}
-                            {% if featured_film.color_type %}<div><strong>Type:</strong> {{ featured_film.color_type }}</div>{% endif %}
-                            <div><strong>Status:</strong> {% if featured_film.discontinued %}Discontinued{% else %}Active{% endif %}</div>
-                        </div>
-
-                        <div class="button-row" style="margin-top: 16px;">
-                            <a class="btn" href="{{ url_for('film_bp.film', selected_film_id=featured_film.film_id) }}">View Film</a>
-                        </div>
-                        {% else %}
-                        <p class="subtext">No film record available.</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <div class="featured-carousel-slide">
-                <div class="featured-grid">
-                    <div class="featured-image-box">
-                        <div class="image-placeholder">Featured Lens</div>
-                    </div>
-
-                    <div class="featured-copy">
-                        <p class="badge">Featured Lens</p>
-                        {% if featured_lens %}
-                        <h3>{{ featured_lens.lens_name }}</h3>
-                        <p class="subtext">
-                            {{ featured_lens.manufacturer_name }}
-                            {% if featured_lens.release_year %} | {{ featured_lens.release_year }}{% endif %}
-                        </p>
-
-                        <div class="featured-meta">
-                            {% if featured_lens.mount_name %}<div><strong>Mount:</strong> {{ featured_lens.mount_name }}</div>{% endif %}
-                            {% if featured_lens.focal_length %}<div><strong>Focal Length:</strong> {{ featured_lens.focal_length }}</div>{% endif %}
-                            {% if featured_lens.max_aperture %}<div><strong>Max Aperture:</strong> {{ featured_lens.max_aperture }}</div>{% endif %}
-                        </div>
-
-                        <div class="button-row" style="margin-top: 16px;">
-                            <a class="btn" href="{{ url_for('lenses_bp.lenses', selected_lens_id=featured_lens.lens_id) }}">View Lens</a>
-                        </div>
-                        {% else %}
-                        <p class="subtext">No lens record available.</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
 <section class="card homepage-search-card">
     <div class="table-header">
         <div>
@@ -131,11 +20,112 @@
     </div>
 </section>
 
+
+<section class="card featured-card">
+    <div class="featured-top">
+        <div>
+            <h2>Featured Showcase</h2>
+            <p class="subtext">A curated look at one camera, one film stock, and one lens from the database.</p>
+        </div>
+
+        <div class="carousel-controls">
+            <button class="btn-secondary" type="button" onclick="moveFeaturedCarousel(-1)">←</button>
+            <button class="btn-secondary" type="button" onclick="moveFeaturedCarousel(1)">→</button>
+        </div>
+    </div>
+
+    <div class="featured-carousel-window">
+        <div class="featured-carousel-track" id="featuredCarouselTrack">
+            <div class="featured-carousel-slide">
+                <div class="featured-grid">
+                    <div class="featured-image-box light-image-box">
+                        <img
+                            src="{{ url_for('static', filename='images/featured_xpan.png') }}"
+                            alt="Hasselblad XPan"
+                            class="featured-static-image"
+                        >
+                    </div>
+
+                    <div class="featured-copy">
+                        <p class="badge">Featured Camera</p>
+                        <h3>Hasselblad XPan</h3>
+                        <p class="subtext">Hasselblad | 1998</p>
+
+                        <div class="featured-meta">
+                            <div><strong>Type:</strong> 35mm Panoramic Rangefinder</div>
+                            <div><strong>Mount:</strong> XPan Mount</div>
+                        </div>
+
+                        <div class="button-row" style="margin-top: 16px;">
+                            <a class="btn" href="{{ url_for('camera_bp.cameras') }}?search=Hasselblad XPan">View Camera</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="featured-carousel-slide">
+                <div class="featured-grid">
+                    <div class="featured-image-box light-image-box">
+                        <img
+                            src="{{ url_for('static', filename='images/featured_portra400.png') }}"
+                            alt="Kodak Portra 400"
+                            class="featured-static-image"
+                        >
+                    </div>
+
+                    <div class="featured-copy">
+                        <p class="badge">Featured Film</p>
+                        <h3>Kodak Portra 400</h3>
+                        <p class="subtext">Kodak | Professional Color Negative Film</p>
+
+                        <div class="featured-meta">
+                            <div><strong>ISO:</strong> 400</div>
+                            <div><strong>Format:</strong> 35mm / 120</div>
+                            <div><strong>Status:</strong> Active</div>
+                        </div>
+
+                        <div class="button-row" style="margin-top: 16px;">
+                            <a class="btn" href="{{ url_for('film_bp.film') }}?search=Kodak Portra 400">View Film</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="featured-carousel-slide">
+                <div class="featured-grid">
+                    <div class="featured-image-box light-image-box">
+                        <img
+                            src="{{ url_for('static', filename='images/featured_supertakumar50.png') }}"
+                            alt="Super-Takumar 50mm f/1.4"
+                            class="featured-static-image"
+                        >
+                    </div>
+
+                    <div class="featured-copy">
+                        <p class="badge">Featured Lens</p>
+                        <h3>Super-Takumar 50mm f/1.4</h3>
+                        <p class="subtext">Asahi Pentax | Classic Standard Prime</p>
+
+                        <div class="featured-meta">
+                            <div><strong>Mount:</strong> M42</div>
+                            <div><strong>Focal Length:</strong> 50mm</div>
+                            <div><strong>Max Aperture:</strong> f/1.4</div>
+                        </div>
+
+                        <div class="button-row" style="margin-top: 16px;">
+                            <a class="btn" href="{{ url_for('lenses_bp.lenses') }}?search=Super-Takumar 50mm f/1.4">View Lens</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="card">
     <div class="table-header">
         <div>
             <h2>Browse Core Sections</h2>
-            <p class="subtext">Use the homepage as a launch point into the main working areas of the database.</p>
         </div>
     </div>
 
