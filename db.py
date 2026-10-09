@@ -1,5 +1,6 @@
 import mysql.connector
 import os
+import re
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -54,5 +55,11 @@ def execute_many(query, values):
         connection.close()
 
 def get_lookup_table(table_name, id_col, name_col):
+    if not re.match(r'^[a-zA-Z0-9_]+$', str(table_name)):
+        raise ValueError("Invalid input")
+    if not re.match(r'^[a-zA-Z0-9_]+$', str(id_col)):
+        raise ValueError("Invalid input")
+    if not re.match(r'^[a-zA-Z0-9_]+$', str(name_col)):
+        raise ValueError("Invalid input")
     query = f"SELECT {id_col}, {name_col} FROM {table_name} ORDER BY {name_col};"
     return fetch_all(query)
